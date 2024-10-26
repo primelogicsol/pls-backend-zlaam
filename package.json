@@ -13,6 +13,7 @@
     "prebuild": "yarn lint && yarn fmt && yarn type-check",
     "build": "rimraf -rf ./dist  && yarn tsc --build",
     "dev": "yarn build && bun --watch   --env-file .env ./server.ts",
+    "start:dev": "yarn build && nodemon  --env-file .env ./dist/server.js",
     "start": "yarn build && node --env-file .env ./dist/server.js"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "@types/express": "^5.0.0",
     "eslint": "^9.13.0",
     "globals": "^15.11.0",
+    "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "prisma": "^5.21.1",
     "rimraf": "^6.0.1",
