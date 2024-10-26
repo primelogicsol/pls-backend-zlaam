@@ -1,9 +1,10 @@
-import express from "express";
-import type { Express } from "express";
+import { app } from "./app";
 import { PORT } from "./config/config";
-const app: Express = express();
-const port = PORT;
-app.get("/", (_, res) => {
-  res.send("Hello World!!!");
-});
-app.listen(port, () => console.log(`listening on port ${port}`));
+import { connectDB } from "./database/db";
+connectDB()
+  .then(() => app.listen(PORT, () => console.log(`Listening on port ${PORT}`)))
+  .catch((err: unknown) => {
+    if (err instanceof Error) console.log(`ERRR while connecting to the database \n ${err.message}`);
+    else console.log(`ERRR while connecting to the database \n ${err as string}`);
+    process.exit(1);
+  });
