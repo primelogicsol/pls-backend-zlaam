@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "A freenlance plate form for freelancer just like fiverr",
   "main": "/src/server.ts",
-  "type": "module",
   "author": "zlaam",
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "fmt": "prettier --write .",
     "prebuild": "rimraf -rf ./dist  && yarn lint && yarn fmt && yarn type-check",
@@ -15,7 +15,7 @@
     "dev": "yarn build && bun --watch   --env-file .env ./src/server.ts",
     "start:dev": "yarn build && nodemon  --env-file .env ./dist/src/server.js",
     "start": "yarn build && node --env-file .env ./dist/src/server.js",
-    "prepare": "husky || true",
+    "prepare": "husky",
     "commit-lint": "commitlint  --edit"
   },
   "dependencies": {
