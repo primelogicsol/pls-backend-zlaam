@@ -11,8 +11,8 @@
     "type-check": "tsc --noEmit",
     "fmt": "prettier --write .",
     "prebuild": "yarn lint && yarn fmt && yarn type-check",
-    "build": "rimraf -rf ./dist  && yarn tsc",
-    "dev": "yarn build &&  bun --watch --env-file .env ./server.ts",
+    "build": "rimraf -rf ./dist  && yarn tsc --build",
+    "dev": "yarn build && bun --watch   --env-file .env ./server.ts",
     "start": "yarn build && node --env-file .env ./dist/server.js"
   },
   "dependencies": {
