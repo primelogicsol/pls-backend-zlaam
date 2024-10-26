@@ -12,17 +12,22 @@
     "fmt": "prettier --write .",
     "prebuild": "rimraf -rf ./dist  && yarn lint && yarn fmt && yarn type-check",
     "build": "yarn tsc --build",
-    "dev": "yarn build && bun --watch   --env-file .env ./src/server.ts",
-    "start:dev": "yarn build && nodemon  --env-file .env ./dist/src/server.js",
+    "dev": "yarn build && nodemon  ./src/server.ts",
     "start": "yarn build && node --env-file .env ./dist/src/server.js",
     "prepare": "husky",
-    "commit-lint": "commitlint  --edit"
+    "commit-lint": "commitlint  --edit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma deploy",
+    "prisma:studio": "prisma studio",
+    "prisma:push": "prisma db push"
   },
   "dependencies": {
     "@prisma/client": "^5.21.1",
     "@types/node": "^22.8.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv-flow": "^4.1.0",
     "express": "^4.21.1"
   },
   "devDependencies": {
@@ -40,6 +45,7 @@
     "prettier": "^3.3.3",
     "prisma": "^5.21.1",
     "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0"
   }

@@ -16,16 +16,6 @@ You have to use `yarn` instead of `npm` as it will conflict with already existed
 
 ### Starting development server
 
-#### Note: If you have `bun` installed in your system then run this command for developemnt server
-
 ```bash
     yarn dev
-```
-
-otherwise:
-
-use this command for development server
-
-```bash
-    yarn start:dev
 ```
