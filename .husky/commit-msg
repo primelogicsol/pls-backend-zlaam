@@ -1,0 +1,2 @@
+#!/bin/sh
+npm run commit-lint "$1"

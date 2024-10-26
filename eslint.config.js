@@ -9,14 +9,23 @@ export default [
   ...tseslint.configs.recommended,
 
   {
-    ignores: ["dist/", "dist", "node_modules/", ".env", ".gitignore", "tsconfig.json", "./.env", ".env.example"],
+    ignores: [
+      "dist/",
+      "dist",
+      "node_modules/",
+      ".env",
+      ".gitignore",
+      "tsconfig.json",
+      "./.env",
+      ".env.example",
+    ],
 
     rules: {
       eqeqeq: "off",
       "no-unused-vars": "error",
       "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
       "prefer-arrow-callback": ["error"],
-      "camelcase": ["error", { "properties": "always" }]
+      camelcase: ["error", { properties: "always" }],
     },
   },
 ];
