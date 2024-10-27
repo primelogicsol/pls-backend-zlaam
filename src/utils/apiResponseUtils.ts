@@ -20,12 +20,12 @@ const jsonResponse = (
 };
 const httpResponse = (req: Request, res: Response, statusCode: number, message: string, data: unknown = null): Response => {
   const response: httpResponseType = {
-    success: 400 < statusCode,
+    success: statusCode < 400,
     status: statusCode,
     message,
     data,
     requestInfo: {
-      url: req.url,
+      url: req.originalUrl,
       ip: req.ip || null,
       method: req.method
     }
