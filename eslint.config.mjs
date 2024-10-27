@@ -17,6 +17,7 @@ export default tseslint.config({
     eqeqeq: "off",
     "no-unused-vars": "error",
     "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
+    "@typescript-eslint/only-throw-error": "off",
     "prefer-arrow-callback": ["error"],
     camelcase: ["error", { properties: "always" }]
   }
