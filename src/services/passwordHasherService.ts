@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import { Response } from "express";
-import { apiResponse } from "../utils/apiResponseUtils";
+import { jsonResponse } from "../utils/apiResponseUtils";
 
 export const passwordHasher = async (password: string, res: Response) => {
   try {
     const hashedPassword: string = await bcrypt.hash(password, 10);
     return hashedPassword;
   } catch (error: unknown) {
-    if (error instanceof Error) return res.status(500).json(apiResponse(500, error.message || "internal server error while hashing the password"));
-    else return res.status(500).json(apiResponse(500, (error as string) || "internal server error while hashing the password"));
+    if (error instanceof Error) return res.status(500).json(jsonResponse(500, error.message || "internal server error while hashing the password"));
+    else return res.status(500).json(jsonResponse(500, (error as string) || "internal server error while hashing the password"));
   }
 };
 export const verifyPassword = async (password: string, existingPassword: string, res: Response): Promise<boolean | Response> => {
@@ -17,7 +17,7 @@ export const verifyPassword = async (password: string, existingPassword: string,
     if (!isPasswordValid) throw { status: 403, message: "Invalid Credentials" };
     return isPasswordValid;
   } catch (error: unknown) {
-    if (error instanceof Error) return res.status(500).json(apiResponse(500, error.message || "Internal server Error while checking credentials"));
+    if (error instanceof Error) return res.status(500).json(jsonResponse(500, error.message || "Internal server Error while checking credentials"));
     return false;
   }
 };
