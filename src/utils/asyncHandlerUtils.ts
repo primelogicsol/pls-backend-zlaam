@@ -7,4 +7,3 @@ const asyncHandler = (requestHandler: (req: Request, res: Response, next: NextFu
   };
 };
 export { asyncHandler };
-

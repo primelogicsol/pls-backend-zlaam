@@ -21,4 +21,3 @@ export const verifyPassword = async (password: string, existingPassword: string,
     return false;
   }
 };
-
