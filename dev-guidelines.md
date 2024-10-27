@@ -3,7 +3,7 @@
 ### First you have to fork or clone this repository
 
 ```bash
-  git clone git@github.com:mr-zlaam/fiverr-server.git
+  git clone git@github.com:mr-zlaam/primeLogicFreelancePlateForm-server.git
 ```
 
 ### Installing dependencies
