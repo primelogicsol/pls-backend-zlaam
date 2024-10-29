@@ -1,2 +1,2 @@
 #!/bin/sh
-npm run commit-lint "$1"
+yarn commit-lint "$1"
