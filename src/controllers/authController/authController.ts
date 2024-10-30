@@ -31,10 +31,10 @@ export default {
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
-    const { generateAccessToken, generateRefreshToken } = tokenGeneratorService
+    const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
     const accessToken = generateAccessToken(user.uid, res, "14m");
     const refreshToken = generateRefreshToken(user.uid, res, "7d");
-    res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS)
+    res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, 200, "User logged in successfully", { email, refreshToken, accessToken });
   })
 };

@@ -54,5 +54,5 @@ const COOKIEOPTIONS = {
     sameSite: "none",
     expires: new Date(Date.now() + refreshTokenExpiry)
   } as TCOOKIEOPTIONS
-}
-export const { REFRESHTOKENCOOKIEOPTIONS, ACESSTOKENCOOKIEOPTIONS } = COOKIEOPTIONS
+};
+export const { REFRESHTOKENCOOKIEOPTIONS, ACESSTOKENCOOKIEOPTIONS } = COOKIEOPTIONS;

@@ -32,7 +32,7 @@ export type TUSERLOGIN = {
   password: string;
 };
 
-export type TPAYLOAD = string
+export type TPAYLOAD = string;
 export type TCOOKIEOPTIONS = {
   httpOnly: true;
   secure: boolean;
