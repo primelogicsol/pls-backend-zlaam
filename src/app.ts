@@ -11,11 +11,13 @@ import helmet from "helmet";
 const app: Express = express();
 // ** MIDDLEWARES **
 app.use(helmet());
-app.use(cors({
-  methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
-  credentials: true,
-  origin: "*",// change this in production
-}));
+app.use(
+  cors({
+    methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
+    credentials: true,
+    origin: "*" // change this in production
+  })
+);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../", "public")));
 // **APPLICATION ROUTES **
