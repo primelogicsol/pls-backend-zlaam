@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { httpResponse } from "../../utils/apiResponseUtils";
-import { TUSERLOGIN, TUSERREGISTER } from "../../types";
+import type { TUSERLOGIN, TUSERREGISTER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
 import { BADREQUESTCODE } from "../../constants";
@@ -30,6 +30,7 @@ export default {
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid password" };
+
     httpResponse(req, res, 200, "User logged in successfully", { email });
   })
 };

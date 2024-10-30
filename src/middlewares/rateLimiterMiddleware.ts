@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { ENV } from "../config/config";
 import { rateLimiterPrisma } from "../config/rateLimiter";
 import { httpResponse } from "../utils/apiResponseUtils";

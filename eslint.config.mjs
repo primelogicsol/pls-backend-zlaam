@@ -17,6 +17,13 @@ export default tseslint.config({
     quotes: ["error", "double", { allowTemplateLiterals: true }],
     eqeqeq: "off",
     "no-unused-vars": "error",
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        prefer: "type-imports",
+        disallowTypeAnnotations: false
+      }
+    ],
     "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
     "@typescript-eslint/only-throw-error": "off",
     "prefer-arrow-callback": ["error"],

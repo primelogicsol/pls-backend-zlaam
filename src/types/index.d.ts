@@ -1,4 +1,4 @@
-export type envType = "DEVELOPMENT" | "PRODUCTION";
+export type TENV = "DEVELOPMENT" | "PRODUCTION";
 export type httpResponseType = {
   success: boolean;
   status: number;
@@ -30,4 +30,8 @@ export type TUSERREGISTER = {
 export type TUSERLOGIN = {
   email: string;
   password: string;
+};
+
+export type TPAYLOAD = {
+  uid: string;
 };

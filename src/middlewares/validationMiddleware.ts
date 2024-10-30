@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { z, ZodError } from "zod";
+import type { Request, Response, NextFunction } from "express";
+import { type z, ZodError } from "zod";
 import { BADREQUESTCODE, INTERNALSERVERERRORCODE, INTERNALSERVERERRORMSG } from "../constants";
 
 export function validateDataMiddleware(schema: z.AnyZodObject) {
