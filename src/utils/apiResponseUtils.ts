@@ -33,6 +33,6 @@ const httpResponse = (req: Request, res: Response, statusCode: number, message: 
   if (ENV && ENV === "PRODUCTION") {
     delete response.requestInfo.ip;
   }
-  return res.status(statusCode).json(response);
+  return res.status(statusCode).json(response).end();
 };
 export { jsonResponse, httpResponse };

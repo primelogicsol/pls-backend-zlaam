@@ -10,7 +10,7 @@ export default {
         applicationHealth: quickerUtils.getApplicationHealth(),
         systemHealth: quickerUtils.getSystemHealth()
       };
-      httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, healthData).end();
+      httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, healthData);
     } catch (error) {
       if (error instanceof Error) {
         throw {

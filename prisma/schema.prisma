@@ -10,3 +10,9 @@ datasource db {
 model User {
   uid String @id @default(cuid())
 }
+
+model RateLimiterFlexible {
+  key    String    @id
+  points Int
+  expire DateTime?
+}
