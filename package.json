@@ -29,7 +29,8 @@
     "cors": "^2.8.5",
     "dotenv-flow": "^4.1.0",
     "express": "^4.21.1",
-    "helmet": "^8.0.0"
+    "helmet": "^8.0.0",
+    "rate-limiter-flexible": "^5.0.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
