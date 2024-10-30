@@ -11,7 +11,7 @@ export type httpResponseType = {
   };
 };
 
-export type TUSER = {
+export type TUSERREGISTER = {
   uid?: string;
   username: string;
   fullName: string;
@@ -26,3 +26,8 @@ export type TUSER = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type TUSERLOGIN = {
+  email: string;
+  password: string;
+}
