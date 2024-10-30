@@ -1,7 +1,9 @@
 import { Router } from "express";
 
 import authController from "../../controllers/authController/authController";
+import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
+import { userRegistrationSchema } from "../../validation/zod";
 export const authRouter = Router();
 
 // Routes**
-authRouter.route("/self").get(authController.self);
+authRouter.route("/register").post(validateDataMiddleware(userRegistrationSchema), authController.registerUser);

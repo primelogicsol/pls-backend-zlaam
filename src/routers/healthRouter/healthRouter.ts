@@ -4,4 +4,4 @@ import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 
 export const healthRouter = Router();
 
-healthRouter.route("/").get(rateLimiterMiddleware, apiController.health);
+healthRouter.route("/").get((req, res, next) => rateLimiterMiddleware(req, res, next, 2), apiController.health);

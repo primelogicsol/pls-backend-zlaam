@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { initRateLimiter } from "../config/rateLimiter";
 
-const prisma = new PrismaClient({});
+const db = new PrismaClient({});
 
 const connectDB = async (): Promise<void> => {
-  void (await prisma
+  void (await db
     .$connect()
     .then(() => {
       console.info(`Connected to the database successfully ✔️`);
@@ -16,4 +16,4 @@ const connectDB = async (): Promise<void> => {
       process.exit(1);
     }));
 };
-export { connectDB, prisma };
+export { connectDB, db };

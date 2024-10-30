@@ -10,3 +10,22 @@ export type httpResponseType = {
     method: string | null;
   };
 };
+
+
+export type TUSER = {
+  uid?: string;
+  username: string;
+  fullName: string;
+  email: string;
+  password: string;
+  role: "CLIENT" | "ADMIN" | "FREELANCER";
+
+  otpPassword?: string | null;
+  otpExpiry?: Date | null;
+  emailVerifiedAt?: Date | null;
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+

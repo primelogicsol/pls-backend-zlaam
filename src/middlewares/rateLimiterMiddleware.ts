@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { ENV } from "../config/config";
-import { rateLimiterPostgres } from "../config/rateLimiter";
+import { rateLimiterPrisma } from "../config/rateLimiter";
 import { httpResponse } from "../utils/apiResponseUtils";
 import { ERRMSG, INTERNALSERVERERRORCODE, TOOMANYREQUESTSCODE, TOOMANYREQUESTSMSG } from "../constants";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response, next: NextFunction, rateLimitPoints?: number) => {
   try {
     if (ENV !== "DEVELOPMENT") return next();
-    if (rateLimiterPostgres) {
-      await rateLimiterPostgres.consume(req.ip as string, 1);
+    if (rateLimiterPrisma) {
+      await rateLimiterPrisma.consume(req.ip as string, rateLimitPoints || 1);
       next();
     } else {
       throw new Error("Rate limiter not initialized");
