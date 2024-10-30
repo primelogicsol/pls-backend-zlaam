@@ -14,12 +14,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       throw new Error("Rate limiter not initialized");
     }
   } catch (err: unknown) {
-
-    const error = err as errorLimiter
+    const error = err as errorLimiter;
     if (error?.remainingPoints === 0) httpResponse(req, res, TOOMANYREQUESTSCODE, TOOMANYREQUESTSMSG, null).end();
     else httpResponse(req, res, INTERNALSERVERERRORCODE, `${ERRMSG} with rateLimiter middleware:: ${err as string}$`, null);
   }
 };
 type errorLimiter = {
-  remainingPoints: number
-}
+  remainingPoints: number;
+};
