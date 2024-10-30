@@ -4,15 +4,18 @@ import cors from "cors";
 import path from "node:path";
 import { authRouter } from "./routers/authRouter/authRouter";
 import { errorHandler, notFoundHandler } from "./middlewares/errorMiddleware";
+import { AUTHROUTE, HEALTHROUTE } from "./constants";
+import { healthRouter } from "./routers/healthRouter/healthRouter";
 // **** APP *****
 const app: Express = express();
 // ** MIDDLEWARES **
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../", "public")));
 app.use(cors());
-// ** ROUTES **
-app.use("/api/v1/auth", authRouter);
-
+// **APPLICATION ROUTES **
+app.use(AUTHROUTE, authRouter);
+// ** Health route
+app.use(HEALTHROUTE, healthRouter);
 // **** ERROR HANDLERS ****
 app.use(notFoundHandler);
 app.use(errorHandler);
