@@ -30,4 +30,4 @@ export type TUSERREGISTER = {
 export type TUSERLOGIN = {
   email: string;
   password: string;
-}
+};
