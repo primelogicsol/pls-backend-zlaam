@@ -11,7 +11,6 @@ export type httpResponseType = {
   };
 };
 
-
 export type TUSER = {
   uid?: string;
   username: string;
@@ -26,6 +25,4 @@ export type TUSER = {
 
   createdAt: Date;
   updatedAt: Date;
-}
-
-
+};

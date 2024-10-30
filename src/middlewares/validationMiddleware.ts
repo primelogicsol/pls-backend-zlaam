@@ -32,4 +32,3 @@ export function validateDataMiddleware(schema: z.AnyZodObject) {
 type issueParamType = {
   message: string;
 };
-
