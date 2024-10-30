@@ -32,6 +32,10 @@ export type TUSERLOGIN = {
   password: string;
 };
 
-export type TPAYLOAD = {
-  uid: string;
+export type TPAYLOAD = string
+export type TCOOKIEOPTIONS = {
+  httpOnly: true;
+  secure: boolean;
+  sameSite: "none";
+  expires: Date;
 };

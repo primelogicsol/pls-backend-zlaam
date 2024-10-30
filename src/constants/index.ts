@@ -1,3 +1,5 @@
+import { ENV } from "../config/config";
+import type { TCOOKIEOPTIONS } from "../types";
 const messages = {
   ERRMSG: "Something went wrong",
   SUCCESSMSG: "Operation was successful",
@@ -6,7 +8,7 @@ const messages = {
   UNAUTHORIZEDMSG: "Unauthorized",
   FORBIDDENMSG: "Forbidden",
   INTERNALSERVERERRORMSG: "Internal Server Error",
-  TOOMANYREQUESTSMSG: "Too Many Requests"
+  TOOMANYREQUESTSMSG: "Too Many Requests. Please try again after sometime"
   // CODES
 };
 export const { ERRMSG, SUCCESSMSG, NOTFOUNDMSG, TOOMANYREQUESTSMSG, BADREQUESTMSG, UNAUTHORIZEDMSG, FORBIDDENMSG, INTERNALSERVERERRORMSG } = messages;
@@ -37,3 +39,20 @@ const ENDPOINTS = {
   AUTHROUTE: "/api/v1/auth"
 };
 export const { HEALTHROUTE, AUTHROUTE } = ENDPOINTS;
+const accessTokenExpiry = 14 * 60 * 1000; // 14 minutes in milliseconds
+const refreshTokenExpiry = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+const COOKIEOPTIONS = {
+  ACESSTOKENCOOKIEOPTIONS: {
+    httpOnly: true,
+    secure: ENV === "PRODUCTION",
+    sameSite: "none",
+    expires: new Date(Date.now() + accessTokenExpiry)
+  } as TCOOKIEOPTIONS,
+  REFRESHTOKENCOOKIEOPTIONS: {
+    httpOnly: true,
+    secure: ENV === "PRODUCTION",
+    sameSite: "none",
+    expires: new Date(Date.now() + refreshTokenExpiry)
+  } as TCOOKIEOPTIONS
+}
+export const { REFRESHTOKENCOOKIEOPTIONS, ACESSTOKENCOOKIEOPTIONS } = COOKIEOPTIONS

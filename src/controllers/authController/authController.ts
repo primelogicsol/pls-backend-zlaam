@@ -3,8 +3,9 @@ import { httpResponse } from "../../utils/apiResponseUtils";
 import type { TUSERLOGIN, TUSERREGISTER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
-import { BADREQUESTCODE } from "../../constants";
+import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS } from "../../constants";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
+import tokenGeneratorService from "../../services/tokenGeneratorService";
 export default {
   // ********* REGISTER USER *********
   registerUser: asyncHandler(async (req: Request, res: Response) => {
@@ -27,10 +28,13 @@ export default {
     // validation is already handled by the middleware
     const { email, password } = req.body as TUSERLOGIN;
     const user = await db.user.findUnique({ where: { email: email } });
-    if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
+    if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
-    if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid password" };
-
-    httpResponse(req, res, 200, "User logged in successfully", { email });
+    if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
+    const { generateAccessToken, generateRefreshToken } = tokenGeneratorService
+    const accessToken = generateAccessToken(user.uid, res, "14m");
+    const refreshToken = generateRefreshToken(user.uid, res, "7d");
+    res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS)
+    httpResponse(req, res, 200, "User logged in successfully", { email, refreshToken, accessToken });
   })
 };
