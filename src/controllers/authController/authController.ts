@@ -6,6 +6,8 @@ import { db } from "../../database/db";
 import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS } from "../../constants";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import tokenGeneratorService from "../../services/tokenGeneratorService";
+import { generateOtp } from "../../services/slugStringGeneratorService";
+import { sendOTP } from "../../services/sendOTPService";
 export default {
   // ********* REGISTER USER *********
   registerUser: asyncHandler(async (req: Request, res: Response) => {
@@ -13,14 +15,18 @@ export default {
     const userData = req.body as TUSERREGISTER;
     const { username, fullName, email, password } = userData;
     const isUserExist = await db.user.findUnique({
-      where: { username, email }
+      where: { username: username.toLowerCase(), email: email.toLowerCase() }
     });
     if (isUserExist) throw { status: BADREQUESTCODE, message: "user already exists with same username or email." };
     const hashedPassword = (await passwordHasher(password, res)) as string;
+    const generateOneTimePassword = generateOtp()
+    const hashedOTPPassword = await passwordHasher(generateOneTimePassword.otp, res) as string
+
     await db.user.create({
-      data: { username, fullName, email, password: hashedPassword, role: "CLIENT" }
+      data: { username: username.toLowerCase(), fullName, email: email.toLowerCase(), password: hashedPassword, role: "CLIENT", otpPassword: hashedOTPPassword, otpPasswordExpiry: generateOneTimePassword.otpExpiry }
     });
-    httpResponse(req, res, 200, "User registered successfully", { fullName, email });
+    await sendOTP(email, generateOneTimePassword.otp, fullName);
+    httpResponse(req, res, 200, "Please verify your email wit 6 digit OTP sent to your email", { fullName, email });
   }),
 
   // ********* LOGIN USER *********
