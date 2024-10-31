@@ -19,11 +19,19 @@ export default {
     });
     if (isUserExist) throw { status: BADREQUESTCODE, message: "user already exists with same username or email." };
     const hashedPassword = (await passwordHasher(password, res)) as string;
-    const generateOneTimePassword = generateOtp()
-    const hashedOTPPassword = await passwordHasher(generateOneTimePassword.otp, res) as string
+    const generateOneTimePassword = generateOtp();
+    const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
 
     await db.user.create({
-      data: { username: username.toLowerCase(), fullName, email: email.toLowerCase(), password: hashedPassword, role: "CLIENT", otpPassword: hashedOTPPassword, otpPasswordExpiry: generateOneTimePassword.otpExpiry }
+      data: {
+        username: username.toLowerCase(),
+        fullName,
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        role: "CLIENT",
+        otpPassword: hashedOTPPassword,
+        otpPasswordExpiry: generateOneTimePassword.otpExpiry
+      }
     });
     await sendOTP(email, generateOneTimePassword.otp, fullName);
     httpResponse(req, res, 200, "Please verify your email wit 6 digit OTP sent to your email", { fullName, email });
