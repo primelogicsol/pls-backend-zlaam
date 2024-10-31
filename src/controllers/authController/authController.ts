@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
 import { httpResponse } from "../../utils/apiResponseUtils";
-import type { TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
+import type { TSENDOTP, TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
-import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS } from "../../constants";
+import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE } from "../../constants";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
@@ -34,7 +34,7 @@ export default {
       }
     });
     await sendOTP(email, generateOneTimePassword.otp, fullName);
-    httpResponse(req, res, 200, "Please verify your email wit 6 digit OTP sent to your email", { fullName, email });
+    httpResponse(req, res, SUCCESSCODE, "Please verify your email wit 6 digit OTP sent to your email", { fullName, email });
   }),
 
   // ********* LOGIN USER *********
@@ -49,10 +49,11 @@ export default {
     const accessToken = generateAccessToken(user.uid, res, "14m");
     const refreshToken = generateRefreshToken(user.uid, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
-    httpResponse(req, res, 200, "User logged in successfully", { email, refreshToken, accessToken });
+    httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { email, refreshToken, accessToken });
   }),
   // ********* VERIFY USER WITH OTP ***************
   verifyUser: asyncHandler(async (req: Request, res: Response) => {
+    // validation is already handled by the middleware
     const { email, OTP } = req.body as TVERIFYUSER;
     const user = await db.user.findUnique({ where: { email: email } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
@@ -82,6 +83,25 @@ export default {
     const accessToken = generateAccessToken(user.uid, res, "14m");
     const refreshToken = generateRefreshToken(user.uid, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
-    httpResponse(req, res, 200, "User verified  successfully", { email, refreshToken, accessToken });
+    httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { email, refreshToken, accessToken });
+  }),
+  // ********** Send OTP controller *******************8
+  sendOTP: asyncHandler(async (req: Request, res: Response) => {
+    // validation is already handled by middleware
+    const { email } = req.body as TSENDOTP;
+    const user = await db.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
+    if (user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Email already verified" };
+    const generateOneTimePassword = generateOtp();
+    const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
+    await db.user.update({
+      where: { email: email.toLowerCase() },
+      data: {
+        otpPassword: hashedOTPPassword,
+        otpPasswordExpiry: generateOneTimePassword.otpExpiry
+      }
+    });
+    await sendOTP(email, generateOneTimePassword.otp, user.fullName);
+    httpResponse(req, res, SUCCESSCODE, "OTP sent successfully", { email });
   })
 };

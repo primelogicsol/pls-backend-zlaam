@@ -56,3 +56,10 @@ export const verifyUserSchema = z.object({
     .min(6, { message: "OTP must be at least 6 characters long." })
     .max(6, { message: "OTP can be at most 6 characters long." })
 });
+
+export const sendOTPSchema = z.object({
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+});

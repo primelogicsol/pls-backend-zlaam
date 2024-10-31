@@ -1,4 +1,8 @@
+// Single line types
+
+export type TPAYLOAD = string;
 export type TENV = "DEVELOPMENT" | "PRODUCTION";
+// Multiline types
 export type httpResponseType = {
   success: boolean;
   status: number;
@@ -37,10 +41,13 @@ export type TVERIFYUSER = {
   OTP: string;
 };
 
-export type TPAYLOAD = string;
 export type TCOOKIEOPTIONS = {
   httpOnly: true;
   secure: boolean;
   sameSite: "none";
   expires: Date;
 };
+
+export type TSENDOTP = {
+  email: string;
+}

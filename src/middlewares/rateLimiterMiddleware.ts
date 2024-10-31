@@ -4,7 +4,7 @@ import { rateLimiterPrisma } from "../config/rateLimiter";
 import { httpResponse } from "../utils/apiResponseUtils";
 import { ERRMSG, INTERNALSERVERERRORCODE, TOOMANYREQUESTSCODE, TOOMANYREQUESTSMSG } from "../constants";
 
-export default async (req: Request, res: Response, next: NextFunction, rateLimitPoints?: number) => {
+export default async (req: Request, res: Response, next: NextFunction, rateLimitPoints?: number, message?: string) => {
   try {
     // TOOD: replace ! with = for production
     if (ENV !== "DEVELOPMENT") return next();
@@ -16,7 +16,7 @@ export default async (req: Request, res: Response, next: NextFunction, rateLimit
     }
   } catch (err: unknown) {
     const error = err as errorLimiter;
-    if (error?.remainingPoints === 0) httpResponse(req, res, TOOMANYREQUESTSCODE, TOOMANYREQUESTSMSG, null).end();
+    if (error?.remainingPoints === 0) httpResponse(req, res, TOOMANYREQUESTSCODE, message || `${TOOMANYREQUESTSMSG} 1 minute`, null).end();
     else httpResponse(req, res, INTERNALSERVERERRORCODE, `${ERRMSG} with rateLimiter middleware:: ${err as string}$`, null);
   }
 };

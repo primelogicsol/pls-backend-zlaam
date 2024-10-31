@@ -1,0 +1,7 @@
+yarn lint && yarn lint:fix && yarn type-check && yarn fmt
+
+
+if ! git diff-index --quiet HEAD --; then
+  echo "You have uncommitted changes. Please commit or stash them before merging."
+  exit 1
+fi
