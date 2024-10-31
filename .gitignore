@@ -8,3 +8,4 @@ dist/
 logs/
 .env.development
 .env.production
+test.txt
