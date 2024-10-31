@@ -27,9 +27,15 @@ export type TUSERREGISTER = {
   updatedAt: Date;
 };
 
+
 export type TUSERLOGIN = {
   email: string;
   password: string;
+};
+
+export type TVERIFYUSER = {
+  email: string;
+  OTP: string;
 };
 
 export type TPAYLOAD = string;

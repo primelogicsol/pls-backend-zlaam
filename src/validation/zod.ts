@@ -43,3 +43,16 @@ export const userLoginSchema = z.object({
     .email({ message: "Invalid email format. e.g: john.doe@example.com" }),
   password: z.string({ message: "password is required!!" }).min(1, { message: "password is required!!" })
 });
+
+// ** verify user schema
+export const verifyUserSchema = z.object({
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" }),
+  OTP: z
+    .string({ message: "OTP is required!!" })
+    .min(1, { message: "OTP is required!!" })
+    .min(6, { message: "OTP must be at least 6 characters long." })
+    .max(6, { message: "OTP can be at most 6 characters long." })
+});

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { httpResponse } from "../../utils/apiResponseUtils";
-import type { TUSERLOGIN, TUSERREGISTER } from "../../types";
+import type { TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
 import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS } from "../../constants";
@@ -50,5 +50,38 @@ export default {
     const refreshToken = generateRefreshToken(user.uid, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, 200, "User logged in successfully", { email, refreshToken, accessToken });
+  }),
+  // ********* VERIFY USER WITH OTP ***************
+  verifyUser: asyncHandler(async (req: Request, res: Response) => {
+    const { email, OTP } = req.body as TVERIFYUSER;
+    const user = await db.user.findUnique({ where: { email: email } });
+    if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
+
+    if (user.otpPasswordExpiry && user.otpPasswordExpiry < new Date()) {
+      await db.user.update({
+        where: { email: email.toLowerCase() },
+        data: {
+          otpPassword: null,
+          otpPasswordExpiry: null
+        }
+      })
+      throw { status: BADREQUESTCODE, message: "OTP expired. Please try again" };
+    }
+    const isPasswordMatch = await verifyPassword(OTP, user?.otpPassword as string, res);
+    if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
+
+    await db.user.update({
+      where: { email: email.toLowerCase() },
+      data: {
+        emailVerifiedAt: new Date(),
+        otpPassword: null,
+        otpPasswordExpiry: null
+      }
+    })
+    const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
+    const accessToken = generateAccessToken(user.uid, res, "14m");
+    const refreshToken = generateRefreshToken(user.uid, res, "7d");
+    res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
+    httpResponse(req, res, 200, "User verified  successfully", { email, refreshToken, accessToken });
   })
 };
