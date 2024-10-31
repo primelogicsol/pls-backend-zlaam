@@ -50,4 +50,4 @@ export type TCOOKIEOPTIONS = {
 
 export type TSENDOTP = {
   email: string;
-}
+};

@@ -9,12 +9,21 @@ const messages = {
   FORBIDDENMSG: "Forbidden",
   INTERNALSERVERERRORMSG: "Internal Server Error",
   TOOMANYREQUESTSMSG: "Too Many Requests. Please try again after",
-  OTPALREADYSENT: "OTP already sent. Please try again after 1 minute",
-
+  OTPALREADYSENT: "OTP already sent. Please try again after 1 minute"
 
   // CODES
 };
-export const { ERRMSG, SUCCESSMSG, NOTFOUNDMSG, TOOMANYREQUESTSMSG, BADREQUESTMSG, UNAUTHORIZEDMSG, FORBIDDENMSG, INTERNALSERVERERRORMSG, OTPALREADYSENT } = messages;
+export const {
+  ERRMSG,
+  SUCCESSMSG,
+  NOTFOUNDMSG,
+  TOOMANYREQUESTSMSG,
+  BADREQUESTMSG,
+  UNAUTHORIZEDMSG,
+  FORBIDDENMSG,
+  INTERNALSERVERERRORMSG,
+  OTPALREADYSENT
+} = messages;
 
 const statusCodes = {
   SUCCESSCODE: 200,
