@@ -27,7 +27,6 @@ export type TUSERREGISTER = {
   updatedAt: Date;
 };
 
-
 export type TUSERLOGIN = {
   email: string;
   password: string;

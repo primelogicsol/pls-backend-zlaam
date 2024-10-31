@@ -64,7 +64,7 @@ export default {
           otpPassword: null,
           otpPasswordExpiry: null
         }
-      })
+      });
       throw { status: BADREQUESTCODE, message: "OTP expired. Please try again" };
     }
     const isPasswordMatch = await verifyPassword(OTP, user?.otpPassword as string, res);
@@ -77,7 +77,7 @@ export default {
         otpPassword: null,
         otpPasswordExpiry: null
       }
-    })
+    });
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
     const accessToken = generateAccessToken(user.uid, res, "14m");
     const refreshToken = generateRefreshToken(user.uid, res, "7d");
