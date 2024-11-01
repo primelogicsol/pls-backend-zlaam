@@ -17,11 +17,11 @@
     "start": "yarn build && node --env-file .env ./dist/src/server.js",
     "prepare": "husky",
     "commit-lint": "commitlint  --edit",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma deploy",
-    "prisma:studio": "prisma studio",
-    "prisma:push": "prisma db push"
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma deploy",
+    "db:studio": "prisma studio",
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@prisma/client": "^5.21.1",

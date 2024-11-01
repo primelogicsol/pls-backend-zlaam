@@ -1,21 +1,29 @@
 # Developer Guidelines
 
-### First you have to fork or clone this repository
+### 1. First you have to fork or clone this repository
 
 ```bash
-  git clone git@github.com:mr-zlaam/primeLogicFreelancePlateForm-server.git
+    git clone git@github.com:mr-zlaam/primeLogicFreelancePlateForm-server.git
 ```
 
-### Installing dependencies
+### 2. Installing dependencies
 
-You have to use `yarn` instead of `npm` as it will conflict with already existed lock files
+<span style="color:red; font-size:2rem; font-weight:bold;">Note-></span> Don't use `npm` for this project, use `yarn` instead
 
 ```bash
     yarn install
 ```
 
-### Starting development server
+### 3. Run Migrations
+
+```bash
+    yarn db:generate && yarn db:push
+```
+
+### 4. Starting development server
 
 ```bash
     yarn dev
 ```
+
+<h3 style="color:yellow;">Your server will run on <code> PORT:8000</code></h3>
