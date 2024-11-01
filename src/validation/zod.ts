@@ -24,7 +24,8 @@ export const userRegistrationSchema = z.object({
   email: z
     .string({ message: "email is required!!" })
     .min(1, { message: "email is required!!" })
-    .max(150, { message: "email can be at most 150 characters long. e.g: john.doe@example.com" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
     .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
       message: "Invalid email format. e.g: john.doe@example.com"
     }),
@@ -37,10 +38,7 @@ export const userRegistrationSchema = z.object({
 
 // ** user login schema
 export const userLoginSchema = z.object({
-  email: z
-    .string({ message: "email is required!!" })
-    .min(1, { message: "email is required!!" })
-    .email({ message: "Invalid email format. e.g: john.doe@example.com" }),
+  email: z.string({ message: "email is required!!" }).min(1, { message: "email is required!!" }).email({ message: "Invalid email format." }),
   password: z.string({ message: "password is required!!" }).min(1, { message: "password is required!!" })
 });
 
