@@ -26,10 +26,6 @@
     touch .env   # if this command didn't work for you then you can create it manually
     ```
 
-  ```
-
-  ```
-
 - Copy the configurations from [.env.example](/.env.example) and paste in your new created `.env` file.
 - Now change the project configuration according to your need like `DATABASE_URL` and `SERVER_EMAIL`
 
