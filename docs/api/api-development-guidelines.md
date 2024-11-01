@@ -22,10 +22,6 @@
     cd  primeLogicSolutionFreelancePlateform-server # check the directory name before running this command.
     ```
 
-  ```
-
-  ```
-
   - ```bash
     touch .env   # if this command didn't work for you then you can create it manually
     ```
