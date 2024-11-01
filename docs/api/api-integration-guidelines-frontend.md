@@ -6,6 +6,14 @@
 
 First you have to install backend in your system through this [guideline](/docs/api/api-development-guidelines.md). After configuring backend your system you can follow the rest.
 
+## Table of Contents
+
+- [Authentication](#authentication)
+  - [Register](#1-post-register)
+  - [Verify Email](#2-post-verifyemail)
+  - [Resend OTP](#3-post-sendOTP)
+  - [Login](#4-post-login)
+
 # `Authentication`
 
 #### You can validate using `zod` or any other validation library.
@@ -43,7 +51,7 @@ use `OTP` verification screen, so user can enter that `OTP`. If user entered cor
 ## 2. `POST` verifyEmail
 
 ```bash
-/api/v1/auth/login
+/api/v1/auth/verifyEmail
 ```
 
 ### You will send to the server
@@ -56,7 +64,11 @@ Send the following data to backend by using above endpoint in `body`.
 
 If verification was successfully you will recieve two jwt tokens one is `refreshToken` which will expire in "7d" while accessToken will be expired in "14m". You can use refresh token to renew the accessToken. Without accessToken no one can access Protected routes.
 
-## 3.`POST` resend OTP
+## 3.`POST` sendOTP
+
+```bash
+/api/v1/auth/sendOTP
+```
 
 ### You will send to the server
 
