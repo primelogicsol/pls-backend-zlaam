@@ -8,10 +8,12 @@ First you have to install backend in your system through this [guideline](/docs/
 
 ## Table of Contents
 
+Endpoints
+
 - [Authentication](#authentication)
   - [Register](#1-post-register)
   - [Verify Email](#2-post-verifyemail)
-  - [Resend OTP](#3-post-sendOTP)
+  - [Send OTP](#3-post-sendOTP)
   - [Login](#4-post-login)
 
 # `Authentication`
