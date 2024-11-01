@@ -1,4 +1,4 @@
-# Developer Guidelines
+# API DEVELOPMENT GUIDELINE
 
 ### 1. First you have to fork or clone this repository
 
