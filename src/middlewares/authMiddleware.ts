@@ -48,5 +48,10 @@ export default {
     logger.info("Checking if user is admin", "authMiddleware.ts:48");
     if (req.userFromToken?.role !== "ADMIN") throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
     return next();
+  },
+  checkIfUserIAdminOrModerator: (req: _Request, _: Response, next: NextFunction) => {
+    logger.info("Checking if user is admin or moderator", "authMiddleware.ts:53");
+    if (req.userFromToken?.role !== "ADMIN" && req.userFromToken?.role !== "MODERATOR") throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
+    return next();
   }
 };

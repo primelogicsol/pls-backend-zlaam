@@ -1,7 +1,7 @@
 // Single line types
 export type TENV = "DEVELOPMENT" | "PRODUCTION";
 
-export type TROLE = "CLIENT" | "ADMIN" | "FREELANCER";
+export type TROLE = "CLIENT" | "ADMIN" | "FREELANCER" | "MODERATOR";
 export type TPAYLOAD = {
   uid: string;
   tokenVersion: number;
