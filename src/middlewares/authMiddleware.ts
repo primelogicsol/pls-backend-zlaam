@@ -8,7 +8,7 @@ import logger from "../utils/loggerUtils";
 
 export type _Request = Request & {
   userFromToken?: TPAYLOAD;
-}
+};
 export default {
   checkToken: asyncHandler(async (req: _Request, _: Response, next: NextFunction) => {
     const accessToken = req.header("Authorization");
