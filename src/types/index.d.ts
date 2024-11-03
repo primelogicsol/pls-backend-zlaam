@@ -37,6 +37,14 @@ export type TUSERREGISTER = {
   updatedAt: Date;
 };
 
+export type TUSERUPDATE = {
+  username: string;
+  fullName: string;
+  email: string;
+  oldPassword: string
+  password: string;
+  role: TROLE;
+};
 export type TUSERLOGIN = {
   email: string;
   password: string;

@@ -1,7 +1,6 @@
 import { RateLimiterPrisma } from "rate-limiter-flexible";
 import { db } from "../database/db";
-const POINTS = 10;
-const DURATION = 60;
+import { DURATION, POINTS } from "../constants";
 export let rateLimiterPrisma: null | RateLimiterPrisma = null;
 export const initRateLimiter = () => {
   rateLimiterPrisma = new RateLimiterPrisma({

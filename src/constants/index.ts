@@ -11,7 +11,6 @@ const messages = {
   TOOMANYREQUESTSMSG: "Too Many Requests. Please try again after",
   OTPALREADYSENT: "OTP already sent. Please try again after 1 minute"
 
-  // CODES
 };
 export const {
   ERRMSG,
@@ -25,6 +24,7 @@ export const {
   OTPALREADYSENT
 } = messages;
 
+// CODES
 const statusCodes = {
   SUCCESSCODE: 200,
   CREATEDCODE: 201,
@@ -45,6 +45,12 @@ export const {
   NOTFOUNDCODE,
   INTERNALSERVERERRORCODE
 } = statusCodes;
+
+const rateLimitingPoints = {
+  POINTS: 10,
+  DURATION: 60,
+}
+export const { POINTS, DURATION } = rateLimitingPoints;
 
 const ENDPOINTS = {
   HEALTHROUTE: "/api/v1/health",

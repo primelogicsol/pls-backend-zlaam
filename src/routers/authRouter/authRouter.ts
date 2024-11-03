@@ -2,9 +2,11 @@ import { Router } from "express";
 
 import authController from "../../controllers/authController/authController";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
-import { sendOTPSchema, userLoginSchema, userRegistrationSchema, verifyUserSchema } from "../../validation/zod";
+import { sendOTPSchema, userLoginSchema, userRegistrationSchema, userUpdateSchema, verifyUserSchema } from "../../validation/zod";
 import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 import { OTPALREADYSENT } from "../../constants/index";
+import userController from "../../controllers/authController/userController";
+import authMiddleware from "../../middlewares/authMiddleware";
 export const authRouter = Router();
 
 // Routes**
@@ -24,3 +26,7 @@ authRouter
   .route("/login")
   // 5 req per mnute from single  ip adress
   .post(validateDataMiddleware(userLoginSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 2), authController.loginUser);
+
+authRouter.route("/updateUserInfo").patch(authMiddleware.checkToken, validateDataMiddleware(userUpdateSchema),
+  // 1 req per minute from single  ip adress
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 10), userController.updateInfo);
