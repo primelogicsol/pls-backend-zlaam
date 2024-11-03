@@ -3,13 +3,13 @@ import { httpResponse } from "../../utils/apiResponseUtils";
 import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
-import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE } from "../../constants";
+import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE, WHITELISTMAILS } from "../../constants";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
 
-let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0 };
+let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0, role: "CLIENT", isVerified: null };
 export default {
   // ********* REGISTER USER *********
   registerUser: asyncHandler(async (req: Request, res: Response) => {
@@ -30,7 +30,7 @@ export default {
         fullName,
         email: email.toLowerCase(),
         password: hashedPassword,
-        role: "CLIENT",
+        role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
         otpPassword: hashedOTPPassword,
         otpPasswordExpiry: generateOneTimePassword.otpExpiry
       }
@@ -45,10 +45,16 @@ export default {
     const { email, password } = req.body as TUSERLOGIN;
     const user = await db.user.findUnique({ where: { email: email } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
+    if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
-    payLoad = { uid: user?.uid, tokenVersion: user?.tokenVersion };
+    payLoad = {
+      uid: user?.uid,
+      tokenVersion: user?.tokenVersion,
+      role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
+      isVerified: user?.emailVerifiedAt
+    };
     const accessToken = generateAccessToken(payLoad, res, "14m");
     const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
@@ -84,7 +90,12 @@ export default {
     });
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
 
-    payLoad = { uid: user?.uid, tokenVersion: user?.tokenVersion };
+    payLoad = {
+      uid: user?.uid,
+      tokenVersion: user?.tokenVersion,
+      role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
+      isVerified: new Date()
+    };
     const accessToken = generateAccessToken(payLoad, res, "14m");
     const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);

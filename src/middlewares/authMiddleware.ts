@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandlerUtils";
 import { verifyToken } from "../services/verifyTokenService";
-import { UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../constants";
+import { FORBIDDENCODE, FORBIDDENMSG, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../constants";
 import type { TPAYLOAD } from "../types";
 import { db } from "../database/db";
 import logger from "../utils/loggerUtils";
@@ -31,6 +31,10 @@ export default {
     if (user?.tokenVersion !== decoded.tokenVersion) {
       logger.error("Invalid token. tokenVersion doesn't match maybe session is expired", "authMiddleware.ts:33");
       throw { status: UNAUTHORIZEDCODE, message: "Session expired. Please login again" };
+    }
+    if (decoded.isVerified == null) {
+      logger.error("user is not verified", "authMiddleware.ts:36");
+      throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
     }
     return next();
   })

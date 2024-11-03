@@ -1,10 +1,13 @@
 // Single line types
+export type TENV = "DEVELOPMENT" | "PRODUCTION";
 
+export type TROLE = "CLIENT" | "ADMIN" | "FREELANCER";
 export type TPAYLOAD = {
   uid: string;
   tokenVersion: number;
+  role: TROLE;
+  isVerified: Date | null;
 };
-export type TENV = "DEVELOPMENT" | "PRODUCTION";
 // Multiline types
 export type httpResponseType = {
   success: boolean;
@@ -24,8 +27,8 @@ export type TUSERREGISTER = {
   fullName: string;
   email: string;
   password: string;
-  role: "CLIENT" | "ADMIN" | "FREELANCER";
 
+  role: TROLE;
   otpPassword?: string | null;
   otpExpiry?: Date | null;
   emailVerifiedAt?: Date | null;

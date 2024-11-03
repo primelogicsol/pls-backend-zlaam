@@ -25,7 +25,7 @@ export default {
   },
   generateRefreshToken: (payload: TPAYLOAD, res: Response, expiresIn?: string): string | Response => {
     try {
-      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn || "7d" });
+      const token = jwt.sign({ uid: payload.uid, tokenVersion: payload.tokenVersion }, JWT_SECRET, { expiresIn: expiresIn || "7d" });
       return token;
     } catch (error: unknown) {
       if (error instanceof Error)

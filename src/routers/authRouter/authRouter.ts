@@ -2,14 +2,13 @@ import { Router } from "express";
 
 import authController from "../../controllers/authController/authController";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
-import authMiddleware from "../../middlewares/authMiddleware";
 import { sendOTPSchema, userLoginSchema, userRegistrationSchema, verifyUserSchema } from "../../validation/zod";
 import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 import { OTPALREADYSENT } from "../../constants/index";
 export const authRouter = Router();
 
 // Routes**
-authRouter.route("/register").post(authMiddleware.checkToken, validateDataMiddleware(userRegistrationSchema), authController.registerUser);
+authRouter.route("/register").post(validateDataMiddleware(userRegistrationSchema), authController.registerUser);
 
 authRouter
   .route("/verifyEmail")
