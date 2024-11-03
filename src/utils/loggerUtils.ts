@@ -25,15 +25,15 @@ const colorizeLevel = (level: string) => {
 
 const consoleLogFormat = format.printf((info) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { level, message, meta = {} } = info;
+  const { level, message, meta } = info;
 
   const customLevel = colorizeLevel(level.toUpperCase());
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const customMessage = message;
   const customMeta = util.inspect(meta, {
-    showHidden: false,
-    depth: null,
-    colors: true
+    showHidden: true,
+    depth: 1,
+    colors: true,
   });
 
   // Use the timestamp function here

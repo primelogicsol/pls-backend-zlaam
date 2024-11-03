@@ -28,6 +28,9 @@ export const errorHandler = (error: CustomError, req: Request, res: Response, ne
     },
     ...(ENV !== "PRODUCTION" && { stack: error.stack ? error.stack : "No stack has been sent" }) // Only add `ip` if not in production
   };
-  res.status(error.status || 500).json(errObject);
+  res
+    .status(error.status || 500)
+    .json(errObject)
+    .end();
   next();
 };

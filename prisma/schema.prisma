@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  CLIENT
+  ADMIN
+  FREELANCER
+}
+
 model User {
   uid               String    @id @default(cuid())
   username          String    @unique
@@ -32,10 +38,4 @@ model RateLimiterFlexible {
   key    String    @id
   points Int
   expire DateTime?
-}
-
-enum Role {
-  CLIENT
-  ADMIN
-  FREELANCER
 }
