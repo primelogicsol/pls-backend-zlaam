@@ -1,5 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -11,7 +13,6 @@ enum Role {
   CLIENT
   ADMIN
   MODERATOR
-  FREELANCER
 }
 
 model User {
@@ -27,7 +28,7 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   tokenVersion      Int       @default(0)
-
+  @@index([uid])
   @@index([username]) // Index on username
   @@index([email]) // Index on email
   @@index([role, createdAt]) // Composite index on role and createdAt

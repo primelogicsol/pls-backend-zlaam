@@ -1,14 +1,14 @@
 // Single line types
 export type TENV = "DEVELOPMENT" | "PRODUCTION";
 
-export type TROLE = "CLIENT" | "ADMIN" | "FREELANCER" | "MODERATOR";
+export type TROLE = "CLIENT" | "ADMIN" | "MODERATOR";
+// Multiline types
 export type TPAYLOAD = {
   uid: string;
   tokenVersion: number;
   role: TROLE;
   isVerified: Date | null;
 };
-// Multiline types
 export type httpResponseType = {
   success: boolean;
   status: number;
@@ -38,6 +38,7 @@ export type TUSERREGISTER = {
 };
 
 export type TUSERUPDATE = {
+  uid: string;
   username: string;
   fullName: string;
   email: string;

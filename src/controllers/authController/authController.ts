@@ -32,11 +32,18 @@ export default {
         password: hashedPassword,
         role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
         otpPassword: hashedOTPPassword,
-        otpPasswordExpiry: generateOneTimePassword.otpExpiry
+        otpPasswordExpiry: generateOneTimePassword.otpExpiry,
+        emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
       }
     });
-    await sendOTP(email, generateOneTimePassword.otp, fullName);
-    httpResponse(req, res, SUCCESSCODE, "Please verify your email wit 6 digit OTP sent to your email", { fullName, email });
+    if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
+    httpResponse(
+      req,
+      res,
+      SUCCESSCODE,
+      WHITELISTMAILS.includes(email) ? "User registered successfully" : "Please verify your email wit 6 digit OTP sent to your email",
+      { fullName, email }
+    );
   }),
 
   // ********* LOGIN USER *********

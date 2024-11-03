@@ -24,7 +24,7 @@ export default {
     const [error, decoded] = verifyToken<TPAYLOAD>(parsedToken);
     if (error) {
       logger.error("Error while verifying token", "authMiddleware.ts:24");
-      throw { status: UNAUTHORIZEDCODE, message: error.message || UNAUTHORIZEDMSG };
+      throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     }
     if (!decoded?.uid) {
       logger.warn("Invalid token. Not uid found in accessToken", "authMiddleware.ts:28");

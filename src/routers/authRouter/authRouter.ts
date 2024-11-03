@@ -4,6 +4,7 @@ import authController from "../../controllers/authController/authController";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 import {
   sendOTPSchema,
+  userDeleteSchema,
   userLoginSchema,
   userRegistrationSchema,
   userUpdateEmailSchema,
@@ -57,10 +58,21 @@ authRouter.route("/updatePassword").patch(
   (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
   userController.updatePassword
 );
-authRouter.route("/updatePassword").patch(
+authRouter.route("/updateRole").patch(
   authMiddleware.checkToken,
   authMiddleware.checkIfUserIsAdmin,
   // 1 req per minute from single  ip adress
-  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 1),
   userController.updateRole
 );
+authRouter
+  .route("/deleteUser")
+  .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.deleteUser);
+authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(userDeleteSchema), userController.getSingleUser);
+
+authRouter
+  .route("/getAllUsers")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.getAllUsers);
+
+authRouter.route("/searchUsers").get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.searchUser);
+authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userController.getCurrentUser);

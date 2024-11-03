@@ -63,6 +63,7 @@ export const sendOTPSchema = z.object({
 });
 
 export const userUpdateSchema = z.object({
+  uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" }),
   username: z
     .string({ message: "username is required!!" })
     .min(1, { message: "username is required!!" })
@@ -85,6 +86,7 @@ export const userUpdateSchema = z.object({
     })
 });
 export const userUpdateEmailSchema = z.object({
+  uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" }),
   email: z
     .string({ message: "email is required!!" })
     .min(1, { message: "email is required!!" })
@@ -97,6 +99,7 @@ export const userUpdateEmailSchema = z.object({
 });
 
 export const userUpdatePasswordSchema = z.object({
+  uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" }),
   oldPassword: z
     .string({ message: "oldPassword Password is required" })
     .min(1, { message: "oldPassword Password is required" })
@@ -106,4 +109,7 @@ export const userUpdatePasswordSchema = z.object({
     .min(1, { message: "password is required!!" })
     .min(6, { message: "password must be at least 6 characters long." })
     .max(50, { message: "password can be at most 50 characters long." })
+});
+export const userDeleteSchema = z.object({
+  uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" })
 });
