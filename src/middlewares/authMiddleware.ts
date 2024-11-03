@@ -6,8 +6,11 @@ import type { TPAYLOAD } from "../types";
 import { db } from "../database/db";
 import logger from "../utils/loggerUtils";
 
+export type _Request = Request & {
+  userFromToken?: TPAYLOAD;
+}
 export default {
-  checkToken: asyncHandler(async (req: Request, _: Response, next: NextFunction) => {
+  checkToken: asyncHandler(async (req: _Request, _: Response, next: NextFunction) => {
     const accessToken = req.header("Authorization");
     if (!accessToken) {
       logger.error("No access token found", "authMiddleware.ts:13");
@@ -36,6 +39,14 @@ export default {
       logger.error("user is not verified", "authMiddleware.ts:36");
       throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
     }
+
+    req.userFromToken = decoded;
+
     return next();
-  })
+  }),
+  checkIfUserIsAdmin: (req: _Request, _: Response, next: NextFunction) => {
+    logger.info("Checking if user is admin", "authMiddleware.ts:48");
+    if (req.userFromToken?.role !== "ADMIN") throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
+    return next();
+  }
 };
