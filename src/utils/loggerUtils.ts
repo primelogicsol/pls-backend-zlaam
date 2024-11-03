@@ -33,7 +33,7 @@ const consoleLogFormat = format.printf((info) => {
   const customMeta = util.inspect(meta, {
     showHidden: true,
     depth: 1,
-    colors: true,
+    colors: true
   });
 
   // Use the timestamp function here
