@@ -1,6 +1,9 @@
 // Single line types
 
-export type TPAYLOAD = string;
+export type TPAYLOAD = {
+  uid: string;
+  tokenVersion: number;
+};
 export type TENV = "DEVELOPMENT" | "PRODUCTION";
 // Multiline types
 export type httpResponseType = {

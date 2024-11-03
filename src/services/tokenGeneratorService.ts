@@ -6,7 +6,7 @@ import type { TPAYLOAD } from "../types";
 export default {
   generateAccessToken: (payload: TPAYLOAD, res: Response, expiresIn?: string): string | Response => {
     try {
-      const token = jwt.sign({ uid: payload }, JWT_SECRET, { expiresIn: expiresIn || "1d" });
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn || "1d" });
       return token;
     } catch (error: unknown) {
       if (error instanceof Error)
@@ -25,7 +25,7 @@ export default {
   },
   generateRefreshToken: (payload: TPAYLOAD, res: Response, expiresIn?: string): string | Response => {
     try {
-      const token = jwt.sign({ uid: payload }, JWT_SECRET, { expiresIn: expiresIn || "7d" });
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn || "7d" });
       return token;
     } catch (error: unknown) {
       if (error instanceof Error)

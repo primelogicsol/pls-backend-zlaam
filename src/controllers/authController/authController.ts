@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { httpResponse } from "../../utils/apiResponseUtils";
-import type { TSENDOTP, TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
+import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
 import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE } from "../../constants";
@@ -8,6 +8,8 @@ import { passwordHasher, verifyPassword } from "../../services/passwordHasherSer
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
+
+let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0 };
 export default {
   // ********* REGISTER USER *********
   registerUser: asyncHandler(async (req: Request, res: Response) => {
@@ -46,8 +48,9 @@ export default {
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
-    const accessToken = generateAccessToken(user.uid, res, "14m");
-    const refreshToken = generateRefreshToken(user.uid, res, "7d");
+    payLoad = { uid: user?.uid, tokenVersion: user?.tokenVersion };
+    const accessToken = generateAccessToken(payLoad, res, "14m");
+    const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { email, refreshToken, accessToken });
   }),
@@ -80,8 +83,10 @@ export default {
       }
     });
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
-    const accessToken = generateAccessToken(user.uid, res, "14m");
-    const refreshToken = generateRefreshToken(user.uid, res, "7d");
+
+    payLoad = { uid: user?.uid, tokenVersion: user?.tokenVersion };
+    const accessToken = generateAccessToken(payLoad, res, "14m");
+    const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { email, refreshToken, accessToken });
   }),

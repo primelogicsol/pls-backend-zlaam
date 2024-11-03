@@ -19,6 +19,7 @@ model User {
   emailVerifiedAt   DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  tokenVersion      Int       @default(0)
 
   @@index([username]) // Index on username
   @@index([email]) // Index on email

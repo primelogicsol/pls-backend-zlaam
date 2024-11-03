@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "node:path";
 import { authRouter } from "./routers/authRouter/authRouter";
 import { errorHandler, notFoundHandler } from "./middlewares/errorMiddleware";
-import { AUTHROUTE, HEALTHROUTE } from "./constants";
+import { AUTHROUTE, HEALTHROUTE } from "./constants/index";
 import { healthRouter } from "./routers/healthRouter/healthRouter";
 import helmet from "helmet";
 // **** APP *****

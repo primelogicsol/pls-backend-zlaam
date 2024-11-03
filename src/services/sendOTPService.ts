@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
 import { generateRandomStrings } from "./slugStringGeneratorService";
+import logger from "../utils/loggerUtils";
 
 // Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
@@ -31,9 +32,9 @@ export async function sendOTP(to: string, otp: string, name: string) {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("OTP sent: " + info.response);
+    logger.info("OTP sent: " + info.response);
   } catch (error) {
-    if (error instanceof Error) console.error("Error sending OTP:", error.message);
-    else console.error("Error sending OTP:", error);
+    if (error instanceof Error) logger.error("Error sending OTP:", error.message);
+    else logger.error("Error sending OTP:", error);
   }
 }
