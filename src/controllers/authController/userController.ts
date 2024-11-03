@@ -11,7 +11,7 @@ export default {
   // ** updateUserInfo controller
   updateInfo: asyncHandler(async (req: _Request, res: Response) => {
     // ** validation is already handled by the middleware
-    const uid = req.userFromToken?.uid
+    const uid = req.userFromToken?.uid;
     if (!uid) throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     const userData = req.body as TUSERUPDATE;
     const { username, fullName } = userData;
@@ -19,17 +19,17 @@ export default {
     const isUserAlreadyExist = await db.user.findFirst({
       where: {
         username: username.toLowerCase(),
-        uid: { not: uid },
-      },
+        uid: { not: uid }
+      }
     });
     if (isUserAlreadyExist) throw { status: BADREQUESTCODE, message: "user already exists with same username" };
     const updatedUser = await db.user.update({
       where: { uid },
       data: {
         username,
-        fullName,
+        fullName
       },
-      select: { username: true, fullName: true, },
+      select: { username: true, fullName: true }
     });
     httpResponse(req, res, SUCCESSCODE, "User updated successfully", updatedUser);
   }),
@@ -37,15 +37,15 @@ export default {
   // ** updateEmail controllelr
   updateEmail: asyncHandler(async (req: _Request, res: Response) => {
     // ** validation is already handled by the middleware
-    const uid = req.userFromToken?.uid
+    const uid = req.userFromToken?.uid;
     if (!uid) throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     const userData = req.body as TUSERUPDATE;
     const { email } = userData;
     const isUserAlreadyExist = await db.user.findFirst({
       where: {
         email: email.toLowerCase(),
-        uid: { not: uid },
-      },
+        uid: { not: uid }
+      }
     });
     if (isUserAlreadyExist) throw { status: BADREQUESTCODE, message: "user already exists with same email" };
     const updatedUser = await db.user.update({
@@ -55,14 +55,14 @@ export default {
         emailVerifiedAt: null,
         tokenVersion: { increment: 1 }
       },
-      select: { email: true, updatedAt: true, tokenVersion: true },
+      select: { email: true, updatedAt: true, tokenVersion: true }
     });
     httpResponse(req, res, SUCCESSCODE, "User updated successfully", updatedUser);
   }),
   // ** updatePassword controllelr
   updatePassword: asyncHandler(async (req: _Request, res: Response) => {
     // ** validation is already handled by the middleware
-    const uid = req.userFromToken?.uid
+    const uid = req.userFromToken?.uid;
     if (!uid) throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     const userData = req.body as TUSERUPDATE;
     const { oldPassword, password } = userData;
@@ -76,15 +76,15 @@ export default {
       where: { uid },
       data: {
         password: hashedPassword,
-        tokenVersion: { increment: 1 },
-      },
+        tokenVersion: { increment: 1 }
+      }
     });
     httpResponse(req, res, SUCCESSCODE, "User password updated successfully");
   }),
   // ** updateRole controllelr
   updateRole: asyncHandler(async (req: _Request, res: Response) => {
     // ** validation is already handled by the middleware
-    const uid = req.userFromToken?.uid
+    const uid = req.userFromToken?.uid;
     if (!uid) throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     const userData = req.body as TUSERUPDATE;
     const { role } = userData;

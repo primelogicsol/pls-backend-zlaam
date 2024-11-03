@@ -62,7 +62,6 @@ export const sendOTPSchema = z.object({
     .email({ message: "Invalid email format. e.g: john.doe@example.com" })
 });
 
-
 export const userUpdateSchema = z.object({
   username: z
     .string({ message: "username is required!!" })
@@ -83,7 +82,7 @@ export const userUpdateSchema = z.object({
     .max(50, { message: "Full name can be at most 50 characters long. e.g: John Doe" })
     .regex(/^[a-zA-Z ]{3,20}$/, {
       message: "Full name can only contain letters and spaces. e.g: John Doe"
-    }),
+    })
 });
 export const userUpdateEmailSchema = z.object({
   email: z
@@ -94,11 +93,13 @@ export const userUpdateEmailSchema = z.object({
     .email({ message: "Invalid email format. e.g: john.doe@example.com" })
     .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
       message: "Invalid email format. e.g: john.doe@example.com"
-    }),
-})
+    })
+});
 
 export const userUpdatePasswordSchema = z.object({
-  oldPassword: z.string({ message: "oldPassword Password is required" }).min(1, { message: "oldPassword Password is required" })
+  oldPassword: z
+    .string({ message: "oldPassword Password is required" })
+    .min(1, { message: "oldPassword Password is required" })
     .max(50, { message: "oldPassword Password can be at most 50 characters long." }),
   password: z
     .string({ message: "password is required!!" })

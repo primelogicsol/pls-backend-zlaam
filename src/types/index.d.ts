@@ -41,7 +41,7 @@ export type TUSERUPDATE = {
   username: string;
   fullName: string;
   email: string;
-  oldPassword: string
+  oldPassword: string;
   password: string;
   role: TROLE;
 };

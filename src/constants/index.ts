@@ -10,7 +10,6 @@ const messages = {
   INTERNALSERVERERRORMSG: "Internal Server Error",
   TOOMANYREQUESTSMSG: "Too Many Requests. Please try again after",
   OTPALREADYSENT: "OTP already sent. Please try again after 1 minute"
-
 };
 export const {
   ERRMSG,
@@ -48,8 +47,8 @@ export const {
 
 const rateLimitingPoints = {
   POINTS: 10,
-  DURATION: 60,
-}
+  DURATION: 60
+};
 export const { POINTS, DURATION } = rateLimitingPoints;
 
 const ENDPOINTS = {

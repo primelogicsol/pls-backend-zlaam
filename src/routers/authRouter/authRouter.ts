@@ -2,7 +2,15 @@ import { Router } from "express";
 
 import authController from "../../controllers/authController/authController";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
-import { sendOTPSchema, userLoginSchema, userRegistrationSchema, userUpdateSchema, verifyUserSchema } from "../../validation/zod";
+import {
+  sendOTPSchema,
+  userLoginSchema,
+  userRegistrationSchema,
+  userUpdateEmailSchema,
+  userUpdatePasswordSchema,
+  userUpdateSchema,
+  verifyUserSchema
+} from "../../validation/zod";
 import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 import { OTPALREADYSENT } from "../../constants/index";
 import userController from "../../controllers/authController/userController";
@@ -27,6 +35,32 @@ authRouter
   // 5 req per mnute from single  ip adress
   .post(validateDataMiddleware(userLoginSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 2), authController.loginUser);
 
-authRouter.route("/updateUserInfo").patch(authMiddleware.checkToken, validateDataMiddleware(userUpdateSchema),
+authRouter.route("/updateInfo").patch(
+  authMiddleware.checkToken,
+  validateDataMiddleware(userUpdateSchema),
   // 1 req per minute from single  ip adress
-  (req, res, next) => rateLimiterMiddleware(req, res, next, 10), userController.updateInfo);
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  userController.updateInfo
+);
+authRouter.route("/updateEmail").patch(
+  authMiddleware.checkToken,
+  validateDataMiddleware(userUpdateEmailSchema),
+  // 1 req per minute from single  ip adress
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  userController.updateEmail
+);
+
+authRouter.route("/updatePassword").patch(
+  authMiddleware.checkToken,
+  validateDataMiddleware(userUpdatePasswordSchema),
+  // 1 req per minute from single  ip adress
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  userController.updatePassword
+);
+authRouter.route("/updatePassword").patch(
+  authMiddleware.checkToken,
+  authMiddleware.checkIfUserIsAdmin,
+  // 1 req per minute from single  ip adress
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  userController.updateRole
+);
