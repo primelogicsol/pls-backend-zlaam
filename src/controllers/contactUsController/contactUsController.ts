@@ -1,11 +1,13 @@
-import { NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
+import { BADREQUESTCODE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
+import { sendMessageToTheUserService } from "../../services/sendMessageToUserService";
 import type { TCONTACTUS } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
 export default {
-  contactUs: asyncHandler(async (req, res) => {
+  // create message controller
+  createMessage: asyncHandler(async (req, res) => {
     // ** Validation is handled by middleware
     const { firstName, lastName, email, message } = req.body as TCONTACTUS;
     await db.contactUs.create({
@@ -18,7 +20,7 @@ export default {
     });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { firstName, lastName, email, message });
   }),
-
+  // ** get all message controller
   getAllMessages: asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -45,6 +47,7 @@ export default {
       messages
     });
   }),
+  // delete message controller
   deleteMessage: asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -60,8 +63,11 @@ export default {
       httpResponse(req, res, SUCCESSCODE, "Message deleted successfully", deletedMessage);
     }
   }),
+
+  // get Single message controller
   getSingleMessage: asyncHandler(async (req, res) => {
     const { id } = req.params;
+    if (!id) throw { status: BADREQUESTCODE, message: "Id is required!" };
     const message = await db.contactUs.findUnique({
       where: {
         id: Number(id)
@@ -71,5 +77,21 @@ export default {
     else {
       httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, message);
     }
+  }),
+
+  sendMessageToUser: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) throw { status: BADREQUESTCODE, message: "Id is required!" };
+    const { message: messageByAdmin } = req.body as TCONTACTUS;
+    // ** validation is already handled by middleware
+    const message = await db.contactUs.findUnique({
+      where: {
+        id: Number(id)
+      }
+    });
+
+    if (!message) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+    await sendMessageToTheUserService(message.email, messageByAdmin, `${message.firstName} ${message.lastName}`);
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { messageByAdmin, message: `Replied to this message: ${message.message}` });
   })
 };

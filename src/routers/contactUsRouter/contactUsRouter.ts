@@ -7,9 +7,9 @@ import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 export const contactUsRouter = Router();
 
 contactUsRouter
-  .route("/")
+  .route("/createMessage")
   //TODO: add checkToken middleware
-  .post(validateDataMiddleware(contactUsSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 5), contactUsController.contactUs);
+  .post(validateDataMiddleware(contactUsSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 5), contactUsController.createMessage);
 contactUsRouter
   .route("/getAllMessages")
   //TODO: add checkisAdmin middleware
@@ -23,3 +23,8 @@ contactUsRouter
   .route("/deleteMessage/:id")
   //TODO: add checkisAdmin middleware
   .delete(contactUsController.deleteMessage);
+
+contactUsRouter
+  .route("/sendMessageToUser/:id")
+  //TODO: add checkToken middleware
+  .post(contactUsController.sendMessageToUser);

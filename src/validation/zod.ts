@@ -140,3 +140,8 @@ export const contactUsSchema = z.object({
     .min(3, { message: "message must be at least 3 characters long." })
     .max(500, { message: "message can be at most 500 characters long." })
 });
+
+export const sendMessagaeToUserSchema = z.object({
+  id: z.number({ message: "id is required!!" }).min(1, { message: "id is required!!" }),
+  message: z.string({ message: "message is required!!" }).min(1, { message: "message is required!!" })
+});
