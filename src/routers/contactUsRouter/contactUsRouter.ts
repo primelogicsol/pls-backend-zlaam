@@ -3,28 +3,27 @@ import contactUsController from "../../controllers/contactUsController/contactUs
 import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 import { contactUsSchema } from "../../validation/zod";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
+import authMiddleware from "../../middlewares/authMiddleware";
 
 export const contactUsRouter = Router();
 
 contactUsRouter
   .route("/createMessage")
-  //TODO: add checkToken middleware
-  .post(validateDataMiddleware(contactUsSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 5), contactUsController.createMessage);
+  .post(
+    authMiddleware.checkToken,
+    validateDataMiddleware(contactUsSchema),
+    (req, res, next) => rateLimiterMiddleware(req, res, next, 5),
+    contactUsController.createMessage
+  );
 contactUsRouter
   .route("/getAllMessages")
-  //TODO: add checkisAdmin middleware
-  .get(contactUsController.getAllMessages);
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, contactUsController.getAllMessages);
 
 contactUsRouter
   .route("/getSingleMessage/:id")
-  //TODO: add checkisAdmin middleware
-  .get(contactUsController.getSingleMessage);
-contactUsRouter
-  .route("/deleteMessage/:id")
-  //TODO: add checkisAdmin middleware
-  .delete(contactUsController.deleteMessage);
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, contactUsController.getSingleMessage);
+contactUsRouter.route("/deleteMessage/:id").delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, contactUsController.deleteMessage);
 
 contactUsRouter
   .route("/sendMessageToUser/:id")
-  //TODO: add checkToken middleware
-  .post(contactUsController.sendMessageToUser);
+  .post(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, contactUsController.sendMessageToUser);
