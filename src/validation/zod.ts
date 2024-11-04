@@ -1,4 +1,5 @@
 import { z } from "zod";
+/*                                                       Authentication Schema                                                               */
 // ** user registration schema
 export const userRegistrationSchema = z.object({
   username: z
@@ -112,4 +113,30 @@ export const userUpdatePasswordSchema = z.object({
 });
 export const userDeleteSchema = z.object({
   uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" })
+});
+/*                                                       Contact US Schema                                                               */
+
+export const contactUsSchema = z.object({
+  firstName: z
+    .string({ message: "firstName is required!!" })
+    .min(1, { message: "firstName is required!!" })
+    .min(2, { message: "firstName must be at least 2 characters long." })
+    .max(50, { message: "firstName can be at most 50 characters long." }),
+
+  lastName: z
+    .string({ message: "lastName is required!!" })
+    .min(1, { message: "lastName is required!!" })
+    .min(3, { message: "lastName must be at least 3 characters long." })
+    .max(50, { message: "lastName can be at most 50 characters long." }),
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" }),
+  message: z
+    .string({ message: "message is required!!" })
+    .min(1, { message: "message is required!!" })
+    .min(3, { message: "message must be at least 3 characters long." })
+    .max(500, { message: "message can be at most 500 characters long." })
 });

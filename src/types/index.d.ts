@@ -66,3 +66,11 @@ export type TCOOKIEOPTIONS = {
 export type TSENDOTP = {
   email: string;
 };
+
+export type TCONTACTUS = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  message: string;
+};
