@@ -10,6 +10,11 @@ import helmet from "helmet";
 // **** APP *****
 const app: Express = express();
 // ** MIDDLEWARES **
+
+app.set("trust proxy", 1);
+
+app.disable("x-powered-by");
+
 app.use(helmet());
 app.use(
   cors({
