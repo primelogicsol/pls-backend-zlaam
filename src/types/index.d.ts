@@ -43,7 +43,7 @@ export type TUSERUPDATE = {
   fullName: string;
   email: string;
   oldPassword: string;
-  password: string;
+  newPassword: string;
   role: TROLE;
 };
 export type TUSERLOGIN = {

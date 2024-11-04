@@ -34,7 +34,10 @@ authRouter
 authRouter
   .route("/login")
   // 5 req per mnute from single  ip adress
-  .post(validateDataMiddleware(userLoginSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 2), authController.loginUser);
+  .post(validateDataMiddleware(userLoginSchema), (req, res, next) => rateLimiterMiddleware(req, res, next, 5), authController.loginUser);
+
+authRouter.route("/logoutUser").get(authMiddleware.checkToken, authController.logOut);
+authRouter.route("/logoutUserForceFully").post(authMiddleware.checkToken, authController.logOutUserForecfully);
 
 authRouter.route("/updateInfo").patch(
   authMiddleware.checkToken,
@@ -65,14 +68,13 @@ authRouter.route("/updateRole").patch(
   (req, res, next) => rateLimiterMiddleware(req, res, next, 1),
   userController.updateRole
 );
+authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(userDeleteSchema), userController.getSingleUser);
+
+authRouter.route("/getAllUsers").get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.getAllUsers);
+
+authRouter.route("/searchUsers").get(authMiddleware.checkToken, userController.searchUser);
+authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userController.getCurrentUser);
+
 authRouter
   .route("/deleteUser")
   .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.deleteUser);
-authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(userDeleteSchema), userController.getSingleUser);
-
-authRouter
-  .route("/getAllUsers")
-  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.getAllUsers);
-
-authRouter.route("/searchUsers").get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.searchUser);
-authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userController.getCurrentUser);

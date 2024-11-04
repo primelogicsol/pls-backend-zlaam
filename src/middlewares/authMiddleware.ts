@@ -18,7 +18,11 @@ export default {
     }
     const parsedToken = accessToken?.split(" ")[1] || "";
     if (!parsedToken) {
-      logger.error("Invalid access token", parsedToken, "authMiddleware.ts:18");
+      logger.error(
+        `Invalid access token. It seems Bearer is not attached with the Token or maybe check the spelling of Bearer`,
+        parsedToken,
+        "authMiddleware.ts:18"
+      );
       throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     }
     const [error, decoded] = verifyToken<TPAYLOAD>(parsedToken);
@@ -45,7 +49,7 @@ export default {
     return next();
   }),
   checkIfUserIsAdmin: (req: _Request, _: Response, next: NextFunction) => {
-    logger.info("Checking if user is admin", "authMiddleware.ts:48");
+    logger.info("Since User is not Admin He/She can't perform this operation", "authMiddleware.ts:48");
     if (req.userFromToken?.role !== "ADMIN") throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
     return next();
   },

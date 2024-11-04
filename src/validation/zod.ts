@@ -101,14 +101,14 @@ export const userUpdateEmailSchema = z.object({
 export const userUpdatePasswordSchema = z.object({
   uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" }),
   oldPassword: z
-    .string({ message: "oldPassword Password is required" })
-    .min(1, { message: "oldPassword Password is required" })
-    .max(50, { message: "oldPassword Password can be at most 50 characters long." }),
+    .string({ message: "oldPassword  is required" })
+    .min(1, { message: "oldPassword  is required" })
+    .max(50, { message: "oldPassword  can be at most 50 characters long." }),
   password: z
-    .string({ message: "password is required!!" })
-    .min(1, { message: "password is required!!" })
-    .min(6, { message: "password must be at least 6 characters long." })
-    .max(50, { message: "password can be at most 50 characters long." })
+    .string({ message: "newPassword is required!!" })
+    .min(1, { message: "newPassword is required!!" })
+    .min(6, { message: " newPassword must be at least 6 characters long." })
+    .max(50, { message: " newPassword can be at most 50 characters long." })
 });
 export const userDeleteSchema = z.object({
   uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" })

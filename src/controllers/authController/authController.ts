@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { httpResponse } from "../../utils/apiResponseUtils";
-import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TVERIFYUSER } from "../../types";
+import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TUSERUPDATE, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
 import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE, WHITELISTMAILS } from "../../constants";
@@ -65,7 +65,7 @@ export default {
     const accessToken = generateAccessToken(payLoad, res, "14m");
     const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
-    httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { email, refreshToken, accessToken });
+    httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { uid: user.uid, email, refreshToken, accessToken });
   }),
   // ********* VERIFY USER WITH OTP ***************
   verifyUser: asyncHandler(async (req: Request, res: Response) => {
@@ -106,9 +106,9 @@ export default {
     const accessToken = generateAccessToken(payLoad, res, "14m");
     const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
-    httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { email, refreshToken, accessToken });
+    httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { uid: user.uid, email, refreshToken, accessToken });
   }),
-  // ********** Send OTP controller *******************8
+  // ********** Send OTP controller *******************
   sendOTP: asyncHandler(async (req: Request, res: Response) => {
     // validation is already handled by middleware
     const { email } = req.body as TSENDOTP;
@@ -126,5 +126,24 @@ export default {
     });
     await sendOTP(email, generateOneTimePassword.otp, user.fullName);
     httpResponse(req, res, SUCCESSCODE, "OTP sent successfully", { email });
+  }),
+  // *** Logout User Controlelr *************************
+  logOut: (req: Request, res: Response) => {
+    res.cookie("refreshToken", "", REFRESHTOKENCOOKIEOPTIONS);
+    res.cookie("accessToken", "", ACESSTOKENCOOKIEOPTIONS);
+    httpResponse(req, res, SUCCESSCODE, "User logged out successfully");
+  },
+  logOutUserForecfully: asyncHandler(async (req: Request, res: Response) => {
+    const { uid } = req.body as TUSERUPDATE;
+    if (!uid) throw { status: BADREQUESTCODE, message: "Please Send user ID" };
+    await db.user.update({
+      where: { uid },
+      data: {
+        tokenVersion: { increment: 1 }
+      }
+    });
+    res.cookie("refreshToken", "", REFRESHTOKENCOOKIEOPTIONS);
+    res.cookie("accessToken", "", ACESSTOKENCOOKIEOPTIONS);
+    httpResponse(req, res, SUCCESSCODE, "User logged out successfully");
   })
 };

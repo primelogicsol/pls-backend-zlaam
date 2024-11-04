@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { BADREQUESTCODE, SUCCESSCODE, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../../constants";
-import type { TUSERUPDATE } from "../../types";
+import type { TUSERREGISTER, TUSERUPDATE } from "../../types";
 import { db } from "../../database/db";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
@@ -59,7 +59,7 @@ export default {
   updatePassword: asyncHandler(async (req: Request, res: Response) => {
     // ** validation is already handled by the middleware
     const userData = req.body as TUSERUPDATE;
-    const { uid, oldPassword, password } = userData;
+    const { uid, oldPassword, newPassword: password } = userData;
 
     const user = await db.user.findUnique({ where: { uid } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
@@ -101,7 +101,10 @@ export default {
   // ** get single user
   getSingleUser: asyncHandler(async (req: Request, res: Response) => {
     const { uid } = req.body as TUSERUPDATE;
-    const user = await db.user.findUnique({ where: { uid } });
+    const user = await db.user.findUnique({
+      where: { uid },
+      select: { username: true, email: true, fullName: true, emailVerifiedAt: true, uid: true }
+    });
     httpResponse(req, res, SUCCESSCODE, "User fetched successfully", user);
   }),
   getAllUsers: asyncHandler(async (req: Request, res: Response) => {
@@ -159,7 +162,7 @@ export default {
     const skip = (pageNumber - 1) * limitNumber;
     const take = limitNumber;
 
-    const users = await db.$queryRaw`
+    const users: TUSERREGISTER[] = await db.$queryRaw`
       SELECT * FROM "User"
       WHERE to_tsvector('english', "username" || ' ' || "email" || ' ' || "fullName") @@ plainto_tsquery('english', ${searchQuery})
       ORDER BY "createdAt" DESC
@@ -175,8 +178,18 @@ export default {
     const totalPages = Math.ceil(UsersCount / take);
     const hasNextPage = totalPages > pageNumber;
     const hasPreviousPage = pageNumber > 1;
+    const filteredUsers = users.map((user) => {
+      return {
+        uid: user.uid,
+        username: user.username,
+        fullName: user.fullName,
+        email: user.email,
+        emailVerifiedAt: user.emailVerifiedAt,
+        role: user.role
+      };
+    });
     httpResponse(req, res, SUCCESSCODE, "Data searched successfully", {
-      users,
+      filteredUsers,
       pagination: { hasNextPage, hasPreviousPage, totalPages, currentPage: pageNumber }
     });
   }),
@@ -184,7 +197,10 @@ export default {
   getCurrentUser: asyncHandler(async (req: _Request, res: Response) => {
     const uid = req.userFromToken?.uid;
     if (!uid) throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
-    const user = await db.user.findUnique({ where: { uid } });
+    const user = await db.user.findUnique({
+      where: { uid },
+      select: { username: true, email: true, fullName: true, emailVerifiedAt: true, uid: true }
+    });
     httpResponse(req, res, SUCCESSCODE, "User fetched successfully", user);
   })
 };
