@@ -4,9 +4,10 @@ import cors from "cors";
 import path from "node:path";
 import { authRouter } from "./routers/authRouter/authRouter";
 import { errorHandler, notFoundHandler } from "./middlewares/errorMiddleware";
-import { AUTHROUTE, HEALTHROUTE } from "./constants/index";
+import { AUTHROUTE, CONTACTUSROUTE, HEALTHROUTE } from "./constants/index";
 import { healthRouter } from "./routers/healthRouter/healthRouter";
 import helmet from "helmet";
+import { contactUsRouter } from "./routers/contactUsRouter/contactUsRouter";
 // **** APP *****
 const app: Express = express();
 // ** MIDDLEWARES **
@@ -29,6 +30,8 @@ app.use(express.static(path.join(__dirname, "../", "public")));
 app.use(AUTHROUTE, authRouter);
 // ** Health route
 app.use(HEALTHROUTE, healthRouter);
+// ** Contact Us Route
+app.use(CONTACTUSROUTE, contactUsRouter);
 // **** ERROR HANDLERS ****
 app.use(notFoundHandler);
 app.use(errorHandler);

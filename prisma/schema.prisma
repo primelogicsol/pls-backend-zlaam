@@ -1,7 +1,7 @@
 generator client {
   provider = "prisma-client-js"
 
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -13,6 +13,12 @@ enum Role {
   CLIENT
   ADMIN
   MODERATOR
+}
+
+model RateLimiterFlexible {
+  key    String    @id
+  points Int
+  expire DateTime?
 }
 
 model User {
@@ -28,16 +34,25 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   tokenVersion      Int       @default(0)
+
   @@index([uid])
-  @@index([username]) // Index on username
-  @@index([email]) // Index on email
-  @@index([role, createdAt]) // Composite index on role and createdAt
-  @@index([otpPassword], name: "otp_user_idx") // Unique index for OTP lookups
+  @@index([username])
+  @@index([email])
+  @@index([role, createdAt])
+  @@index([otpPassword], name: "otp_user_idx")
   @@index([role, username], name: "role_name_user_idx")
 }
 
-model RateLimiterFlexible {
-  key    String    @id
-  points Int
-  expire DateTime?
+model ContactUs {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([message])
+  @@map("ContactUs")
 }
