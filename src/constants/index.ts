@@ -51,12 +51,6 @@ const rateLimitingPoints = {
 };
 export const { POINTS, DURATION } = rateLimitingPoints;
 
-const ENDPOINTS = {
-  HEALTHROUTE: "/api/v1/health",
-  AUTHROUTE: "/api/v1/auth",
-  CONTACTUSROUTE: "/api/v1/contactUs"
-};
-export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE } = ENDPOINTS;
 const accessTokenExpiry = 14 * 60 * 1000; // 14 minutes in milliseconds
 const refreshTokenExpiry = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 const COOKIEOPTIONS = {
@@ -75,3 +69,11 @@ const COOKIEOPTIONS = {
 };
 export const { REFRESHTOKENCOOKIEOPTIONS, ACESSTOKENCOOKIEOPTIONS } = COOKIEOPTIONS;
 export const WHITELISTMAILS = [ADMIN_MAIL_1, ADMIN_MAIL_2];
+
+const ENDPOINTS = {
+  HEALTHROUTE: "/api/v1/health",
+  AUTHROUTE: "/api/v1/auth",
+  CONTACTUSROUTE: "/api/v1/contactUs",
+  NEWSLETTERROUTE: "/api/v1/newsletter"
+};
+export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE, NEWSLETTERROUTE } = ENDPOINTS;
