@@ -37,6 +37,11 @@ export default {
         emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
       }
     });
+    await db.newsletter.create({
+      data: {
+        email: email.toLowerCase()
+      }
+    });
     httpResponse(
       req,
       res,

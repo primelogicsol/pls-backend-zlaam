@@ -9,16 +9,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  CLIENT
-  ADMIN
-  MODERATOR
-}
-
 model RateLimiterFlexible {
   key    String    @id
   points Int
   expire DateTime?
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  MODERATOR
 }
 
 model User {
@@ -59,4 +59,12 @@ model ContactUs {
   @@index([createdAt])
   @@index([message])
   @@map("ContactUs")
+}
+
+model Newsletter {
+  id                 String  @id @default(cuid())
+  email              String  @unique
+  subscriptionStatus Boolean @default(true)
+
+  createdAt DateTime @default(now())
 }

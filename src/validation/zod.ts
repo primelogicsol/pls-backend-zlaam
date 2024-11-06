@@ -145,3 +145,16 @@ export const sendMessagaeToUserSchema = z.object({
   id: z.number({ message: "id is required!!" }).min(1, { message: "id is required!!" }),
   message: z.string({ message: "message is required!!" }).min(1, { message: "message is required!!" })
 });
+/*                                                 news letter schema                                                    */
+
+export const newsLetterSchema = z.object({
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+    .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
+      message: "Invalid email format. e.g: john.doe@example.com"
+    })
+});

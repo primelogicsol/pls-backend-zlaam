@@ -5,59 +5,97 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Email From Prime Logic Solution</title>
     <style>
-      * {
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
-        font-family: sans-serif;
       }
 
       .container {
-        max-width: 500px;
-        margin: 0 auto;
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
         padding: 20px;
         border-radius: 8px;
-        height: 500px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: auto;
-        position: relative;
-        top: 100px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
 
-      .footerContainer {
-        position: absolute;
-        bottom: 0px;
-        padding: 5px;
-        width: 90%;
-      }
-
-      footer {
+      .header {
         text-align: center;
-        font-size: 12px;
-        color: #888;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eeeeee;
+        background-color: #28282b;
       }
 
-      .message {
-        text-align: justify;
-        font-size: small;
-        margin: 18px;
+      .header img {
+        max-width: 100px;
+        margin-bottom: 10px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        margin: 0;
+        color: #ffffff;
+      }
+
+      .content {
+        padding: 20px 0;
+        color: #333333;
+        line-height: 1.6;
+      }
+
+      .content h2 {
+        font-size: 20px;
+        color: #6a0dad;
+      }
+
+      .button {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .button a {
+        text-decoration: none;
+        background-color: #6a0dad;
+        color: #ffffff;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 16px;
+        display: inline-block;
+      }
+
+      .footer {
+        font-size: 12px;
+        color: #777777;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #eeeeee;
       }
     </style>
   </head>
 
   <body>
     <div class="container">
+      <!-- Header -->
       <div class="header">
-        <h2>Hello {{name}}</h2>
+        <img
+          src="https://athershahid.com/portfolio/pls/assets/imgs/logo-white.png"
+          alt="Logo" />
+        <h1>Prime Logic Solution</h1>
       </div>
-      <h3>Welcome To the Prime Logic Solution!</h3>
-      <p class="message">{{messageByAdmin}}</p>
-      <div class="footerContainer">
-        <footer class="footer">
-          <p>&copy; 2024 Prime Logic Solution. All rights reserved.</p>
-        </footer>
+
+      <!-- Content -->
+      <div class="content">
+        <h1>Dear, {{name}}</h1>
+        <div>{{messageByAdmin}}</div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; 2024 Prime Logic Solution. All rights reserved.</p>
       </div>
     </div>
   </body>

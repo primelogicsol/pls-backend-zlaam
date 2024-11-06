@@ -88,3 +88,7 @@ export type TCONTACTUS = {
   email: string;
   message: string;
 };
+
+export type TSUBSCRIBENEWSLETTER = {
+  email: string;
+};
