@@ -8,9 +8,10 @@ import authMiddleware from "../../middlewares/authMiddleware";
 export const contactUsRouter = Router();
 
 contactUsRouter
+  // this route only for client
   .route("/createMessage")
   .post(
-    authMiddleware.checkToken,
+    //   authMiddleware.checkToken,
     validateDataMiddleware(contactUsSchema),
     (req, res, next) => rateLimiterMiddleware(req, res, next, 5),
     contactUsController.createMessage
@@ -26,4 +27,9 @@ contactUsRouter.route("/deleteMessage/:id").delete(authMiddleware.checkToken, au
 
 contactUsRouter
   .route("/sendMessageToUser/:id")
-  .post(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, contactUsController.sendMessageToUser);
+  .post(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, contactUsController.sendMessageToUser);
+
+contactUsRouter
+  .route("/moveMessageToTrash")
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, contactUsController.trashMessage);
+contactUsRouter.route("/unTrashMessage").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, contactUsController.unTrashMessage);

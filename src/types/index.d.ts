@@ -20,7 +20,16 @@ export type httpResponseType = {
     method: string | null;
   };
 };
-
+export type TUSER = {
+  uid: string;
+  username: string;
+  fullName: string;
+  email: string;
+  emailVerifiedAt: Date | null;
+  role: TROLE;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 export type TUSERREGISTER = {
   uid?: string;
   username: string;

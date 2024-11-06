@@ -78,5 +78,5 @@ authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userControlle
 authRouter
   .route("/deleteUser")
   .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.deleteUser);
-authRouter.route("/moveToTrash").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.moveToTrash);
-authRouter.route("/unTrash").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.unTrashUser);
+authRouter.route("/trashTheUser").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.moveToTrash);
+authRouter.route("/unTrashTheUser").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.unTrashUser);

@@ -49,8 +49,11 @@ export default {
     return next();
   }),
   checkIfUserIsAdmin: (req: _Request, _: Response, next: NextFunction) => {
-    logger.info("Since User is not Admin He/She can't perform this operation", "authMiddleware.ts:48");
-    if (req.userFromToken?.role !== "ADMIN") throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
+    if (req.userFromToken?.role !== "ADMIN") {
+      logger.info("Since User is not Admin He/She can't perform this operation", "authMiddleware.ts:48");
+
+      throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
+    }
     return next();
   },
   checkIfUserIAdminOrModerator: (req: _Request, _: Response, next: NextFunction) => {

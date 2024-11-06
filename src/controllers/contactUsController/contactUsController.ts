@@ -1,9 +1,10 @@
 import { BADREQUESTCODE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import { sendMessageToTheUserService } from "../../services/sendMessageToUserService";
-import type { TCONTACTUS } from "../../types";
+import type { TCONTACTUS, TTRASH, TUSER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
+import { findUniqueUser } from "../../utils/findUniqueUserUtils";
 
 export default {
   // create message controller
@@ -28,13 +29,15 @@ export default {
 
     const [messages, totalMessages] = await Promise.all([
       db.contactUs.findMany({
+        where: { trashedBy: null },
         skip,
         take: limit,
         orderBy: {
           createdAt: "desc"
-        }
+        },
+        select: { id: true, email: true, message: true, firstName: true, lastName: true, createdAt: true }
       }),
-      db.contactUs.count()
+      db.contactUs.count({ where: { trashedBy: null } })
     ]);
 
     const totalPages = Math.ceil(totalMessages / limit);
@@ -47,22 +50,6 @@ export default {
       messages
     });
   }),
-  // delete message controller
-  deleteMessage: asyncHandler(async (req, res) => {
-    const { id } = req.params;
-
-    // Attempt to delete the message
-    const deletedMessage = await db.contactUs.delete({
-      where: {
-        id: Number(id)
-      }
-    });
-
-    if (!deletedMessage) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
-    else {
-      httpResponse(req, res, SUCCESSCODE, "Message deleted successfully", deletedMessage);
-    }
-  }),
 
   // get Single message controller
   getSingleMessage: asyncHandler(async (req, res) => {
@@ -70,8 +57,10 @@ export default {
     if (!id) throw { status: BADREQUESTCODE, message: "Id is required!" };
     const message = await db.contactUs.findUnique({
       where: {
-        id: Number(id)
-      }
+        id: Number(id),
+        trashedBy: null
+      },
+      select: { id: true, email: true, message: true, firstName: true, lastName: true, createdAt: true }
     });
     if (!message) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     else {
@@ -93,5 +82,56 @@ export default {
     if (!message) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     await sendMessageToTheUserService(message.email, messageByAdmin, `${message.firstName} ${message.lastName}`);
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { messageByAdmin, message: `Replied to this message: ${message.message}` });
+  }),
+
+  // delete message controller
+  deleteMessage: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    // Attempt to delete the message
+    const deletedMessage = await db.contactUs.delete({
+      where: {
+        id: Number(id)
+      }
+    });
+
+    if (!deletedMessage) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+    else {
+      httpResponse(req, res, SUCCESSCODE, "Message deleted successfully", deletedMessage);
+    }
+  }),
+
+  // ** Trash the message
+  trashMessage: asyncHandler(async (req, res) => {
+    const { trashedBy, victimUid: idOfMessageWhichIsGoingToTrashed } = req.body as TTRASH;
+    const user: TUSER = await findUniqueUser(trashedBy);
+    if (!idOfMessageWhichIsGoingToTrashed) throw { status: BADREQUESTCODE, message: "Please send the id of message" };
+    await db.contactUs.update({
+      where: {
+        id: Number(idOfMessageWhichIsGoingToTrashed)
+      },
+      data: {
+        trashedBy: `@${user?.username} - ${user?.fullName} - ${user?.role}`,
+        trashedAt: new Date()
+      }
+    });
+
+    httpResponse(req, res, SUCCESSCODE, "Message trashed successfully");
+  }),
+
+  // ** Untrash the message
+  unTrashMessage: asyncHandler(async (req, res) => {
+    const { victimUid: idOfMessageWhichIsGoingToUnTrashed } = req.body as TTRASH;
+    if (!idOfMessageWhichIsGoingToUnTrashed) throw { status: BADREQUESTCODE, message: "Please send the id of message" };
+    await db.contactUs.update({
+      where: {
+        id: Number(idOfMessageWhichIsGoingToUnTrashed)
+      },
+      data: {
+        trashedBy: null,
+        trashedAt: null
+      }
+    });
+    httpResponse(req, res, SUCCESSCODE, "Message untrashed successfully");
   })
 };
