@@ -70,7 +70,7 @@ authRouter.route("/updateRole").patch(
 );
 authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(userDeleteSchema), userController.getSingleUser);
 
-authRouter.route("/getAllUsers").get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.getAllUsers);
+authRouter.route("/getAllUsers").get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.getAllUsers);
 
 authRouter.route("/searchUsers").get(authMiddleware.checkToken, userController.searchUser);
 authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userController.getCurrentUser);
@@ -78,3 +78,5 @@ authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userControlle
 authRouter
   .route("/deleteUser")
   .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.deleteUser);
+authRouter.route("/moveToTrash").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.moveToTrash);
+authRouter.route("/unTrash").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.unTrashUser);

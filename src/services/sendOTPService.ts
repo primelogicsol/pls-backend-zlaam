@@ -4,6 +4,7 @@ import path from "node:path";
 import { HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
 import { generateRandomStrings } from "./slugStringGeneratorService";
 import logger from "../utils/loggerUtils";
+import { INTERNALSERVERERRORCODE } from "../constants";
 
 // Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
@@ -34,7 +35,13 @@ export async function sendOTP(to: string, otp: string, name: string) {
     const info = await transporter.sendMail(mailOptions);
     logger.info("OTP sent: " + info.response);
   } catch (error) {
-    if (error instanceof Error) logger.error("Error sending OTP:", error.message);
-    else logger.error("Error sending OTP:", error);
+    if (error instanceof Error) {
+      logger.error(`Error sending OTP:${error.message}`);
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable To send OTP as something went wrong maybe" };
+    } else {
+      logger.error(`Error sending OTP:${error as string}`);
+
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable To send OTP due to server issue" };
+    }
   }
 }

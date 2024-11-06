@@ -51,6 +51,11 @@ export type TUSERLOGIN = {
   password: string;
 };
 
+export type TTRASH = {
+  trashedBy: string;
+  victimUid: string;
+};
+
 export type TVERIFYUSER = {
   email: string;
   OTP: string;

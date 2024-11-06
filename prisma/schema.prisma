@@ -34,6 +34,8 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   tokenVersion      Int       @default(0)
+  trashedBy         String?
+  trashedAt         DateTime?
 
   @@index([uid])
   @@index([username])
@@ -44,12 +46,14 @@ model User {
 }
 
 model ContactUs {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   firstName String
   lastName  String
-  email     String   @unique
+  email     String    @unique
   message   String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  trashedBy String?
+  trashedAt DateTime?
 
   @@index([email])
   @@index([createdAt])

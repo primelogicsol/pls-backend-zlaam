@@ -24,6 +24,7 @@ export default {
     const generateOneTimePassword = generateOtp();
     const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
 
+    if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
     await db.user.create({
       data: {
         username: username.toLowerCase(),
@@ -36,12 +37,11 @@ export default {
         emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
       }
     });
-    if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
     httpResponse(
       req,
       res,
       SUCCESSCODE,
-      WHITELISTMAILS.includes(email) ? "User registered successfully" : "Please verify your email wit 6 digit OTP sent to your email",
+      WHITELISTMAILS.includes(email) ? "User registered successfully" : "Please verify your email with 6 digit OTP sent to your email",
       { fullName, email }
     );
   }),
@@ -52,6 +52,7 @@ export default {
     const { email, password } = req.body as TUSERLOGIN;
     const user = await db.user.findUnique({ where: { email: email } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
+    if (user.trashedBy) throw { status: BADREQUESTCODE, message: "You account has been suspended by Administrators. Please contact support" };
     if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
