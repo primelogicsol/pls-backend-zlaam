@@ -91,4 +91,5 @@ export type TCONTACTUS = {
 
 export type TSUBSCRIBENEWSLETTER = {
   email: string;
+  newsLetter: string;
 };

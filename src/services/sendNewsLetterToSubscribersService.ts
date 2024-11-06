@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export async function sendNewsLetterToSingleSubscriber(to: string, newsLetterFromAdmin: string) {
+export async function sendNewsLetterToSubscribers(to: string, newsLetterFromAdmin: string) {
   const templatePath = path.resolve(__dirname, "../templates/sendNewsLetter.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
   htmlTemplate = htmlTemplate.replace("{{newsLetterFromAdmin}}", newsLetterFromAdmin);
@@ -31,9 +31,9 @@ export async function sendNewsLetterToSingleSubscriber(to: string, newsLetterFro
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    logger.info("message sent: " + info.response);
+    logger.info("newLetter sent: " + info.response);
   } catch (error) {
-    if (error instanceof Error) logger.error("message sending error:", error.message);
-    else logger.error("Error sending message:", error);
+    if (error instanceof Error) logger.error("newsLetter  sending error:", error.message);
+    else logger.error("newsLetter sending message:", +`${error as string}`);
   }
 }
