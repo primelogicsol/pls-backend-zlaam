@@ -1,4 +1,4 @@
-import { ENV } from "../config/config";
+import { ADMIN_MAIL_1, ADMIN_MAIL_2, ENV } from "../config/config";
 import type { TCOOKIEOPTIONS } from "../types";
 const messages = {
   ERRMSG: "Something went wrong",
@@ -57,7 +57,6 @@ const ENDPOINTS = {
   CONTACTUSROUTE: "/api/v1/contactUs"
 };
 export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE } = ENDPOINTS;
-export const WHITELISTMAILS = ["athershahid37@gmail.com", "zlaam.dev@gmail.com"];
 const accessTokenExpiry = 14 * 60 * 1000; // 14 minutes in milliseconds
 const refreshTokenExpiry = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 const COOKIEOPTIONS = {
@@ -75,3 +74,4 @@ const COOKIEOPTIONS = {
   } as TCOOKIEOPTIONS
 };
 export const { REFRESHTOKENCOOKIEOPTIONS, ACESSTOKENCOOKIEOPTIONS } = COOKIEOPTIONS;
+export const WHITELISTMAILS = [ADMIN_MAIL_1, ADMIN_MAIL_2];

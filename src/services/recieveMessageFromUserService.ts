@@ -14,15 +14,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export async function sendMessageToTheUserService(to: string, messageByAdmin: string, name: string) {
-  const templatePath = path.resolve(__dirname, "../templates/sendMessageToUser.html");
+export async function recieveMessageFromUser(from: string, to: string, messageByUser: string, name: string) {
+  const templatePath = path.resolve(__dirname, "../templates/recieveMessageFromUser.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
-  htmlTemplate = htmlTemplate.replace("{{messageByAdmin}}", messageByAdmin).replace("{{name}}", name);
+  htmlTemplate = htmlTemplate.replace("{{messageByUser}}", messageByUser).replace("{{name}}", name).replace("{{mail}}", from);
   const randomStr = generateRandomStrings(10);
   const mailOptions = {
-    from: "noreply@pls.com",
+    from: from,
     to: to,
-    subject: "Replied Mail by Administrator of Prime Logic Solution",
+    subject: "Interested in working with Prime Logic Solution",
     html: htmlTemplate,
     headers: {
       "Message-ID": `<${randomStr}.dev>`
@@ -31,9 +31,9 @@ export async function sendMessageToTheUserService(to: string, messageByAdmin: st
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    logger.info("message sent: " + info.response);
+    logger.info("Message  recieveMessageFromUser: " + info.response);
   } catch (error) {
-    if (error instanceof Error) logger.error("message sending error:", error.message);
-    else logger.error("Error sending message:", error);
+    if (error instanceof Error) logger.error("Error while recieve message from user :", error.message);
+    else logger.error("Error while recieve message:", error);
   }
 }

@@ -1,5 +1,7 @@
+import { ADMIN_MAIL_2 } from "../../config/config";
 import { BADREQUESTCODE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
+import { recieveMessageFromUser } from "../../services/recieveMessageFromUserService";
 import { sendMessageToTheUserService } from "../../services/sendMessageToUserService";
 import type { TCONTACTUS, TTRASH, TUSER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
@@ -11,6 +13,7 @@ export default {
   createMessage: asyncHandler(async (req, res) => {
     // ** Validation is handled by middleware
     const { firstName, lastName, email, message } = req.body as TCONTACTUS;
+    await recieveMessageFromUser(email, ADMIN_MAIL_2, message, `${firstName} ${lastName}`);
     await db.contactUs.create({
       data: {
         firstName,

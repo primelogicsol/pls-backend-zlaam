@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 8px;
+        height: 500px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: auto;
+        position: relative;
+        top: 100px;
+      }
+
+      .footerContainer {
+        position: absolute;
+        bottom: 0px;
+        padding: 5px;
+        width: 90%;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+      }
+
+      .message {
+        text-align: justify;
+        font-size: small;
+        margin: 18px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h3>This Message came from dashboard of Prime Logic Solution by {{mail}}</h3>
+      <div class="header">
+        <h2>Hello there I am {{name}}</h2>
+      </div>
+      <h3>Email To: Administrators of Prime Logic Solutions</h3>
+      <p class="message">{{messageByUser}}</p>
+      <div class="footerContainer">
+        <footer class="footer">
+          <p>&copy; 2024 Prime Logic Solution. All rights reserved.</p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
