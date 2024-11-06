@@ -15,15 +15,16 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export async function sendNewsLetterToSubscribers(to: string, newsLetterFromAdmin: string) {
-  const templatePath = path.resolve(__dirname, "../templates/sendNewsLetter.html");
+// Send OTP function
+export async function sendThankYouMessage(to: string, name: string) {
+  const templatePath = path.resolve(__dirname, "../templates/ThankYou.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
-  htmlTemplate = htmlTemplate.replace("{{newsLetterFromAdmin}}", newsLetterFromAdmin);
+  htmlTemplate = htmlTemplate.replace("{{name}}", name);
   const randomStr = generateRandomStrings(10);
   const mailOptions = {
     from: "noreply@pls.com",
     to: to,
-    subject: "News Letter For You By Prime Logic Solution",
+    subject: "Thank You For Your Interest",
     html: htmlTemplate,
     headers: {
       "Message-ID": `<${randomStr}.dev>`
@@ -32,16 +33,15 @@ export async function sendNewsLetterToSubscribers(to: string, newsLetterFromAdmi
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    logger.info("newLetter sent: " + info.response);
+    logger.info("Thank You message  sent successfully: " + info.response);
   } catch (error) {
     if (error instanceof Error) {
-      logger.error("newsLetter  sending error:", error.message);
-
-      throw { status: INTERNALSERVERERRORCODE, message: "Unable To recieve message" };
+      logger.error(`Error Thank you message sending :${error.message}`);
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable to send thank you message" };
     } else {
-      logger.error("newsLetter sending message:", +`${error as string}`);
+      logger.error(`Error sending Thank you message:${error as string}`);
 
-      throw { status: INTERNALSERVERERRORCODE, message: "Unable To recieve message" };
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable To send thank you message due to server issue" };
     }
   }
 }

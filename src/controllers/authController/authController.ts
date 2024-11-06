@@ -8,6 +8,7 @@ import { passwordHasher, verifyPassword } from "../../services/passwordHasherSer
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
+import { sendThankYouMessage } from "../../services/ThankYouService";
 
 let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0, role: "CLIENT", isVerified: null };
 export default {
@@ -36,7 +37,7 @@ export default {
         emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
       }
     });
-
+    if (!WHITELISTMAILS.includes(email)) await sendThankYouMessage(email, fullName);
     if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
     if (!WHITELISTMAILS.includes(email) && !isSubscribed) {

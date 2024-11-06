@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Thank You for Signing Up</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eeeeee;
+        background-color: #28282b;
+        border-radius: 8px;
+      }
+
+      .header img {
+        max-width: 100px;
+        margin-bottom: 10px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        margin: 0;
+        color: #ffffff;
+      }
+
+      .content {
+        padding: 20px 0;
+        color: #333333;
+        line-height: 1.6;
+      }
+
+      .content h1 {
+        font-size: 20px;
+        color: #6a0dad;
+      }
+
+      .content p {
+        font-size: 16px;
+      }
+
+      .footer {
+        font-size: 12px;
+        color: #777777;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #eeeeee;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://athershahid.com/portfolio/pls/assets/imgs/logo-white.png"
+          alt="Logo" />
+        <h1>Prime Logic Solution</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <h1>Thank You, {{name}}!</h1>
+        <p>Your account has been successfully created. We're excited to have you with us!</p>
+        <p>
+          To complete your registration, please check your email for the OTP verification link. If you don't see it in your inbox, be sure to check
+          your spam folder.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; 2024 Prime Logic Solution. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

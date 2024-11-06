@@ -4,6 +4,7 @@ import path from "node:path";
 import { HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
 import { generateRandomStrings } from "./slugStringGeneratorService";
 import logger from "../utils/loggerUtils";
+import { INTERNALSERVERERRORCODE } from "../constants";
 
 // Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
@@ -33,7 +34,14 @@ export async function recieveMessageFromUser(from: string, to: string, messageBy
     const info = await transporter.sendMail(mailOptions);
     logger.info("Message  recieveMessageFromUser: " + info.response);
   } catch (error) {
-    if (error instanceof Error) logger.error("Error while recieve message from user :", error.message);
-    else logger.error("Error while recieve message:", error);
+    if (error instanceof Error) {
+      logger.error("message  recieving error:", error.message);
+
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable To recieve message" };
+    } else {
+      logger.error("message sending message:", +`${error as string}`);
+
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable To recieve message" };
+    }
   }
 }
