@@ -32,8 +32,8 @@ export default {
         email: email.toLowerCase(),
         password: hashedPassword,
         role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
-        otpPassword: hashedOTPPassword,
-        otpPasswordExpiry: generateOneTimePassword.otpExpiry,
+        otpPassword: WHITELISTMAILS.includes(email) ? null : hashedOTPPassword,
+        otpPasswordExpiry: WHITELISTMAILS.includes(email) ? null : generateOneTimePassword.otpExpiry,
         emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
       }
     });
@@ -128,12 +128,13 @@ export default {
     await sendOTP(email, generateOneTimePassword.otp, user.fullName);
     httpResponse(req, res, SUCCESSCODE, "OTP sent successfully", { email });
   }),
-  // *** Logout User Controlelr *************************
+  // *** Logout User Controlelr ************************* This controller is only for user who want to logout himself admin can't use this otherise he will logout himself
   logOut: (req: Request, res: Response) => {
     res.cookie("refreshToken", "", REFRESHTOKENCOOKIEOPTIONS);
     res.cookie("accessToken", "", ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, SUCCESSCODE, "User logged out successfully");
   },
+  // ** This controller is only for dashboard Administrators
   logOutUserForecfully: asyncHandler(async (req: Request, res: Response) => {
     const { uid } = req.body as TUSERUPDATE;
     if (!uid) throw { status: BADREQUESTCODE, message: "Please Send user ID" };
