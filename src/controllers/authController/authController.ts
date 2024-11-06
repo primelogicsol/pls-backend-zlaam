@@ -24,7 +24,6 @@ export default {
     const generateOneTimePassword = generateOtp();
     const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
 
-    if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
     await db.user.create({
       data: {
         username: username.toLowerCase(),
@@ -37,11 +36,16 @@ export default {
         emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
       }
     });
-    await db.newsletter.create({
-      data: {
-        email: email.toLowerCase()
-      }
-    });
+
+    if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
+    const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
+    if (!WHITELISTMAILS.includes(email) && !isSubscribed) {
+      await db.newsletter.create({
+        data: {
+          email: email.toLowerCase()
+        }
+      });
+    }
     httpResponse(
       req,
       res,
@@ -92,7 +96,6 @@ export default {
     }
     const isPasswordMatch = await verifyPassword(OTP, user?.otpPassword as string, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
-
     await db.user.update({
       where: { email: email.toLowerCase() },
       data: {

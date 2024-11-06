@@ -1,4 +1,4 @@
-import { BADREQUESTCODE, SUCCESSCODE } from "../../constants";
+import { BADREQUESTCODE, SUCCESSCODE, WHITELISTMAILS } from "../../constants";
 import { db } from "../../database/db";
 import { sendNewsLetterToSubscribers } from "../../services/sendNewsLetterToSubscribersService";
 import type { TSUBSCRIBENEWSLETTER } from "../../types";
@@ -10,14 +10,19 @@ export default {
     // ** validation is already handled by  middleware
     const { email } = req.body as TSUBSCRIBENEWSLETTER;
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
-    if (isSubscribed) throw { status: BADREQUESTCODE, message: "You are already subscribed" };
-    await db.newsletter.create({
-      data: {
-        email: email.toLowerCase(),
-        subscriptionStatus: true
-      }
-    });
-    httpResponse(req, res, SUCCESSCODE, "You are now subscribed to our newsletter");
+
+    if (!isSubscribed) {
+      await db.newsletter.create({
+        data: {
+          email: email.toLowerCase()
+        }
+      });
+    }
+    if (isSubscribed?.subscriptionStatus) throw { status: BADREQUESTCODE, message: "You have are already subscribed" };
+    if (!isSubscribed?.subscriptionStatus) {
+      await db.newsletter.update({ where: { email: email.toLowerCase() }, data: { subscriptionStatus: true } });
+    }
+    httpResponse(req, res, SUCCESSCODE, "You have  subscribed to our newsletter", { email, isSubscribed: true });
   }),
   // *** unsubscribed to the news letter
 
@@ -35,6 +40,7 @@ export default {
     // ** validation is already handled by  middleware
     const { email, newsLetter } = req.body as TSUBSCRIBENEWSLETTER;
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase(), subscriptionStatus: true } });
+    if (WHITELISTMAILS.includes(email)) throw { status: BADREQUESTCODE, message: "Cannot send newsletter to admin" };
     if (!isSubscribed) throw { status: BADREQUESTCODE, message: "You are not subscribed" };
     await sendNewsLetterToSubscribers(email, newsLetter);
     httpResponse(req, res, SUCCESSCODE, "News letter sent successfully");

@@ -146,8 +146,18 @@ export const sendMessagaeToUserSchema = z.object({
   message: z.string({ message: "message is required!!" }).min(1, { message: "message is required!!" })
 });
 /*                                                 news letter schema                                                    */
-
-export const newsLetterToSingleUserSchema = z.object({
+export const SubscribeORunsubscribeToNewsLetterSchema = z.object({
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+    .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
+      message: "Invalid email format. e.g: john.doe@example.com"
+    })
+});
+export const sendNewsLetterToSingleUserSchema = z.object({
   email: z
     .string({ message: "email is required!!" })
     .min(1, { message: "email is required!!" })
@@ -159,6 +169,6 @@ export const newsLetterToSingleUserSchema = z.object({
     }),
   newsLetter: z.string({ message: "newsLetter is required!!" }).min(1, { message: "newsLetter is required!!" })
 });
-export const newsLetterToAllUsersSchema = z.object({
+export const sendNewsLetterToAllUsersSchema = z.object({
   newsLetter: z.string({ message: "newsLetter is required!!" }).min(1, { message: "newsLetter is required!!" })
 });
