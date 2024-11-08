@@ -8,7 +8,6 @@ import { passwordHasher, verifyPassword } from "../../services/passwordHasherSer
 import type { _Request } from "../../middlewares/authMiddleware";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
-import logger from "../../utils/loggerUtils";
 
 export default {
   // ** updateUserInfo controller
@@ -262,7 +261,7 @@ export default {
         otpPasswordExpiry: generateOneTimePassword.otpExpiry
       }
     });
-    await sendOTP(email, generateOneTimePassword.otp, user.fullName, "Please use this OTP to reset your password");
+    await sendOTP(email, generateOneTimePassword.otp, user.fullName, "Please use this OTP to reset your password", "Reset Password");
     httpResponse(req, res, SUCCESSCODE, "OTP sent successfully", { email });
   }),
   // ** Verify Forgot Password Request Controller ******
@@ -271,7 +270,6 @@ export default {
     const { OTP } = req.body as TVERIFYUSER;
 
     const uid = req.userFromToken?.uid;
-    logger.info(uid);
     if (!uid) throw { status: BADREQUESTCODE, message: "Please send uid" };
     const user = await db.user.findUnique({ where: { uid: uid } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid OTP" };

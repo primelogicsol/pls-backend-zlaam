@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Send OTP function
-export async function sendOTP(to: string, otp: string, name: string, message?: string) {
+export async function sendOTP(to: string, otp: string, name: string, message?: string, subject?: string) {
   const templatePath = path.resolve(__dirname, "../templates/sendOTP.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
   htmlTemplate = htmlTemplate
@@ -27,7 +27,7 @@ export async function sendOTP(to: string, otp: string, name: string, message?: s
   const mailOptions = {
     from: "noreply@pls.com",
     to: to,
-    subject: "Account Verification",
+    subject: subject ?? "Account Verification For Prime Logic Solution",
     html: htmlTemplate,
     headers: {
       "Message-ID": `<${randomStr}.dev>`
