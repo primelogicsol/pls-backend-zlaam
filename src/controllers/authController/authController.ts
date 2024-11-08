@@ -106,7 +106,7 @@ export default {
       }
     });
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
-
+    // test
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
