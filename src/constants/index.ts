@@ -74,6 +74,7 @@ const ENDPOINTS = {
   HEALTHROUTE: "/api/v1/health",
   AUTHROUTE: "/api/v1/auth",
   CONTACTUSROUTE: "/api/v1/contactUs",
-  NEWSLETTERROUTE: "/api/v1/newsletter"
+  NEWSLETTERROUTE: "/api/v1/newsletter",
+  TRASH: "/api/v1/trash"
 };
-export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE, NEWSLETTERROUTE } = ENDPOINTS;
+export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE, NEWSLETTERROUTE, TRASH } = ENDPOINTS;

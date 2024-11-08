@@ -1,6 +1,7 @@
 import { ADMIN_MAIL_2 } from "../../config/config";
 import { BADREQUESTCODE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
+import type { _Request } from "../../middlewares/authMiddleware";
 import { recieveMessageFromUser } from "../../services/recieveMessageFromUserService";
 import { sendMessageToTheUserService } from "../../services/sendMessageToUserService";
 import type { TCONTACTUS, TTRASH, TUSER } from "../../types";
@@ -105,8 +106,10 @@ export default {
   }),
 
   // ** Trash the message
-  trashMessage: asyncHandler(async (req, res) => {
-    const { trashedBy, victimUid: idOfMessageWhichIsGoingToTrashed } = req.body as TTRASH;
+  trashMessage: asyncHandler(async (req: _Request, res) => {
+    const { victimUid: idOfMessageWhichIsGoingToTrashed } = req.body as TTRASH;
+    const trashedBy = req.userFromToken?.uid as string;
+    if (trashedBy) throw { status: BADREQUESTCODE, message: "Please Send the id of user who want to trash it" };
     const user: TUSER = await findUniqueUser(trashedBy);
     if (!idOfMessageWhichIsGoingToTrashed) throw { status: BADREQUESTCODE, message: "Please send the id of message" };
     await db.contactUs.update({

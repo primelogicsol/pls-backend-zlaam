@@ -61,7 +61,6 @@ export type TUSERLOGIN = {
 };
 
 export type TTRASH = {
-  trashedBy: string;
   victimUid: string;
 };
 

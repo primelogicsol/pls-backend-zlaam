@@ -204,10 +204,12 @@ export default {
   }),
 
   // *** Move to the trash ****************************
-  moveToTrash: asyncHandler(async (req: Request, res: Response) => {
-    const { trashedBy, victimUid } = req.body as TTRASH;
+  moveToTrash: asyncHandler(async (req: _Request, res: Response) => {
+    const { victimUid } = req.body as TTRASH;
+    const trashedBy = req.userFromToken?.uid;
     if (!trashedBy) throw { status: BADREQUESTCODE, message: "Please Send the id of user who want to trash it" };
     const user = await db.user.findUnique({ where: { uid: trashedBy } });
+    if (!user) throw { status: BADREQUESTCODE, message: "You aren't allowed to trash data" };
     if (!victimUid) throw { status: BADREQUESTCODE, message: "Please Send the id of victim" };
     const victim = await db.user.findUnique({ where: { uid: victimUid } });
     if (!victim) throw { status: BADREQUESTCODE, message: "User not found" };
