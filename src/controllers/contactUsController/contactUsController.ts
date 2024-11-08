@@ -1,4 +1,4 @@
-import { ADMIN_MAIL_2 } from "../../config/config";
+import { ADMIN_MAIL_1 } from "../../config/config";
 import { BADREQUESTCODE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
@@ -14,7 +14,7 @@ export default {
   createMessage: asyncHandler(async (req, res) => {
     // ** Validation is handled by middleware
     const { firstName, lastName, email, message } = req.body as TCONTACTUS;
-    await recieveMessageFromUser(email, ADMIN_MAIL_2, message, `${firstName} ${lastName}`);
+    await recieveMessageFromUser(email, ADMIN_MAIL_1, message, `${firstName} ${lastName}`);
     await db.contactUs.create({
       data: {
         firstName,
@@ -109,7 +109,7 @@ export default {
   trashMessage: asyncHandler(async (req: _Request, res) => {
     const { victimUid: idOfMessageWhichIsGoingToTrashed } = req.body as TTRASH;
     const trashedBy = req.userFromToken?.uid as string;
-    if (trashedBy) throw { status: BADREQUESTCODE, message: "Please Send the id of user who want to trash it" };
+    if (!trashedBy) throw { status: BADREQUESTCODE, message: "Please Send the id of user who want to trash it" };
     const user: TUSER = await findUniqueUser(trashedBy);
     if (!idOfMessageWhichIsGoingToTrashed) throw { status: BADREQUESTCODE, message: "Please send the id of message" };
     await db.contactUs.update({
