@@ -198,3 +198,38 @@ export const updateForgotPasswordSchema = z.object({
     .min(6, { message: "newPassword must be at least 6 characters long." })
     .max(50, { message: "newPassword can be at most 50 characters long." })
 });
+
+// *** Get a Quote
+
+export const getQuoteSchema = z.object({
+  name: z
+    .string({ message: "name is required!!" })
+    .min(1, { message: "name is required!!" })
+    .min(3, { message: "name must be at least 3 characters long." })
+    .max(150, { message: "name can be at most 150 characters long." }),
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+    .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
+      message: "Invalid email format. e.g: john.doe@example.com"
+    }),
+  phone: z
+    .string({ message: "phone is required!!" })
+    .min(1, { message: "phone is required!!" })
+    .min(3, { message: "phone must be at least 3 characters long." })
+    .max(150, { message: "phone can be at most 150 characters long." }),
+  address: z
+    .string({ message: "address is required!!" })
+    .min(1, { message: "address is required!!" })
+    .min(3, { message: "address must be at least 3 characters long." })
+    .max(450, { message: "address can be at most 150 characters long." }),
+  detail: z
+    .string({ message: "detail is required!!" })
+    .min(1, { message: "detail is required!!" })
+    .min(3, { message: "detail must be at least 3 characters long." })
+    .max(1000, { message: "detail can be at most 150 characters long." }),
+  services: z.string({ message: "services is required!!" }).min(1, { message: "services is required!!" })
+});

@@ -75,3 +75,28 @@ model NavigationPages {
   trashedBy            String?
   trashedAt            DateTime?
 }
+
+model GetQuote {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  company   String?   @default("")
+  address   String
+  deadline  String?
+  services  String
+  detail    String?   @default("")
+  createdAt DateTime  @default(now())
+  trashedBy String?
+  trashedAt DateTime?
+
+  @@index([email])
+  @@index([id])
+  @@index([createdAt])
+  @@map("GetQuote")
+}
+
+model CreateServicesForQuote {
+  id       Int    @id @default(autoincrement())
+  services String
+}

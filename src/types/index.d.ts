@@ -95,3 +95,21 @@ export type TSUBSCRIBENEWSLETTER = {
 export type TNAVIGATIONPAGE = {
   data: object[];
 };
+
+// types.ts
+
+export type TGETQUOTE = {
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  address: string;
+  deadline?: string;
+  services: string;
+  detail?: string;
+  trashedBy?: string;
+  trashedAt?: Date;
+};
+export type TSERVICESFORQUOTE = {
+  services: string;
+};
