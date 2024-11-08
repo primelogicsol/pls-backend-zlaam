@@ -172,3 +172,29 @@ export const sendNewsLetterToSingleUserSchema = z.object({
 export const sendNewsLetterToAllUsersSchema = z.object({
   newsLetter: z.string({ message: "newsLetter is required!!" }).min(1, { message: "newsLetter is required!!" })
 });
+// **** forgot password schema
+export const forgotPasswordRequestFromUserSchema = z.object({
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+    .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
+      message: "Invalid email format. e.g: john.doe@example.com"
+    })
+});
+export const verifyForgotPasswordRequestSchema = z.object({
+  OTP: z
+    .string({ message: "OTP is required!!" })
+    .min(1, { message: "OTP is required!!" })
+    .min(6, { message: "OTP must be at least 6 characters long." })
+    .max(6, { message: "OTP can be at most 6 characters long." })
+});
+export const updateForgotPasswordSchema = z.object({
+  newPassword: z
+    .string({ message: "newPassword is required!!" })
+    .min(1, { message: "newPassword is required!!" })
+    .min(6, { message: "newPassword must be at least 6 characters long." })
+    .max(50, { message: "newPassword can be at most 50 characters long." })
+});

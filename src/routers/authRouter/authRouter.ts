@@ -3,13 +3,16 @@ import { Router } from "express";
 import authController from "../../controllers/authController/authController";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 import {
+  forgotPasswordRequestFromUserSchema,
   sendOTPSchema,
+  updateForgotPasswordSchema,
   userDeleteSchema,
   userLoginSchema,
   userRegistrationSchema,
   userUpdateEmailSchema,
   userUpdatePasswordSchema,
   userUpdateSchema,
+  verifyForgotPasswordRequestSchema,
   verifyUserSchema
 } from "../../validation/zod";
 import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
@@ -80,3 +83,13 @@ authRouter
   .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.deleteUser);
 authRouter.route("/trashTheUser").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.moveToTrash);
 authRouter.route("/unTrashTheUser").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.unTrashUser);
+// ** forgot password
+authRouter
+  .route("/forgotPasswordRequestFromUser")
+  .post(validateDataMiddleware(forgotPasswordRequestFromUserSchema), authMiddleware.checkToken, userController.forgotPasswordRequestFromUser);
+authRouter
+  .route("/verifyForgotPasswordRequest")
+  .post(validateDataMiddleware(verifyForgotPasswordRequestSchema), authMiddleware.checkToken, userController.verifyForgotPasswordRequest);
+authRouter
+  .route("/updateNewPasswordRequest")
+  .patch(validateDataMiddleware(updateForgotPasswordSchema), authMiddleware.checkToken, userController.updateNewPasswordRequest);

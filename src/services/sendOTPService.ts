@@ -16,10 +16,13 @@ const transporter = nodemailer.createTransport({
 });
 
 // Send OTP function
-export async function sendOTP(to: string, otp: string, name: string) {
+export async function sendOTP(to: string, otp: string, name: string, message?: string) {
   const templatePath = path.resolve(__dirname, "../templates/sendOTP.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
-  htmlTemplate = htmlTemplate.replace("{{otp}}", otp).replace("{{name}}", name);
+  htmlTemplate = htmlTemplate
+    .replace("{{otp}}", otp)
+    .replace("{{name}}", name)
+    .replace("{{message}}", message || "");
   const randomStr = generateRandomStrings(10);
   const mailOptions = {
     from: "noreply@pls.com",

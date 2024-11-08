@@ -1,11 +1,14 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { BADREQUESTCODE, SUCCESSCODE, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../../constants";
-import type { TTRASH, TUSERUPDATE } from "../../types";
+import type { TSENDOTP, TTRASH, TUSERUPDATE, TVERIFYUSER } from "../../types";
 import { db } from "../../database/db";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import type { _Request } from "../../middlewares/authMiddleware";
+import { generateOtp } from "../../services/slugStringGeneratorService";
+import { sendOTP } from "../../services/sendOTPService";
+import logger from "../../utils/loggerUtils";
 
 export default {
   // ** updateUserInfo controller
@@ -242,5 +245,76 @@ export default {
     const { uid } = userData;
     await db.user.delete({ where: { uid } });
     httpResponse(req, res, SUCCESSCODE, "User deleted successfully");
+  }),
+
+  // ** Forgot Password Request From  User Controller **************
+  forgotPasswordRequestFromUser: asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body as TSENDOTP;
+    const user = await db.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
+    if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
+    const generateOneTimePassword = generateOtp();
+    const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
+    await db.user.update({
+      where: { email: email.toLowerCase() },
+      data: {
+        otpPassword: hashedOTPPassword,
+        otpPasswordExpiry: generateOneTimePassword.otpExpiry
+      }
+    });
+    await sendOTP(email, generateOneTimePassword.otp, user.fullName, "Please use this OTP to reset your password");
+    httpResponse(req, res, SUCCESSCODE, "OTP sent successfully", { email });
+  }),
+  // ** Verify Forgot Password Request Controller ******
+  verifyForgotPasswordRequest: asyncHandler(async (req: _Request, res: Response) => {
+    // validation is already handled by the middleware
+    const { OTP } = req.body as TVERIFYUSER;
+
+    const uid = req.userFromToken?.uid;
+    logger.info(uid);
+    if (!uid) throw { status: BADREQUESTCODE, message: "Please send uid" };
+    const user = await db.user.findUnique({ where: { uid: uid } });
+    if (!user) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
+    if (user.password === "") throw { status: BADREQUESTCODE, message: "Password already reset" };
+    if (user.otpPasswordExpiry && user.otpPasswordExpiry < new Date()) {
+      await db.user.update({
+        where: { uid: uid },
+        data: {
+          otpPassword: null,
+          otpPasswordExpiry: null
+        }
+      });
+      throw { status: BADREQUESTCODE, message: "OTP expired. Please try again" };
+    }
+    const isPasswordMatch = await verifyPassword(OTP, user?.otpPassword as string, res);
+    if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
+    await db.user.update({
+      where: { uid: uid },
+      data: {
+        otpPassword: null,
+        otpPasswordExpiry: null,
+        password: ""
+      }
+    });
+    httpResponse(req, res, SUCCESSCODE, "Password reset successfully");
+  }),
+
+  // *****  update New Password Request Controller **********
+  updateNewPasswordRequest: asyncHandler(async (req: _Request, res: Response) => {
+    const { newPassword } = req.body as TUSERUPDATE;
+    const uid = req.userFromToken?.uid;
+
+    if (!uid) throw { status: BADREQUESTCODE, message: "Please send uid" };
+    const user = await db.user.findUnique({ where: { uid: uid } });
+    if (user?.password !== "") throw { status: BADREQUESTCODE, message: "You are not allowed to change your password" };
+    if (!newPassword) throw { status: BADREQUESTCODE, message: "Please send password" };
+    const hashedPassword = (await passwordHasher(newPassword, res)) as string;
+    await db.user.update({
+      where: { uid: uid },
+      data: {
+        password: hashedPassword
+      }
+    });
+    httpResponse(req, res, SUCCESSCODE, "Password updated successfully");
   })
 };
