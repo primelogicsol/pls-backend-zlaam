@@ -93,3 +93,4 @@ authRouter
 authRouter
   .route("/updateNewPasswordRequest")
   .patch(validateDataMiddleware(updateForgotPasswordSchema), authMiddleware.checkToken, userController.updateNewPasswordRequest);
+authRouter.route("/refreshAcessToken").post(authController.refreshAcessToken);

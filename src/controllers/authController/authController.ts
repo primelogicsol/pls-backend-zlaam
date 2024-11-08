@@ -3,12 +3,22 @@ import { httpResponse } from "../../utils/apiResponseUtils";
 import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TUSERUPDATE, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
-import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE, WHITELISTMAILS } from "../../constants";
+import {
+  ACESSTOKENCOOKIEOPTIONS,
+  BADREQUESTCODE,
+  REFRESHTOKENCOOKIEOPTIONS,
+  SUCCESSCODE,
+  UNAUTHORIZEDCODE,
+  UNAUTHORIZEDMSG,
+  WHITELISTMAILS
+} from "../../constants";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
 import { sendThankYouMessage } from "../../services/ThankYouService";
+import logger from "../../utils/loggerUtils";
+import { verifyToken } from "../../services/verifyTokenService";
 
 let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0, role: "CLIENT", isVerified: null };
 export default {
@@ -156,5 +166,48 @@ export default {
     res.cookie("refreshToken", "", REFRESHTOKENCOOKIEOPTIONS);
     res.cookie("accessToken", "", ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, SUCCESSCODE, "User logged out successfully");
+  }),
+  // ** RefreshedAccessToken
+  refreshAcessToken: asyncHandler(async (req: Request, res: Response) => {
+    const refreshToken = req.header("Authorization")?.split(" ")[1];
+
+    if (!refreshToken) throw { status: BADREQUESTCODE, message: "Please provide refresh token" };
+
+    const [error, decoded] = verifyToken<TPAYLOAD>(refreshToken);
+
+    if (error) {
+      logger.error("Error while verifying token", "authController.ts:152");
+      throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
+    }
+
+    if (!decoded?.uid) {
+      logger.warn("Invalid token. Not uid found in accessToken", "authController.ts:158");
+      throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
+    }
+
+    const user = await db.user.findUnique({ where: { uid: decoded.uid } });
+
+    if (!user) {
+      logger.warn("Invalid token. User not found", "authController.ts:164");
+      throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
+    }
+
+    if (user.tokenVersion !== decoded.tokenVersion) {
+      logger.error("Invalid token. tokenVersion doesn't match maybe session is expired", "authController.ts:169");
+      throw { status: UNAUTHORIZEDCODE, message: "Session expired. Please login again" };
+    }
+
+    const { generateAccessToken } = tokenGeneratorService;
+    const payLoad: TPAYLOAD = {
+      uid: user && user?.uid,
+      tokenVersion: user?.tokenVersion,
+      role: WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
+      isVerified: user?.emailVerifiedAt
+    };
+    const accessToken = generateAccessToken(payLoad, res, "14m");
+
+    res.cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
+
+    httpResponse(req, res, SUCCESSCODE, "Token refreshed successfully", { accessToken });
   })
 };
