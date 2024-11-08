@@ -92,3 +92,6 @@ export type TSUBSCRIBENEWSLETTER = {
   email: string;
   newsLetter: string;
 };
+export type TNAVIGATIONPAGE = {
+  data: object[];
+};

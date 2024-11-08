@@ -68,3 +68,10 @@ model Newsletter {
 
   createdAt DateTime @default(now())
 }
+
+model NavigationPages {
+  id                   Int       @id @default(autoincrement())
+  navigationPageConfig Json[]
+  trashedBy            String?
+  trashedAt            DateTime?
+}
