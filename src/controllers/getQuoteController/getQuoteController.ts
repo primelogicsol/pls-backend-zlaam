@@ -49,6 +49,7 @@ export default {
   // ** fetch all qotes controller
   getAllQuote: asyncHandler(async (req, res) => {
     const quotes = await db.getQuote.findMany({ where: { trashedAt: null, trashedBy: null } });
+    if (quotes.length === 0) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, quotes);
   }),
   // ** Trash single quote controller
