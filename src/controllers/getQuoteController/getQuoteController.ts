@@ -1,4 +1,4 @@
-import { BADREQUESTCODE, BADREQUESTMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
+import { BADREQUESTCODE, BADREQUESTMSG, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
 import type { TGETQUOTE, TSERVICESFORQUOTE } from "../../types";
@@ -31,9 +31,17 @@ export default {
     await db.createServicesForQuote.create({ data: { services } });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { services });
   }),
+  // ** Delete services for quote controller
+  deleteServicesForQuote: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) throw { status: BADREQUESTCODE, message: BADREQUESTMSG };
+    await db.createServicesForQuote.delete({ where: { id: Number(id) } });
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
+  }),
   // ** fetch single quote controller
   getSingleQuote: asyncHandler(async (req, res) => {
     const quote = await db.getQuote.findUnique({ where: { id: Number(req.params.id), trashedBy: null, trashedAt: null } });
+    if (!quote) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, quote);
   }),
   // ** fetch all qotes controller
@@ -45,13 +53,17 @@ export default {
   trashQuote: asyncHandler(async (req: _Request, res) => {
     const uid = req.userFromToken?.uid;
     if (!uid) throw { status: BADREQUESTCODE, message: BADREQUESTMSG };
-    const quote = await db.getQuote.update({ where: { id: Number(req.params.id) }, data: { trashedBy: uid, trashedAt: new Date() } });
+    const user = await db.user.findUnique({ where: { uid } });
+    const quote = await db.getQuote.update({
+      where: { id: Number(req.params.id) },
+      data: { trashedBy: `@${user?.username} ${user?.fullName}-${user?.role}`, trashedAt: new Date() }
+    });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, quote);
   }),
   // ** Untrash Single controller
   unTrashQuote: asyncHandler(async (req: _Request, res) => {
-    const quote = await db.getQuote.update({ where: { id: Number(req.params.id) }, data: { trashedBy: null, trashedAt: null } });
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, quote);
+    await db.getQuote.update({ where: { id: Number(req.params.id) }, data: { trashedBy: null, trashedAt: null } });
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   }),
   // ** Delete Single controller
   deleteQuote: asyncHandler(async (req: _Request, res) => {

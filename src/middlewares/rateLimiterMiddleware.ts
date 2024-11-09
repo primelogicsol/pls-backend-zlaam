@@ -6,7 +6,7 @@ import { ERRMSG, INTERNALSERVERERRORCODE, TOOMANYREQUESTSCODE, TOOMANYREQUESTSMS
 
 export default async (req: Request, res: Response, next: NextFunction, rateLimitPoints?: number, message?: string) => {
   try {
-    // TOOD: replace ! with = for production
+    // TODO: replace ! with = for production
     if (ENV !== "DEVELOPMENT") return next();
     if (rateLimiterPrisma) {
       await rateLimiterPrisma.consume(req.ip as string, rateLimitPoints || 1);
