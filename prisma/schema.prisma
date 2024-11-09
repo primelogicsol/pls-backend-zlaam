@@ -105,7 +105,6 @@ enum consultationStatus {
   PENDING
   ACCEPTED
   REJECTED
-  FINISHED
 }
 
 model ConsultationBooking {

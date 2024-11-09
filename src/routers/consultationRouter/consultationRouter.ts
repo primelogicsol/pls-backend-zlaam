@@ -18,17 +18,20 @@ consultationRouter
   .route("/getAllRequestedConsultations")
   .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, consultationController.getAllRequestedConsultations);
 consultationRouter
+  .route("/getSingleRequestedConsultation/:id")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, consultationController.getSingleRequestedConsultation);
+consultationRouter
   .route("/deleteRequestedConsultation/:id")
   .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, consultationController.deleteRequestedConsultation);
 consultationRouter
-  .route("/acceptConsultation/:id")
+  .route("/acceptRequestedConsultation/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, consultationController.acceptConsultationBooking);
 consultationRouter
-  .route("/rejectConsultation/:id")
+  .route("/rejectRequestedConsultation/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, consultationController.rejectConsultationBooking);
 consultationRouter
-  .route("/trashConsultation/:id")
+  .route("/trashRequestedConsultation/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, consultationController.trashConsultation);
 consultationRouter
-  .route("/untrashConsultation/:id")
+  .route("/untrashRequestedConsultation/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, consultationController.untrashConsultation);

@@ -67,7 +67,7 @@ export default {
       message,
       "Consultation Request For Prime Logic Solution",
       "Dear Administrators of PLS,",
-      `User's orignal email is here: ${email}`
+      `User's orignal email is here: ${email} For more information check admin pannel of PLS`
     );
     // ** this is auto generated reply for user
     await sendOrRecieveBookingMessage(
@@ -78,7 +78,7 @@ export default {
       "About your consultation request",
       `Dear ${name},`
     );
-    httpResponse(req, res, SUCCESSCODE, "Please check you email for more details", consultation);
+    httpResponse(req, res, SUCCESSCODE, "Please check your email for more details", consultation);
   }),
 
   // *** get all consultations controller
@@ -140,6 +140,7 @@ export default {
     const uid = req.userFromToken?.uid;
     if (!uid) throw { status: BADREQUESTCODE, message: BADREQUESTMSG };
     const user = await db.user.findUnique({ where: { uid } });
+    //TODO: make sure you pass the correct id
     await db.consultationBooking.update({
       where: { id: Number(id) },
       data: { trashedAt: new Date(), trashedBy: `@${user?.username}-${user?.fullName}-${user?.role}` }
@@ -149,6 +150,8 @@ export default {
   // ** untrashConsultation
   untrashConsultation: asyncHandler(async (req: _Request, res) => {
     const { id } = req.params;
+
+    //TODO: make sure you pass the correct id
     await db.consultationBooking.update({ where: { id: Number(id) }, data: { trashedAt: null, trashedBy: null } });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   })
