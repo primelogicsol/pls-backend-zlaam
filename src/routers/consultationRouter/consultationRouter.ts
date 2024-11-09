@@ -10,7 +10,7 @@ export const consultationRouter = Router();
 consultationRouter.route("/requestAConsultation").post(
   validateDataMiddleware(consultationBookingSchema),
   async (req, res, next) => {
-    await rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 3600);
+    await rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 28800);
   },
   consultationController.createConsultation
 );
