@@ -1,6 +1,7 @@
 import { BADREQUESTCODE, BADREQUESTMSG, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
+import { sendThankYouForQuote } from "../../services/ThankYouForQuoteService";
 import type { TGETQUOTE, TSERVICESFORQUOTE } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
@@ -21,7 +22,8 @@ export default {
       detail: detail ?? "",
       deadline: deadline || ""
     };
-    await db.getQuote.create({ data });
+    const createdQuote = await db.getQuote.create({ data });
+    await sendThankYouForQuote(createdQuote.email, createdQuote.name);
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, data);
   }),
   // **  create services for quote controlller

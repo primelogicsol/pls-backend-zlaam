@@ -3,10 +3,16 @@ import getQuoteController from "../../controllers/getQuoteController/getQuoteCon
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 import { getQuoteSchema } from "../../validation/zod";
 import authMiddleware from "../../middlewares/authMiddleware";
+import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 
 export const getQuoteRouter = Router();
 
-getQuoteRouter.route("/createQuote").post(validateDataMiddleware(getQuoteSchema), getQuoteController.createQuote);
+getQuoteRouter.route("/createQuote").post(
+  validateDataMiddleware(getQuoteSchema),
+  // 1 quote per minute from same ip address
+  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  getQuoteController.createQuote
+);
 getQuoteRouter.route("/createServicesForQuote").post(getQuoteController.createServicesForQuote);
 getQuoteRouter
   .route("/deleteServicesForQuote/:id")
