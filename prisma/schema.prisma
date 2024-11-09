@@ -100,3 +100,27 @@ model CreateServicesForQuote {
   id       Int    @id @default(autoincrement())
   services String
 }
+
+enum consultationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  FINISHED
+}
+
+model ConsultationBooking {
+  id          Int                @id @default(autoincrement())
+  name        String
+  email       String             @unique
+  phone       String
+  message     String
+  bookingDate DateTime
+  status      consultationStatus @default(PENDING)
+  trashedBy   String?
+  trashedAt   DateTime?
+  createdAt   DateTime           @default(now())
+
+  @@index([id])
+  @@index([email])
+  @@index([status])
+}
