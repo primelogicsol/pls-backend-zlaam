@@ -113,3 +113,12 @@ export type TGETQUOTE = {
 export type TSERVICESFORQUOTE = {
   services: string;
 };
+
+export type TCONSULTATIONSTATUS = "PENDING" | "ACCEPTED" | "REJECTED" | "FINISHED";
+export type TCONSULTATION = {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  bookingDate: Date;
+};

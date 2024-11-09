@@ -114,7 +114,7 @@ model ConsultationBooking {
   email       String             @unique
   phone       String
   message     String
-  bookingDate DateTime
+  bookingDate DateTime           @unique
   status      consultationStatus @default(PENDING)
   trashedBy   String?
   trashedAt   DateTime?
@@ -122,5 +122,6 @@ model ConsultationBooking {
 
   @@index([id])
   @@index([email])
+  @@index([bookingDate])
   @@index([status])
 }

@@ -45,12 +45,6 @@ export const {
   INTERNALSERVERERRORCODE
 } = statusCodes;
 
-const rateLimitingPoints = {
-  POINTS: 10,
-  DURATION: 60
-};
-export const { POINTS, DURATION } = rateLimitingPoints;
-
 const accessTokenExpiry = 14 * 60 * 1000; // 14 minutes in milliseconds
 const refreshTokenExpiry = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 const COOKIEOPTIONS = {
@@ -78,6 +72,8 @@ const ENDPOINTS = {
   NEWSLETTERROUTE: "/api/v1/newsletter",
   TRASHROUTE: "/api/v1/trash",
   NAVIGATIONPAGESROUTE: "/api/v1/navigationPages",
-  GETQUOTESROUTE: "/api/v1/getQuotes"
+  GETQUOTESROUTE: "/api/v1/getQuotes",
+  CONSULTATIONROUTE: "/api/v1/consultation"
 };
-export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE, NEWSLETTERROUTE, TRASHROUTE, NAVIGATIONPAGESROUTE, GETQUOTESROUTE } = ENDPOINTS;
+export const { HEALTHROUTE, AUTHROUTE, CONTACTUSROUTE, NEWSLETTERROUTE, TRASHROUTE, NAVIGATIONPAGESROUTE, GETQUOTESROUTE, CONSULTATIONROUTE } =
+  ENDPOINTS;

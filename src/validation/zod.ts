@@ -233,3 +233,35 @@ export const getQuoteSchema = z.object({
     .max(1000, { message: "detail can be at most 150 characters long." }),
   services: z.string({ message: "services is required!!" }).min(1, { message: "services is required!!" })
 });
+
+// ** Consultation booking schema
+
+export const consultationBookingSchema = z.object({
+  name: z
+    .string({ message: "name is required!!" })
+    .min(1, { message: "name is required!!" })
+    .min(3, { message: "name must be at least 3 characters long." })
+    .max(150, { message: "name can be at most 150 characters long." }),
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+    .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
+      message: "Invalid email format. e.g: john.doe@example.com"
+    }),
+  phone: z
+    .string({ message: "phone is required!!" })
+    .min(1, { message: "phone is required!!" })
+    .min(3, { message: "phone must be at least 3 characters long." })
+    .max(150, { message: "phone can be at most 150 characters long." }),
+  message: z
+    .string({ message: "message is required!!" })
+    .min(1, { message: "message is required!!" })
+    .min(3, { message: "message must be at least 3 characters long." })
+    .max(1000, { message: "message can be at most 150 characters long." }),
+  bookingDate: z.date({ message: "bookingDate is required!!" }).min(new Date(), {
+    message: "bookingDate must be a future date."
+  })
+});
