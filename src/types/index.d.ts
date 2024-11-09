@@ -120,5 +120,6 @@ export type TCONSULTATION = {
   email: string;
   phone: string;
   message: string;
-  bookingDate: Date;
+  address: string;
+  bookingDate: string;
 };

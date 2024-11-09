@@ -6,25 +6,35 @@ import { generateRandomStrings } from "./slugStringGeneratorService";
 import logger from "../utils/loggerUtils";
 import { INTERNALSERVERERRORCODE } from "../constants";
 
-// Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: HOST_EMAIL,
-    pass: HOST_EMAIL_SECRET // Use the app password if 2FA is enabled
+    pass: HOST_EMAIL_SECRET
   }
 });
 
-// Send OTP function
-export async function sendOrRecieveBookingMessage(from: string, to: string, messageByUser: string, name: string) {
-  const templatePath = path.resolve(__dirname, "../templates/ThankYou.html");
+export async function sendOrRecieveBookingMessage(
+  from: string,
+  to: string,
+  name: string,
+  message?: string | null,
+  subject?: string,
+  head?: string,
+  addsOn?: string
+) {
+  const templatePath = path.resolve(__dirname, "../templates/consultationMessages.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
-  htmlTemplate = htmlTemplate.replace("{{name}}", name).replace("{{messageByUser}}", messageByUser);
+  htmlTemplate = htmlTemplate
+    .replace("{{name}}", name)
+    .replace("{{message}}", message || "")
+    .replace("{{head}}", head || "")
+    .replace("{{addsOn}}", addsOn || "");
   const randomStr = generateRandomStrings(10);
   const mailOptions = {
     from: from ?? "noreply@pls.com",
     to: to,
-    subject: "About Your Consultation Request",
+    subject: subject ?? "Prime Logic Solution",
     html: htmlTemplate,
     headers: {
       "Message-ID": `<${randomStr}.dev>`

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import util from "util";
 import { createLogger, format, transports } from "winston";
 import type { ConsoleTransportInstance, FileTransportInstance } from "winston/lib/winston/transports";
 import path from "node:path";
@@ -26,22 +25,20 @@ const colorizeLevel = (level: string) => {
 const consoleLogFormat = format.printf((info) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { level, message, meta } = info;
-
   const customLevel = colorizeLevel(level.toUpperCase());
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const customMessage = message;
-  const customMeta = util.inspect(meta, {
-    showHidden: true,
-    depth: 1,
-    colors: true
-  });
 
-  // Use the timestamp function here
+  // Use JSON.stringify to handle nested objects and avoid [object Object] output
+  const customMeta = JSON.stringify(meta, null, 2); // Adjust depth here if needed for more nested details
+
   const timestamp = getCurrentTimestamp();
 
   const customLog = `
 -------------------------------------------------------------------------------
-  ${customLevel}::${customMessage} \n  ${yellow("TIMESTAMP")} [${green(timestamp)}] \n  ${magenta("META")}: ${customMeta}
+  ${customLevel}::${customMessage} 
+  ${yellow("TIMESTAMP")} [${green(timestamp)}] 
+  ${magenta("META")}: ${customMeta}
 -------------------------------------------------------------------------------
 `;
 
@@ -79,10 +76,8 @@ const fileLogFormat = format.printf((info) => {
     }
   }
 
-  // Use the timestamp function here as well
   const logData = {
     level: level.toUpperCase(),
-
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     message,
     customTimestamp: getCurrentTimestamp(),

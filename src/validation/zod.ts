@@ -261,7 +261,10 @@ export const consultationBookingSchema = z.object({
     .min(1, { message: "message is required!!" })
     .min(3, { message: "message must be at least 3 characters long." })
     .max(1000, { message: "message can be at most 150 characters long." }),
-  bookingDate: z.date({ message: "bookingDate is required!!" }).min(new Date(), {
-    message: "bookingDate must be a future date."
-  })
+  bookingDate: z.string({ message: "bookingDate is required!!" }).min(1, { message: "bookingDate is required!!" }),
+  address: z
+    .string({ message: "address is required!!" })
+    .min(1, { message: "address is required!!" })
+    .min(3, { message: "address must be at least 3 characters long." })
+    .max(450, { message: "address can be at most 150 characters long." })
 });
