@@ -13,7 +13,7 @@ contactUsRouter
   .post(
     //   authMiddleware.checkToken,
     validateDataMiddleware(contactUsSchema),
-    (req, res, next) => rateLimiterMiddleware(req, res, next, 5),
+    (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5),
     contactUsController.createMessage
   );
 contactUsRouter

@@ -1,25 +1,47 @@
+import { RateLimiterPrisma } from "rate-limiter-flexible";
 import type { NextFunction, Request, Response } from "express";
-import { ENV } from "../config/config";
-import { rateLimiterPrisma } from "../config/rateLimiter";
+import { db } from "../database/db";
 import { httpResponse } from "../utils/apiResponseUtils";
+import { ENV } from "../config/config";
 import { ERRMSG, INTERNALSERVERERRORCODE, TOOMANYREQUESTSCODE, TOOMANYREQUESTSMSG } from "../constants";
+import getMinutes from "../utils/getMinutesUtils";
 
-export default async (req: Request, res: Response, next: NextFunction, rateLimitPoints?: number, message?: string) => {
-  try {
-    // TODO: replace ! with = for production
-    if (ENV !== "DEVELOPMENT") return next();
-    if (rateLimiterPrisma) {
-      await rateLimiterPrisma.consume(req.ip as string, rateLimitPoints || 1);
-      next();
-    } else {
-      throw new Error("Rate limiter not initialized");
-    }
-  } catch (err: unknown) {
-    const error = err as errorLimiter;
-    if (error?.remainingPoints === 0) httpResponse(req, res, TOOMANYREQUESTSCODE, message || `${TOOMANYREQUESTSMSG} 1 minute`, null).end();
-    else httpResponse(req, res, INTERNALSERVERERRORCODE, `${ERRMSG} with rateLimiter middleware:: ${err as string}$`, null);
-  }
-};
-type errorLimiter = {
+type ErrorLimiter = {
   remainingPoints: number;
 };
+
+export class RateLimiterMiddleware {
+  private rateLimiter: RateLimiterPrisma | null = null;
+  private currentTotalPoints: number | null = null;
+  private currentDuration: number | null = null;
+
+  public async handle(req: Request, res: Response, next: NextFunction, consumptionPoints = 1, message?: string, totalPoints?: number, duration = 60) {
+    try {
+      if (ENV !== "DEVELOPMENT") return next(); // TODO: replace ! with = for production
+
+      // **  Initialize or reinitialize rate limiter only if totalPoints or duration have changed
+      if (!this.rateLimiter || this.currentTotalPoints !== totalPoints || this.currentDuration !== duration) {
+        this.rateLimiter = new RateLimiterPrisma({
+          storeClient: db,
+          points: totalPoints || 10, // Default points if none provided
+          duration
+        });
+        this.currentTotalPoints = totalPoints || 10;
+        this.currentDuration = duration;
+      }
+
+      // **  Consume points based on the request-specific consumptionPoints
+      await this.rateLimiter.consume(req.ip as string, consumptionPoints);
+      next();
+    } catch (err: unknown) {
+      const error = err as ErrorLimiter;
+      if (error?.remainingPoints === 0) {
+        httpResponse(req, res, TOOMANYREQUESTSCODE, message || `${TOOMANYREQUESTSMSG} ${getMinutes(duration)}`, null).end();
+      } else {
+        httpResponse(req, res, INTERNALSERVERERRORCODE, `${ERRMSG} in rateLimiter middleware: ${err as string}`, null);
+      }
+    }
+  }
+}
+const rateLimiterMiddleware = new RateLimiterMiddleware();
+export default rateLimiterMiddleware;

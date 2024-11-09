@@ -10,7 +10,7 @@ export const getQuoteRouter = Router();
 getQuoteRouter.route("/createQuote").post(
   validateDataMiddleware(getQuoteSchema),
   // 1 quote per minute from same ip address
-  (req, res, next) => rateLimiterMiddleware(req, res, next, 10),
+  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
   getQuoteController.createQuote
 );
 getQuoteRouter.route("/createServicesForQuote").post(getQuoteController.createServicesForQuote);
