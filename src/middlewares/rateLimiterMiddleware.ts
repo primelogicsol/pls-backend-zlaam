@@ -8,6 +8,7 @@ import getMinutes from "../utils/getMinutesUtils";
 
 type ErrorLimiter = {
   remainingPoints: number;
+  msBeforeNext: number; // Time remaining in milliseconds (optional, but useful for rate limit reset)
 };
 
 export class RateLimiterMiddleware {
@@ -36,7 +37,9 @@ export class RateLimiterMiddleware {
     } catch (err: unknown) {
       const error = err as ErrorLimiter;
       if (error?.remainingPoints === 0) {
-        httpResponse(req, res, TOOMANYREQUESTSCODE, message || `${TOOMANYREQUESTSMSG} ${getMinutes(duration)}`, null).end();
+        const remainingSeconds = Math.ceil(error.msBeforeNext / 1000); // Convert ms to seconds
+        const remainingDuration = getMinutes(remainingSeconds);
+        httpResponse(req, res, TOOMANYREQUESTSCODE, message || `${TOOMANYREQUESTSMSG} ${remainingDuration}`, null).end();
       } else {
         httpResponse(req, res, INTERNALSERVERERRORCODE, `${ERRMSG} in rateLimiter middleware: ${err as string}`, null);
       }
