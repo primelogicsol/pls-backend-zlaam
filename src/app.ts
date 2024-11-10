@@ -31,7 +31,6 @@ const app: Express = express();
 app.set("trust proxy", 1);
 
 app.disable("x-powered-by");
-
 app.use(helmet());
 app.use(
   cors({
@@ -41,7 +40,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../", "public")));
+app.use(express.static(path.resolve(__dirname, "../public")));
 // **APPLICATION ROUTES **
 app.use(AUTHROUTE, authRouter);
 // ** Health route

@@ -20,7 +20,7 @@ const uploadOnCloudinary = async (localFilePath: string, fileName: string, forma
     return response;
   } catch (error: unknown) {
     fs.unlinkSync(localFilePath);
-    if (error instanceof Error) throw { status: 500, message: error };
+    if (error instanceof Error) throw { status: 500, message: error.message };
     else throw { status: 500, message: `Error while uploading files:: ${error as string}` };
   }
 };

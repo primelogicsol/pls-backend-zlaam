@@ -1,27 +1,37 @@
 import type { UploadApiResponse } from "cloudinary";
 import { uploadOnCloudinary } from "../../services/cloudinaryService";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
+import { BADREQUESTCODE } from "../../constants";
 
 export default {
   hireUs: asyncHandler(async (req, res) => {
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    if (!files.doc1) throw { status: 400, message: "No file uploaded" };
+    const files = req.files as Express.Multer.File[];
 
-    const doc1LocalPath: string | undefined = files.doc1[0]?.path;
-    if (!doc1LocalPath) throw { status: 400, message: "No file found in temp folder" };
-    const fileType = files.doc1[0]?.mimetype.split("/").at(-1) as string;
-    /*  * validate if files are pdf or not */
-    if (fileType !== "pdf") throw { status: 400, message: "Only pdf files are allowed" };
-    const fileName = files.doc1[0]?.filename as string;
-    const response: UploadApiResponse | null = await uploadOnCloudinary(doc1LocalPath, fileName, fileType);
+    if (!files || files.length === 0) {
+      throw { status: BADREQUESTCODE, message: "At least one file is required." };
+    }
+    const uploadFile = async (file: Express.Multer.File): Promise<UploadApiResponse | null> => {
+      const localPath = file.path;
+      const fileType = file.mimetype.split("/").at(-1) as string;
+
+      if (fileType !== "pdf") {
+        throw { status: BADREQUESTCODE, message: "Only PDF files are allowed" };
+      }
+
+      return await uploadOnCloudinary(localPath, file.filename, fileType);
+    };
+
+    const uploadResponses = await Promise.all(files.map(uploadFile));
+
+    const responseData = uploadResponses.map((response) => ({
+      name: response?.original_filename,
+      url: response?.secure_url
+    }));
 
     res.json({
       success: true,
-      message: "File uploaded successfully",
-      data: {
-        name: response?.original_filename,
-        url: response?.secure_url
-      }
+      message: "Files uploaded successfully",
+      data: responseData
     });
   })
 };
