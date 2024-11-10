@@ -15,7 +15,7 @@ import {
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
 
-import { sendOrRecieveBookingMessage } from "../../services/consultationMessageService";
+import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
 import type { TCONSULTATION } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
@@ -60,7 +60,7 @@ export default {
       }
     });
     // ** this email sent by user
-    await sendOrRecieveBookingMessage(
+    await gloabalEmailMessage(
       email,
       ADMIN_MAIL_1,
       name,
@@ -70,14 +70,7 @@ export default {
       `User's orignal email is here: ${email} For more information check admin pannel of PLS`
     );
     // ** this is auto generated reply for user
-    await sendOrRecieveBookingMessage(
-      HOST_EMAIL,
-      email,
-      ADMINNAME,
-      CONSULTATIONPENDINGMESSAGEFROMADMIN,
-      "About your consultation request",
-      `Dear ${name},`
-    );
+    await gloabalEmailMessage(HOST_EMAIL, email, ADMINNAME, CONSULTATIONPENDINGMESSAGEFROMADMIN, "About your consultation request", `Dear ${name},`);
     httpResponse(req, res, SUCCESSCODE, "Please check your email for more details", consultation);
   }),
 
@@ -110,7 +103,7 @@ export default {
     const { id } = req.params;
     const consultation = await db.consultationBooking.update({ where: { id: Number(id) }, data: { status: "ACCEPTED" } });
     // ** send acceptance email controller
-    await sendOrRecieveBookingMessage(
+    await gloabalEmailMessage(
       HOST_EMAIL,
       consultation.email,
       ADMINNAME,
@@ -124,7 +117,7 @@ export default {
   rejectConsultationBooking: asyncHandler(async (req, res) => {
     const { id } = req.params;
     const rejectedConsultation = await db.consultationBooking.update({ where: { id: Number(id), status: "PENDING" }, data: { status: "REJECTED" } });
-    await sendOrRecieveBookingMessage(
+    await gloabalEmailMessage(
       HOST_EMAIL,
       rejectedConsultation.email,
       ADMINNAME,

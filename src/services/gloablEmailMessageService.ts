@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export async function sendOrRecieveBookingMessage(
+export async function gloabalEmailMessage(
   from: string,
   to: string,
   name: string,
@@ -23,7 +23,7 @@ export async function sendOrRecieveBookingMessage(
   head?: string,
   addsOn?: string
 ) {
-  const templatePath = path.resolve(__dirname, "../templates/consultationMessages.html");
+  const templatePath = path.resolve(__dirname, "../templates/globalEmailMessageTemplate.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
   htmlTemplate = htmlTemplate
     .replace("{{name}}", name)

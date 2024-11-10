@@ -70,9 +70,16 @@ const QUICKS = {
     "I hope you are doing well, Thank You for your Patience. We are excited to tell you that your request have been accepted",
   CONSULTATIONREJECTMESSAGEFROMADMIN:
     "We hope this message finds you well. Thank you for your understanding and patience. Unfortunately, after careful consideration, we regret to inform you that we are unable to proceed with scheduling your consultation at this time due to internal circumstances. We truly appreciate your interest and hope to have the opportunity to work with you in the future.<p>Best regards,</p>The Prime Logic Solutions Team",
+  HIREUSMESSAGE: `Thank you for reaching out to us. We would like to inform you that your request is currently under review. Our team is carefully assessing the details, and we will get back to you as soon as possible with an update.We appreciate your patience and understanding during this process. If you have any additional questions or need further assistance in the meantime, please don’t hesitate to reach out. <p>Best Regards,</p> Prime Logic Solution`,
   ADMINNAME: " administrator from Prime Logic Solution"
 };
-export const { CONSULTATIONPENDINGMESSAGEFROMADMIN, CONSULTATIONAPPROVALMESSAGEFROMADMIN, CONSULTATIONREJECTMESSAGEFROMADMIN, ADMINNAME } = QUICKS;
+export const {
+  CONSULTATIONPENDINGMESSAGEFROMADMIN,
+  CONSULTATIONAPPROVALMESSAGEFROMADMIN,
+  CONSULTATIONREJECTMESSAGEFROMADMIN,
+  HIREUSMESSAGE,
+  ADMINNAME
+} = QUICKS;
 const ENDPOINTS = {
   HEALTHROUTE: "/api/v1/health",
   AUTHROUTE: "/api/v1/auth",

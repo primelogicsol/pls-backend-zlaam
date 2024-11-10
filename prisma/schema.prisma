@@ -133,14 +133,8 @@ model HireUs {
   phone     String
   company   String?   @default("")
   address   String
-  deadline  String?
-  services  String
   detail    String
-  doc1      String
-  doc2      String?
-  doc3      String?
-  doc4      String?
-  doc5      String?
+  docs      Json[]
   createdAt DateTime  @default(now())
   trashedBy String?
   trashedAt DateTime?
