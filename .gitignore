@@ -8,3 +8,4 @@ dist/
 .env.development
 .env.production
 test.txt
+public/temp/

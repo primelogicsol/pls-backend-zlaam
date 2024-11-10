@@ -125,3 +125,27 @@ model ConsultationBooking {
   @@index([bookingDate])
   @@index([status])
 }
+
+model HireUs {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  company   String?   @default("")
+  address   String
+  deadline  String?
+  services  String
+  detail    String
+  doc1      String
+  doc2      String?
+  doc3      String?
+  doc4      String?
+  doc5      String?
+  createdAt DateTime  @default(now())
+  trashedBy String?
+  trashedAt DateTime?
+
+  @@index([email])
+  @@index([id])
+  @@index([createdAt])
+}

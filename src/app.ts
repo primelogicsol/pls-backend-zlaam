@@ -12,7 +12,8 @@ import {
   NEWSLETTERROUTE,
   TRASHROUTE,
   GETQUOTESROUTE,
-  CONSULTATIONROUTE
+  CONSULTATIONROUTE,
+  HIREUSROUTE
 } from "./constants/index";
 import { healthRouter } from "./routers/healthRouter/healthRouter";
 import helmet from "helmet";
@@ -22,6 +23,7 @@ import { trashRouter } from "./routers/trashRouter/trashRouter";
 import { navigationPagesRouter } from "./routers/navigationPagesRouter/navigationPagesRouter";
 import { getQuoteRouter } from "./routers/getQuoteRouter/getQuoteRouter";
 import { consultationRouter } from "./routers/consultationRouter/consultationRouter";
+import { hireUsRouter } from "./routers/hireUsRouter/hireUsRouter";
 // **** APP *****
 const app: Express = express();
 // ** MIDDLEWARES **
@@ -56,6 +58,8 @@ app.use(NAVIGATIONPAGESROUTE, navigationPagesRouter);
 app.use(GETQUOTESROUTE, getQuoteRouter);
 // ** Consultation Router
 app.use(CONSULTATIONROUTE, consultationRouter);
+// **   HIRE US ROUTER
+app.use(HIREUSROUTE, hireUsRouter);
 // **** ERROR HANDLERS ****
 app.use(notFoundHandler);
 app.use(errorHandler);

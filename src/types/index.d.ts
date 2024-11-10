@@ -96,8 +96,6 @@ export type TNAVIGATIONPAGE = {
   data: object[];
 };
 
-// types.ts
-
 export type TGETQUOTE = {
   name: string;
   email: string;
@@ -122,4 +120,20 @@ export type TCONSULTATION = {
   message: string;
   address: string;
   bookingDate: string;
+};
+
+export type THIREUS = {
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  address: string;
+  deadline?: string;
+  services: string;
+  detail?: string;
+  doc1: string;
+  doc2?: string;
+  doc3?: string;
+  doc4?: string;
+  doc5?: string;
 };
