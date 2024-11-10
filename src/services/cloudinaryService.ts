@@ -8,18 +8,20 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET
 });
 
-const uploadOnCloudinary = async (localFilePath: string) => {
+const uploadOnCloudinary = async (localFilePath: string, fileName: string, format: string) => {
   try {
     if (!localFilePath) return null;
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resourcetype: "auto"
+      resource_type: "raw",
+      filename_override: fileName,
+      folder: "hireUsDocs",
+      format: format
     });
-    //file has been uploaded
-    fs.unlinkSync(localFilePath);
     return response;
   } catch (error: unknown) {
-    fs.unlinkSync(localFilePath); //remove local file from local server.
-    throw { status: 500, message: error };
+    fs.unlinkSync(localFilePath);
+    if (error instanceof Error) throw { status: 500, message: error };
+    else throw { status: 500, message: `Error while uploading files:: ${error as string}` };
   }
 };
 export { uploadOnCloudinary };
