@@ -40,7 +40,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.static(path.resolve(__dirname, "../public")));
+app.use(express.static(path.resolve(__dirname, "./public")));
 // **APPLICATION ROUTES **
 app.use(AUTHROUTE, authRouter);
 // ** Health route

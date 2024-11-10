@@ -2,6 +2,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "node:fs";
 import { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_NAME } from "../config/config";
+import { INTERNALSERVERERRORCODE } from "../constants";
 cloudinary.config({
   cloud_name: CLOUDINARY_NAME,
   api_key: CLOUDINARY_API_KEY,
@@ -21,7 +22,7 @@ const uploadOnCloudinary = async (localFilePath: string, fileName: string, forma
   } catch (error: unknown) {
     fs.unlinkSync(localFilePath);
     if (error instanceof Error) throw { status: 500, message: error.message };
-    else throw { status: 500, message: `Error while uploading files:: ${error as string}` };
+    else throw { status: INTERNALSERVERERRORCODE, message: `Error while uploading files:: ${error as string}` };
   }
 };
 export { uploadOnCloudinary };
