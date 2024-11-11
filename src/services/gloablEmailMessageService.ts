@@ -43,15 +43,15 @@ export async function gloabalEmailMessage(
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    logger.info(" Consultation message sent successfully: " + info.response);
+    logger.info(" Email message sent successfully: " + info.response);
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(`Error constulation message sending :${error.message}`);
-      throw { status: INTERNALSERVERERRORCODE, message: "Unable to send constulation  message" };
+      logger.error(`Error Email message sending :${error.message}`);
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable to send Email  message" };
     } else {
-      logger.error(`Error sending constulation  message:${error as string}`);
+      logger.error(`Error sending Email  message:${error as string}`);
 
-      throw { status: INTERNALSERVERERRORCODE, message: "Unable To send constulation you message due to server issue" };
+      throw { status: INTERNALSERVERERRORCODE, message: "Unable To send Email  message due to server issue" };
     }
   }
 }

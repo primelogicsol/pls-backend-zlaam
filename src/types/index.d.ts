@@ -130,3 +130,24 @@ export type THIREUS = {
   address: string;
   detail: string;
 };
+
+type THIREUSDOCUMENT = {
+  url?: string;
+  name?: string;
+};
+
+export type THIREUSDATA = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  company: string | null;
+  address: string;
+  detail: string;
+  docs: Document[];
+  createdAt: string; // ISO date string format
+  trashedBy: string | null;
+  trashedAt: string | null;
+};
+
+export type THIREUSRESPONSE = THIREUSDATA[];

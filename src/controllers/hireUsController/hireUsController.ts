@@ -1,13 +1,13 @@
 import type { UploadApiResponse } from "cloudinary";
-import { uploadOnCloudinary } from "../../services/cloudinaryService";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../../services/cloudinaryService";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { ADMINNAME, BADREQUESTCODE, HIREUSMESSAGE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
-import type { THIREUS } from "../../types";
+import type { THIREUS, THIREUSDOCUMENT } from "../../types";
 import { db } from "../../database/db";
 import { httpResponse } from "../../utils/apiResponseUtils";
+import type { _Request } from "../../middlewares/authMiddleware";
 import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
 import { ADMIN_MAIL_1 } from "../../config/config";
-import type { _Request } from "../../middlewares/authMiddleware";
 
 export default {
   // create hire us request controller
@@ -85,8 +85,35 @@ export default {
   // ** permanent delete hire us request
   permanentDeleteHireUsRequest: asyncHandler(async (req: _Request, res) => {
     const { id } = req.params;
-    const hireUs = await db.hireUs.delete({ where: { id: Number(id) } });
+
+    // Specify the type of `hireUs` as `THIREUSDATA | null`
+    const hireUs = await db.hireUs.findUnique({ where: { id: Number(id) } });
     if (!hireUs) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
+
+    const deleteCloudinaryFiles = async () => {
+      if (hireUs.docs) {
+        const documents = hireUs.docs as THIREUSDOCUMENT[];
+        await Promise.all(
+          documents.map(async (doc: THIREUSDOCUMENT) => {
+            if (!doc.url) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+            const publicId = new URL(doc.url).pathname.split("/").pop()?.split(".")[0];
+            if (publicId) {
+              await deleteFromCloudinary(`hireUsDocs/${publicId}.pdf`);
+            }
+          })
+        );
+      }
+    };
+
+    // Perform Cloudinary deletions and database deletion
+    const responseFromCloudinary = await deleteCloudinaryFiles()
+      .then(() => true)
+      .catch(() => {
+        throw { status: 500, message: "Unable to delete files" };
+      });
+
+    await db.hireUs.delete({ where: { id: Number(id) } });
+
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { data: { responseFromCloudinary } });
   })
 };
