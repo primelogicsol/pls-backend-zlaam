@@ -12,7 +12,7 @@ hireUsRouter.route("/createHireUsRequest").post(
   validateDataMiddleware(hireUsSchema),
 
   async (req, res, next) => {
-    await rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 7200);
+    await rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 28800);
   },
   hireUsController.createHireUsRequest
 );
