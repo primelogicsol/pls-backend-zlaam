@@ -8,6 +8,7 @@ import { httpResponse } from "../../utils/apiResponseUtils";
 import type { _Request } from "../../middlewares/authMiddleware";
 import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
 import { ADMIN_MAIL_1 } from "../../config/config";
+import logger from "../../utils/loggerUtils";
 
 export default {
   // create hire us request controller
@@ -20,12 +21,8 @@ export default {
     }
     const uploadFile = async (file: Express.Multer.File): Promise<UploadApiResponse | null> => {
       const localPath = file.path;
-      const fileType = file.mimetype.split("/").at(-1) as string;
 
-      if (fileType !== "pdf") {
-        throw { status: BADREQUESTCODE, message: "Only PDF files are allowed" };
-      }
-
+      const fileType = localPath.split("/").at(-1)?.split(".")[1]?.split("-")[0] as string;
       return await uploadOnCloudinary(localPath, file.filename, fileType);
     };
 
@@ -87,6 +84,7 @@ export default {
     const { id } = req.params;
 
     // Specify the type of `hireUs` as `THIREUSDATA | null`
+
     const hireUs = await db.hireUs.findUnique({ where: { id: Number(id) } });
     if (!hireUs) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
 
@@ -96,9 +94,11 @@ export default {
         await Promise.all(
           documents.map(async (doc: THIREUSDOCUMENT) => {
             if (!doc.url) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
-            const publicId = new URL(doc.url).pathname.split("/").pop()?.split(".")[0];
+            const publicId = doc.url?.split("hireUsDocs/")[1];
             if (publicId) {
-              await deleteFromCloudinary(`hireUsDocs/${publicId}.pdf`);
+              logger.info(publicId);
+              await deleteFromCloudinary(`hireUsDocs/${publicId}`);
+              logger.warn(`hireUsDocs/${publicId}`);
             }
           })
         );
