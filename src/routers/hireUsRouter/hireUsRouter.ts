@@ -17,15 +17,13 @@ hireUsRouter.route("/createHireUsRequest").post(
   hireUsController.createHireUsRequest
 );
 
-hireUsRouter
-  .route("/getAllHireUsRequests")
-  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, hireUsController.getAllHireUsRequests);
+hireUsRouter.route("/getAllHireUsRequests").get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, hireUsController.getAllHireUsRequests);
 hireUsRouter
   .route("/getSingleHireUsRequest/:id")
-  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, hireUsController.getSingleHireUsRequest);
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, hireUsController.getSingleHireUsRequest);
 hireUsRouter
   .route("/trashHireUsRequest/:id")
-  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, hireUsController.trashHireUsRequest);
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, hireUsController.trashHireUsRequest);
 hireUsRouter
   .route("/untrashHireUsRequest/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, hireUsController.untrashHireUsRequest);
