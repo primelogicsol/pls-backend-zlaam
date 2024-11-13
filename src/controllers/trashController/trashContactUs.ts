@@ -11,7 +11,7 @@ export default {
         trashedAt: { not: null }
       }
     });
-    if (!trashedContactUs) {
+    if (trashedContactUs.length === 0) {
       throw {
         status: NOTFOUNDCODE,
         message: NOTFOUNDMSG

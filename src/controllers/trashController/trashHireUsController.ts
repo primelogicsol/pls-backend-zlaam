@@ -11,7 +11,7 @@ export default {
         trashedAt: { not: null }
       }
     });
-    if (!trashedHireUs) {
+    if (trashedHireUs.length === 0) {
       throw {
         status: NOTFOUNDCODE,
         message: NOTFOUNDMSG

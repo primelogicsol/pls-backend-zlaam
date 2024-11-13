@@ -1,3 +1,4 @@
+import { NOTFOUNDCODE, NOTFOUNDMSG } from "../../constants";
 import { db } from "../../database/db";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
@@ -18,6 +19,7 @@ export default {
         createdAt: true
       }
     });
+    if (trashedMessages.length === 0) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     httpResponse(req, res, 200, "Data fetched successfully", trashedMessages);
   })
 };
