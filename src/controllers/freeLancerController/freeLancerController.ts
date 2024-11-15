@@ -100,5 +100,20 @@ export default {
       }
     });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
+  }),
+  // ** Accept freelancer Request
+  acceptFreeLancerRequest: asyncHandler(async (req: _Request, res) => {
+    const { id } = req.params;
+    const isRequestExist = await db.freeLancers.findUnique({ where: { id: Number(id) }, select: { id: true } });
+    if (!isRequestExist) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+    await db.freeLancers.update({
+      where: {
+        id: Number(id)
+      },
+      data: {
+        isAccepted: true
+      }
+    });
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   })
 };
