@@ -169,6 +169,7 @@ model FreeLancers {
   yourTopProject1 String
   yourTopProject2 String
   yourTopProject3 String
+  isAccepted      Boolean   @default(false)
   createdAt       DateTime  @default(now())
   trashedBy       String?
   trashedAt       DateTime?
