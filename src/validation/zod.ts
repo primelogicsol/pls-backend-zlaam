@@ -300,3 +300,55 @@ export const hireUsSchema = z.object({
     .min(3, { message: "address must be at least 3 characters long." })
     .max(450, { message: "address can be at most 150 characters long." })
 });
+//** Freelancer Schema
+export const freeLancerSchema = z.object({
+  name: z
+    .string({ message: "name is required!!" })
+    .min(1, { message: "name is required!!" })
+    .min(3, { message: "name must be at least 3 characters long." })
+    .max(150, { message: "name can be at most 150 characters long." }),
+  email: z
+    .string({ message: "email is required!!" })
+    .min(1, { message: "email is required!!" })
+    .min(3, { message: "email must be at least 3 characters long." })
+    .max(150, { message: "email can be at most 150 characters long." })
+    .email({ message: "Invalid email format. e.g: john.doe@example.com" })
+    .regex(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, {
+      message: "Invalid email format. e.g: john.doe@example.com"
+    }),
+  phone: z
+    .string({ message: "phone is required!!" })
+    .min(1, { message: "phone is required!!" })
+    .min(3, { message: "phone must be at least 3 characters long." })
+    .max(150, { message: "phone can be at most 150 characters long." }),
+  detail: z
+    .string({ message: "detail is required!!" })
+    .min(1, { message: "detail is required!!" })
+    .min(3, { message: "detail must be at least 3 characters long." })
+    .max(1000, { message: "detail can be at most 1000 characters long." }),
+  address: z
+    .string({ message: "address is required!!" })
+    .min(1, { message: "address is required!!" })
+    .min(3, { message: "address must be at least 3 characters long." })
+    .max(450, { message: "address can be at most 450 characters long." }),
+  yourPortfolio: z
+    .string({ message: "yourPortfolio is required!!" })
+    .min(1, { message: "yourPortfolio is required!!" })
+    .min(3, { message: "yourPortfolio must be at least 3 characters long." })
+    .max(450, { message: "yourPortfolio can be at most 450 characters long." }),
+  yourTopProject1: z
+    .string({ message: "yourTopProject1 is required!!" })
+    .min(1, { message: "yourTopProject1 is required!!" })
+    .min(3, { message: "yourTopProject1 must be at least 3 characters long." })
+    .max(450, { message: "yourTopProject1 can be at most 450 characters long." }),
+  yourTopProject2: z
+    .string({ message: "yourTopProject2 is required!!" })
+    .min(1, { message: "yourTopProject2 is required!!" })
+    .min(3, { message: "yourTopProject2 must be at least 3 characters long." })
+    .max(450, { message: "yourTopProject2 can be at most 450 characters long." }),
+  yourTopProject3: z
+    .string({ message: "yourTopProject3 is required!!" })
+    .min(1, { message: "yourTopProject3 is required!!" })
+    .min(3, { message: "yourTopProject3 must be at least 3 characters long." })
+    .max(450, { message: "yourTopProject3 can be at most 450 characters long." })
+});

@@ -19,6 +19,7 @@ enum Role {
   CLIENT
   ADMIN
   MODERATOR
+  FREELANCER
 }
 
 model User {
@@ -37,6 +38,8 @@ model User {
   trashedBy         String?
   trashedAt         DateTime?
 
+  @@index([trashedAt])
+  @@index([trashedBy])
   @@index([uid])
   @@index([username])
   @@index([email])
@@ -55,6 +58,8 @@ model ContactUs {
   trashedBy String?
   trashedAt DateTime?
 
+  @@index([trashedAt])
+  @@index([trashedBy])
   @@index([email])
   @@index([createdAt])
   @@index([message])
@@ -74,6 +79,9 @@ model NavigationPages {
   navigationPageConfig Json[]
   trashedBy            String?
   trashedAt            DateTime?
+
+  @@index([trashedAt])
+  @@index([trashedBy])
 }
 
 model GetQuote {
@@ -93,6 +101,8 @@ model GetQuote {
   @@index([email])
   @@index([id])
   @@index([createdAt])
+  @@index([trashedAt])
+  @@index([trashedBy])
   @@map("GetQuote")
 }
 
@@ -124,6 +134,8 @@ model ConsultationBooking {
   @@index([email])
   @@index([bookingDate])
   @@index([status])
+  @@index([trashedAt])
+  @@index([trashedBy])
 }
 
 model HireUs {
@@ -142,4 +154,29 @@ model HireUs {
   @@index([email])
   @@index([id])
   @@index([createdAt])
+  @@index([trashedAt])
+  @@index([trashedBy])
+}
+
+model FreeLancers {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  phone           String    @unique
+  address         String
+  detail          String
+  yourPortfolio   String
+  yourTopProject1 String
+  yourTopProject2 String
+  yourTopProject3 String
+  createdAt       DateTime  @default(now())
+  trashedBy       String?
+  trashedAt       DateTime?
+
+  @@index([email])
+  @@index([id])
+  @@index([phone])
+  @@index([createdAt])
+  @@index([trashedAt])
+  @@index([trashedBy])
 }

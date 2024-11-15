@@ -13,7 +13,8 @@ import {
   TRASHROUTE,
   GETQUOTESROUTE,
   CONSULTATIONROUTE,
-  HIREUSROUTE
+  HIREUSROUTE,
+  FREELANCER
 } from "./constants/index";
 import { healthRouter } from "./routers/healthRouter/healthRouter";
 import helmet from "helmet";
@@ -24,6 +25,7 @@ import { navigationPagesRouter } from "./routers/navigationPagesRouter/navigatio
 import { getQuoteRouter } from "./routers/getQuoteRouter/getQuoteRouter";
 import { consultationRouter } from "./routers/consultationRouter/consultationRouter";
 import { hireUsRouter } from "./routers/hireUsRouter/hireUsRouter";
+import { freeLancerRouter } from "./routers/freelancerRouter/freeLancerRouter";
 // **** APP *****
 const app: Express = express();
 // ** MIDDLEWARES **
@@ -59,6 +61,8 @@ app.use(GETQUOTESROUTE, getQuoteRouter);
 app.use(CONSULTATIONROUTE, consultationRouter);
 // **   HIRE US ROUTER
 app.use(HIREUSROUTE, hireUsRouter);
+// **   HIRE US ROUTER
+app.use(FREELANCER, freeLancerRouter);
 // **** ERROR HANDLERS ****
 app.use(notFoundHandler);
 app.use(errorHandler);

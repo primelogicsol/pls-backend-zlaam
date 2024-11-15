@@ -1,7 +1,7 @@
 // Single line types
 export type TENV = "DEVELOPMENT" | "PRODUCTION";
 
-export type TROLE = "CLIENT" | "ADMIN" | "MODERATOR";
+export type TROLE = "CLIENT" | "ADMIN" | "MODERATOR" | "FREELANCER";
 // Multiline types
 export type TPAYLOAD = {
   uid: string;
@@ -151,3 +151,19 @@ export type THIREUSDATA = {
 };
 
 export type THIREUSRESPONSE = THIREUSDATA[];
+// ********* Freelancer
+export type TFREELANCER = {
+  name: string;
+  email: string;
+  phone: string;
+  yourPortfolio: string;
+  yourTopProject1: string;
+  yourTopProject2: string;
+  yourTopProject3: string;
+  address: string;
+  detail: string;
+
+  createdAt: string; // ISO date string format
+  trashedBy: string | null;
+  trashedAt: string | null;
+};
