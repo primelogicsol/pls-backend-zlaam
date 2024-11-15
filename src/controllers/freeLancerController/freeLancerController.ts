@@ -1,5 +1,5 @@
 import { ADMIN_MAIL_1 } from "../../config/config";
-import { BADREQUESTCODE, SUCCESSCODE, SUCCESSMSG, THANKYOUMESSAGE } from "../../constants";
+import { ADMINNAME, BADREQUESTCODE, SUCCESSCODE, SUCCESSMSG, THANKYOUMESSAGE } from "../../constants";
 import { db } from "../../database/db";
 import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
 import type { TFREELANCER } from "../../types";
@@ -7,7 +7,7 @@ import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
 export default {
-  getFreeLancerRequest: asyncHandler(async (req, res) => {
+  getFreeLancerJoinUsRequest: asyncHandler(async (req, res) => {
     const freeLancer = req.body as TFREELANCER;
     const isExist = await db.freeLancers.findUnique({
       where: {
@@ -22,7 +22,7 @@ export default {
     await gloabalEmailMessage(
       ADMIN_MAIL_1,
       freeLancer.email,
-      freeLancer.name,
+      ADMINNAME,
       THANKYOUMESSAGE,
       `Your Request To Join Our Team`,
       `Dear, ${freeLancer.name}`
