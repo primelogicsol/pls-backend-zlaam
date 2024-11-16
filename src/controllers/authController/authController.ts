@@ -102,13 +102,13 @@ export default {
   // ********* VERIFY USER WITH OTP ***************
   verifyUser: asyncHandler(async (req: Request, res: Response) => {
     // validation is already handled by the middleware
-    const { email, OTP } = req.body as TVERIFYUSER;
-    const user = await db.user.findUnique({ where: { email: email } });
+    const { OTP } = req.body as TVERIFYUSER;
+    const user = await db.user.findUnique({ where: { otpPassword: OTP } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
 
     if (user.otpPasswordExpiry && user.otpPasswordExpiry < new Date()) {
       await db.user.update({
-        where: { email: email.toLowerCase() },
+        where: { email: user.email.toLowerCase() },
         data: {
           otpPassword: null,
           otpPasswordExpiry: null
@@ -119,7 +119,7 @@ export default {
     const isPasswordMatch = await verifyPassword(OTP, user?.otpPassword as string, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
     await db.user.update({
-      where: { email: email.toLowerCase() },
+      where: { email: user.email.toLowerCase() },
       data: {
         emailVerifiedAt: new Date(),
         otpPassword: null,
@@ -131,13 +131,13 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
+      role: WHITELISTMAILS.includes(user.email) ? "ADMIN" : "CLIENT",
       isVerified: new Date()
     };
     const accessToken = generateAccessToken(payLoad, res, "14m");
     const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
-    httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { uid: user.uid, email, refreshToken, accessToken });
+    httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { uid: user.uid, email: user.email, refreshToken, accessToken });
   }),
   // ********** Send OTP controller *******************
   sendOTP: asyncHandler(async (req: Request, res: Response) => {
