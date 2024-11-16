@@ -1,6 +1,8 @@
 import { ADMIN_MAIL_1, ADMIN_MAIL_2, ENV } from "../config/config";
+
 import type { TCOOKIEOPTIONS } from "../types";
 export const COMPANY_NAME = "Prime Logic Solution";
+export const ORIGIN = ["http://localhost:3000", "https://the-orignal-frontend-url-will-be-here.com"];
 const messages = {
   ERRMSG: "Something went wrong",
   SUCCESSMSG: "Operation was successful",
@@ -71,6 +73,8 @@ const QUICKS = {
   CONSULTATIONREJECTMESSAGEFROMADMIN: `We hope this message finds you well. Thank you for your understanding and patience. Unfortunately, after careful consideration, we regret to inform you that we are unable to proceed with scheduling your consultation at this time due to internal circumstances. We truly appreciate your interest and hope to have the opportunity to work with you in the future.<p>Best regards,</p>${COMPANY_NAME}`,
   HIREUSMESSAGE: `Thank you for reaching out to us. We would like to inform you that your request is currently under review. Our team is carefully assessing the details, and we will get back to you as soon as possible with an update.We appreciate your patience and understanding during this process. If you have any additional questions or need further assistance in the meantime, please don’t hesitate to reach out. <p>Best Regards,</p> ${COMPANY_NAME}`,
   THANKYOUMESSAGE: `Thank you for submitting your join request to work with us. We truly appreciate the time and effort you took to reach out, and we’re excited to review your profile. We’ll carefully go through your application and get back to you soon. In the meantime, feel free to share any additional details or ask any questions you may have about the project.Looking forward to connecting further!<p>Best Regard,</p> ${COMPANY_NAME}`,
+  WELCOMEMESSAGEFORFREELANCER: `Welcome to the team! We’re excited to have you on board and look forward to working with you. Your expertise will be a great asset, and we’re confident this collaboration will be a success. If you have any questions or need anything to get started, feel free to reach out.`,
+
   ADMINNAME: ` administrator from ${COMPANY_NAME}`
 };
 export const {
@@ -79,6 +83,7 @@ export const {
   CONSULTATIONREJECTMESSAGEFROMADMIN,
   HIREUSMESSAGE,
   THANKYOUMESSAGE,
+  WELCOMEMESSAGEFORFREELANCER,
   ADMINNAME
 } = QUICKS;
 const ENDPOINTS = {

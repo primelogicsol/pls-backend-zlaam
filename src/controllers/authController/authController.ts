@@ -69,8 +69,9 @@ export default {
   // ********* LOGIN USER *********
   loginUser: asyncHandler(async (req: Request, res: Response) => {
     // validation is already handled by the middleware
-    const { email, password } = req.body as TUSERLOGIN;
-    const user = await db.user.findUnique({ where: { email: email } });
+    const { username, password } = req.body as TUSERLOGIN;
+
+    const user = await db.user.findUnique({ where: { username: username } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
     if (user.trashedBy) throw { status: BADREQUESTCODE, message: "You account has been suspended by Administrators. Please contact support" };
     if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
@@ -80,13 +81,13 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
+      role: user?.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res, "14m");
     const refreshToken = generateRefreshToken(payLoad, res, "7d");
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
-    httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { uid: user.uid, email, refreshToken, accessToken });
+    httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { uid: user.uid, username, refreshToken, accessToken });
   }),
   // ********* VERIFY USER WITH OTP ***************
   verifyUser: asyncHandler(async (req: Request, res: Response) => {

@@ -32,6 +32,7 @@ model User {
   otpPassword       String?   @unique
   otpPasswordExpiry DateTime?
   emailVerifiedAt   DateTime?
+  phone             String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   tokenVersion      Int       @default(0)
@@ -166,6 +167,7 @@ model FreeLancers {
   address         String
   detail          String
   yourPortfolio   String
+  niche           String
   yourTopProject1 String
   yourTopProject2 String
   yourTopProject3 String
@@ -180,4 +182,9 @@ model FreeLancers {
   @@index([createdAt])
   @@index([trashedAt])
   @@index([trashedBy])
+}
+
+model NichesForFreelancers {
+  id    Int    @id @default(autoincrement())
+  niche String
 }

@@ -39,7 +39,7 @@ export const userRegistrationSchema = z.object({
 
 // ** user login schema
 export const userLoginSchema = z.object({
-  email: z.string({ message: "email is required!!" }).min(1, { message: "email is required!!" }).email({ message: "Invalid email format." }),
+  username: z.string({ message: "username is required!!" }).min(1, { message: "username is required!!" }),
   password: z.string({ message: "password is required!!" }).min(1, { message: "password is required!!" })
 });
 
@@ -326,6 +326,11 @@ export const freeLancerSchema = z.object({
     .min(1, { message: "detail is required!!" })
     .min(3, { message: "detail must be at least 3 characters long." })
     .max(1000, { message: "detail can be at most 1000 characters long." }),
+  niche: z
+    .string({ message: "niche is required!!" })
+    .min(1, { message: "niche is required!!" })
+    .min(3, { message: "niche must be at least 3 characters long." })
+    .max(450, { message: "niche can be at most 450 characters long." }),
   address: z
     .string({ message: "address is required!!" })
     .min(1, { message: "address is required!!" })

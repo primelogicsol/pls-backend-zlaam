@@ -56,7 +56,7 @@ export type TUSERUPDATE = {
   role: TROLE;
 };
 export type TUSERLOGIN = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -162,7 +162,7 @@ export type TFREELANCER = {
   yourTopProject3: string;
   address: string;
   detail: string;
-
+  niche: string;
   createdAt: string; // ISO date string format
   trashedBy: string | null;
   trashedAt: string | null;

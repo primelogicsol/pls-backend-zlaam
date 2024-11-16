@@ -14,7 +14,8 @@ import {
   GETQUOTESROUTE,
   CONSULTATIONROUTE,
   HIREUSROUTE,
-  FREELANCER
+  FREELANCER,
+  ORIGIN
 } from "./constants/index";
 import { healthRouter } from "./routers/healthRouter/healthRouter";
 import helmet from "helmet";
@@ -38,7 +39,7 @@ app.use(
   cors({
     methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
     credentials: true,
-    origin: "*" //TODO: change this in production
+    origin: ORIGIN
   })
 );
 app.use(express.json());
