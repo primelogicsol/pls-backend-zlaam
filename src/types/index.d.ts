@@ -65,7 +65,6 @@ export type TTRASH = {
 };
 
 export type TVERIFYUSER = {
-  email: string;
   OTP: string;
 };
 

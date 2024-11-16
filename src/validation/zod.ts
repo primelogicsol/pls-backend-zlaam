@@ -45,10 +45,6 @@ export const userLoginSchema = z.object({
 
 // ** verify user schema
 export const verifyUserSchema = z.object({
-  email: z
-    .string({ message: "email is required!!" })
-    .min(1, { message: "email is required!!" })
-    .email({ message: "Invalid email format. e.g: john.doe@example.com" }),
   OTP: z
     .string({ message: "OTP is required!!" })
     .min(1, { message: "OTP is required!!" })
