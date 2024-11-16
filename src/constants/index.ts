@@ -52,13 +52,13 @@ const accessTokenExpiry = 14 * 60 * 1000; // 14 minutes in milliseconds
 const refreshTokenExpiry = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 const COOKIEOPTIONS = {
   ACESSTOKENCOOKIEOPTIONS: {
-    httpOnly: ENV === "PRODUCTION",
+    httpOnly: true,
     secure: ENV === "PRODUCTION",
     sameSite: "none",
     expires: new Date(Date.now() + accessTokenExpiry)
   } as TCOOKIEOPTIONS,
   REFRESHTOKENCOOKIEOPTIONS: {
-    httpOnly: ENV === "PRODUCTION",
+    httpOnly: true,
     secure: ENV === "PRODUCTION",
     sameSite: "none",
     expires: new Date(Date.now() + refreshTokenExpiry)

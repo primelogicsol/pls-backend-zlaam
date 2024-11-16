@@ -52,31 +52,44 @@ model User {
 enum PROJECT_STATUS {
   PENDING // mean no one has accepted the project yet
   ONGOING // someone has accepted the project and now he/she is working on it
+  CANCELLED // project has been cancelled
   COMPLETED // progress percentage is 100% 
 }
 
+enum DIFFICULTY_LEVEL {
+  EASY
+  MEDIUM
+  HARD
+}
+
 model Projects {
-  id                                   Int       @id @default(autoincrement())
-  title                                String    @unique()
-  detail                               String
-  niche                                String
-  bounty                               String
-  deadline                             String
-  progressPercentage                   String    @default("0")
-  clientWhoPostedThisProject           String?
-  freelancerWhoAreWorkingOnThisProject String[]
-  createdAt                            DateTime  @default(now())
-  trashedBy                            String?
-  trashedAt                            DateTime?
+  id                                             Int              @id @default(autoincrement())
+  title                                          String           @unique()
+  detail                                         String
+  niche                                          String
+  bounty                                         String
+  deadline                                       String
+  progressPercentage                             String           @default("0")
+  dfficultyLevel                                 DIFFICULTY_LEVEL @default(MEDIUM)
+  createdAt                                      DateTime         @default(now())
+  clientWhoPostedThisProject                     String?
+  selectedFreelancersForThisProject              String[]
+  interestedFreelancerWhoWantToWorkOnThisProject String[]
+  commentByClientAfterProjectCompletion          String?
+  starsByClientAfterProjectCompletion            String?
+  trashedBy                                      String?
+  trashedAt                                      DateTime?
 
   @@index([trashedAt])
   @@index([trashedBy])
+  @@index([dfficultyLevel])
   @@index([id])
   @@index([title])
   @@index([deadline])
   @@index([progressPercentage])
   @@index([clientWhoPostedThisProject])
-  @@index([freelancerWhoAreWorkingOnThisProject])
+  @@index([selectedFreelancersForThisProject])
+  @@index([createdAt])
   @@map("Projects")
 }
 
