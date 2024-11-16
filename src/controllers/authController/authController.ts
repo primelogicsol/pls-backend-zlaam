@@ -51,11 +51,14 @@ export default {
     if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
     if (!WHITELISTMAILS.includes(email) && !isSubscribed) {
-      await db.newsletter.create({
-        data: {
-          email: email.toLowerCase()
-        }
-      });
+      const isAlreadySubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
+      if (!isAlreadySubscribed) {
+        await db.newsletter.create({
+          data: {
+            email: email.toLowerCase()
+          }
+        });
+      }
     }
 
     const { generateAccessToken } = tokenGeneratorService;
