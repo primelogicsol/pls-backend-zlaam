@@ -35,7 +35,7 @@ export default {
     const generateOneTimePassword = generateOtp();
     const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
 
-    await db.user.create({
+    const createdUser = await db.user.create({
       data: {
         username: username.toLowerCase(),
         fullName,
@@ -57,12 +57,19 @@ export default {
         }
       });
     }
+
+    const { generateAccessToken } = tokenGeneratorService;
+    payLoad = { uid: createdUser.uid, isVerified: null, tokenVersion: createdUser.tokenVersion, role: createdUser.role };
+    const accessToken = generateAccessToken(payLoad, res, "1d");
+    if (!WHITELISTMAILS.includes(email)) {
+      res.cookie("accessToken", accessToken, REFRESHTOKENCOOKIEOPTIONS);
+    }
     httpResponse(
       req,
       res,
       SUCCESSCODE,
       WHITELISTMAILS.includes(email) ? "User registered successfully" : "Please verify your email with 6 digit OTP sent to your email",
-      { fullName, email }
+      { fullName, email, accessToken: !WHITELISTMAILS.includes(email) ? accessToken : null }
     );
   }),
 

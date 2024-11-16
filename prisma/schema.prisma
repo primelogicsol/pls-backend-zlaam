@@ -49,6 +49,37 @@ model User {
   @@index([role, username], name: "role_name_user_idx")
 }
 
+enum PROJECT_STATUS {
+  PENDING // mean no one has accepted the project yet
+  ONGOING // someone has accepted the project and now he/she is working on it
+  COMPLETED // progress percentage is 100% 
+}
+
+model Projects {
+  id                                   Int       @id @default(autoincrement())
+  title                                String    @unique()
+  detail                               String
+  niche                                String
+  bounty                               String
+  deadline                             String
+  progressPercentage                   String    @default("0")
+  clientWhoPostedThisProject           String?
+  freelancerWhoAreWorkingOnThisProject String[]
+  createdAt                            DateTime  @default(now())
+  trashedBy                            String?
+  trashedAt                            DateTime?
+
+  @@index([trashedAt])
+  @@index([trashedBy])
+  @@index([id])
+  @@index([title])
+  @@index([deadline])
+  @@index([progressPercentage])
+  @@index([clientWhoPostedThisProject])
+  @@index([freelancerWhoAreWorkingOnThisProject])
+  @@map("Projects")
+}
+
 model ContactUs {
   id        Int       @id @default(autoincrement())
   firstName String

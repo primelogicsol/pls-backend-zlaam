@@ -62,5 +62,12 @@ export default {
       throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
     }
     return next();
+  },
+  checkIfFreeLancer: (req: _Request, _: Response, next: NextFunction) => {
+    if (req.userFromToken?.role !== "FREELANCER") {
+      logger.info("Checking if user is free lancer", "authMiddleware.ts:68");
+      throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
+    }
+    return next();
   }
 };
