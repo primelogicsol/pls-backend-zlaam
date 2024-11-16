@@ -23,7 +23,13 @@ import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 export const authRouter = Router();
 
 // Routes**
-authRouter.route("/register").post(validateDataMiddleware(userRegistrationSchema), authController.registerUser);
+authRouter
+  .route("/register")
+  .post(
+    validateDataMiddleware(userRegistrationSchema),
+    (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5),
+    authController.registerUser
+  );
 
 authRouter
   .route("/verifyEmail")
