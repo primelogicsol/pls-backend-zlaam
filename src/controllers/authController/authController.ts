@@ -50,7 +50,7 @@ export default {
     if (!WHITELISTMAILS.includes(email)) await sendThankYouMessage(email, fullName);
     if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
-    if (!WHITELISTMAILS.includes(email) && isSubscribed?.email !== email) {
+    if (!WHITELISTMAILS.includes(email) && isSubscribed?.email !== createdUser?.email) {
       await db.newsletter.create({
         data: {
           email: email.toLowerCase()
