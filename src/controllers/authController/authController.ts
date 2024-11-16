@@ -59,10 +59,10 @@ export default {
     }
 
     const { generateAccessToken } = tokenGeneratorService;
-    payLoad = { uid: createdUser.uid, isVerified: null, tokenVersion: createdUser.tokenVersion, role: createdUser.role };
+    payLoad = { uid: createdUser.email, isVerified: null, tokenVersion: createdUser.tokenVersion, role: createdUser.role };
     const accessToken = generateAccessToken(payLoad, res, "1d");
-    if (!WHITELISTMAILS.includes(email)) {
-      res.cookie("accessToken", accessToken, REFRESHTOKENCOOKIEOPTIONS);
+    if (!WHITELISTMAILS.includes(createdUser.email)) {
+      res.cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     }
     httpResponse(
       req,
