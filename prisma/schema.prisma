@@ -62,23 +62,31 @@ enum DIFFICULTY_LEVEL {
   HARD
 }
 
+enum PROJECT_TYPE {
+  INHOUSE
+  OUTSOURCE
+}
+
 model Projects {
   id                                             Int              @id @default(autoincrement())
   title                                          String           @unique()
+  projectSlug                                    String           @unique()
   detail                                         String
   niche                                          String
-  bounty                                         String
-  deadline                                       String
+  bounty                                         Int
+  deadline                                       DateTime
   progressPercentage                             String           @default("0")
-  dfficultyLevel                                 DIFFICULTY_LEVEL @default(MEDIUM)
-  createdAt                                      DateTime         @default(now())
+  dfficultyLevel                                 DIFFICULTY_LEVEL @default(EASY)
+  projectStatus                                  PROJECT_STATUS   @default(PENDING)
   clientWhoPostedThisProject                     String?
-  selectedFreelancersForThisProject              String[]
-  interestedFreelancerWhoWantToWorkOnThisProject String[]
+  selectedFreelancersForThisProject              String[]         @default([""])
+  interestedFreelancerWhoWantToWorkOnThisProject String[]         @default([""])
   commentByClientAfterProjectCompletion          String?
   starsByClientAfterProjectCompletion            String?
+  projectType                                    PROJECT_TYPE     @default(OUTSOURCE)
   trashedBy                                      String?
   trashedAt                                      DateTime?
+  createdAt                                      DateTime         @default(now())
 
   @@index([trashedAt])
   @@index([trashedBy])

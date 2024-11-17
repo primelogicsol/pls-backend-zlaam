@@ -63,9 +63,9 @@ export default {
     }
     return next();
   },
-  checkIfFreeLancer: (req: _Request, _: Response, next: NextFunction) => {
-    if (req.userFromToken?.role !== "FREELANCER") {
-      logger.info("Checking if user is free lancer", "authMiddleware.ts:68");
+  checkIfUserIsAdminOrFreeLancer: (req: _Request, _: Response, next: NextFunction) => {
+    if (req.userFromToken?.role !== "FREELANCER" && req.userFromToken?.role !== "ADMIN") {
+      logger.info("Checking if user is freelancer or admin", "authMiddleware.ts:68");
       throw { status: FORBIDDENCODE, message: FORBIDDENMSG };
     }
     return next();

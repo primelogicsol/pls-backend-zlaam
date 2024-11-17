@@ -167,3 +167,51 @@ export type TFREELANCER = {
   trashedBy: string | null;
   trashedAt: string | null;
 };
+
+export type TPROJECTSTATUS = "PENDING" | "CANCELLED" | "ONGOING" | "COMPLETED";
+
+export type TDIFFICULTYLEVEL = "EASY" | "MEDIUM" | "HARD";
+export type TPROJECTTYPE = "INHOUSE" | "OUTSOURCE";
+export type TProject = {
+  title: string;
+  detail: string;
+  projectType: TPROJECTTYPE;
+  projectSlug: string;
+  niche: string;
+  bounty: number;
+  deadline: string;
+  projectStatus: TPROJECTSTATUS;
+  progressPercentage: string;
+  difficultyLevel: DIFFICULTY_LEVEL;
+  clientWhoPostedThisProject?: string;
+  selectedFreelancersForThisProject: string[];
+  interestedFreelancerWhoWantToWorkOnThisProject: string[];
+  commentByClientAfterProjectCompletion?: string;
+  starsByClientAfterProjectCompletion?: string;
+};
+export type TFILTEREDPROJECT = {
+  trashedAt: null;
+  trashedBy: null;
+  projectType: TPROJECTTYPE;
+  projectStatus: TPROJECTSTATUS;
+  difficultyLevel?: TDIFFICULTYLEVEL;
+  niche?: string;
+};
+
+// Define types for query parameters
+export type TGETPROJECTSQUERY = {
+  page?: string;
+  limit?: string;
+  difficultyLevel?: TDIFFICULTYLEVEL;
+  createdAtOrder?: "oldest" | "latest";
+  bountyOrder?: "lowest" | "highest";
+  nicheName?: string;
+};
+
+// Define filters type
+
+// Define type for sorting
+export type TSORTORDER = {
+  createdAt?: "asc" | "desc";
+  bounty?: "asc" | "desc";
+};

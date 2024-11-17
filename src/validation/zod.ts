@@ -357,3 +357,30 @@ export const freeLancerSchema = z.object({
     .min(3, { message: "yourTopProject3 must be at least 3 characters long." })
     .max(450, { message: "yourTopProject3 can be at most 450 characters long." })
 });
+// ** Project Schema
+export const projectSchema = z.object({
+  title: z
+    .string({ message: "title is required!!" })
+    .min(1, { message: "title is required!!" })
+    .min(3, { message: "title must be at least 3 characters long." })
+    .max(150, { message: "title can be at most 150 characters long." }),
+  detail: z
+    .string({ message: "detail is required!!" })
+    .min(1, { message: "detail is required!!" })
+    .min(3, { message: "detail must be at least 3 characters long." }),
+  niche: z
+    .string({ message: "niche is required!!" })
+    .min(1, { message: "niche is required!!" })
+    .min(3, { message: "niche must be at least 3 characters long." })
+    .max(450, { message: "niche can be at most 450 characters long." }),
+  bounty: z
+    .string({ message: "bounty is required!!" })
+    .min(1, { message: "bounty is required!!" })
+    .min(3, { message: "bounty must be at least 3 characters long." })
+    .max(450, { message: "bounty can be at most 450 characters long." }),
+  deadline: z
+    .string({ message: "deadline is required!!" })
+    .min(1, { message: "deadline is required!!" })
+    .min(3, { message: "deadline must be at least 3 characters long." })
+    .max(450, { message: "deadline can be at most 450 characters long." })
+});
