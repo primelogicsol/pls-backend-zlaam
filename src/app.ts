@@ -15,7 +15,8 @@ import {
   CONSULTATIONROUTE,
   HIREUSROUTE,
   FREELANCER,
-  ORIGIN
+  ORIGIN,
+  PROJECT
 } from "./constants/index";
 import { healthRouter } from "./routers/healthRouter/healthRouter";
 import helmet from "helmet";
@@ -27,6 +28,7 @@ import { getQuoteRouter } from "./routers/getQuoteRouter/getQuoteRouter";
 import { consultationRouter } from "./routers/consultationRouter/consultationRouter";
 import { hireUsRouter } from "./routers/hireUsRouter/hireUsRouter";
 import { freeLancerRouter } from "./routers/freelancerRouter/freeLancerRouter";
+import { projectRouter } from "./routers/projectRouter/projectRouter";
 // **** APP *****
 const app: Express = express();
 // ** MIDDLEWARES **
@@ -62,8 +64,10 @@ app.use(GETQUOTESROUTE, getQuoteRouter);
 app.use(CONSULTATIONROUTE, consultationRouter);
 // **   HIRE US ROUTER
 app.use(HIREUSROUTE, hireUsRouter);
-// **   HIRE US ROUTER
+// **   HIREUS  ROUTER
 app.use(FREELANCER, freeLancerRouter);
+// **   PROJECT  ROUTER
+app.use(PROJECT, projectRouter);
 // **** ERROR HANDLERS ****
 app.use(notFoundHandler);
 app.use(errorHandler);

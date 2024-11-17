@@ -76,7 +76,7 @@ model Projects {
   bounty                                         Int
   deadline                                       DateTime
   progressPercentage                             Int              @default(0)
-  dfficultyLevel                                 DIFFICULTY_LEVEL @default(EASY)
+  difficultyLevel                                DIFFICULTY_LEVEL @default(EASY)
   projectStatus                                  PROJECT_STATUS   @default(PENDING)
   clientWhoPostedThisProject                     String?
   selectedFreelancersForThisProject              String[]         @default([""])
@@ -91,7 +91,7 @@ model Projects {
 
   @@index([trashedAt])
   @@index([trashedBy])
-  @@index([dfficultyLevel])
+  @@index([difficultyLevel])
   @@index([id])
   @@index([title])
   @@index([deadline])

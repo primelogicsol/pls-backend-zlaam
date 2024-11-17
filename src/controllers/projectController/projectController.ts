@@ -1,5 +1,6 @@
-import { BADREQUESTCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
+import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
+import { generateSlug } from "../../services/slugStringGeneratorService";
 import type { TSORTORDER, TFILTEREDPROJECT, TGETPROJECTSQUERY, TPROJECT } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
@@ -12,18 +13,26 @@ export default {
 
     if (deadline.length === 16) {
       deadline += ":00.000Z";
-    } else {
+    } else if (deadline.length === 19) {
+      deadline += ".000Z";
+    } else if (deadline.length === 23) {
+      deadline += "Z";
+    } else if (deadline.length !== 25) {
       throw { status: BADREQUESTCODE, message: "Please enter a valid date" };
     }
+
+    // Validate the final date string
     const newDeadLine = new Date(deadline);
     if (isNaN(newDeadLine.getTime())) {
       throw { status: BADREQUESTCODE, message: "Invalid date format." };
     }
-    const isProjectAlreadyExist = await db.projects.findUnique({ where: { projectSlug: projectData.projectSlug, title: projectData.title } });
+    const projectSlug = generateSlug(projectData.title);
+    const niche = generateSlug(projectData.niche);
+    const isProjectAlreadyExist = await db.projects.findUnique({ where: { projectSlug: projectSlug, title: projectData.title } });
     if (isProjectAlreadyExist) {
       throw { status: BADREQUESTCODE, message: "Project already exist with same title." };
     }
-    const createdProject = await db.projects.create({ data: { ...projectData, deadline: newDeadLine } });
+    const createdProject = await db.projects.create({ data: { ...projectData, deadline: newDeadLine, projectSlug, niche } });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, createdProject);
   }),
 
@@ -41,27 +50,21 @@ export default {
         bounty: true,
         progressPercentage: true,
         niche: true,
-        dfficultyLevel: true,
+        difficultyLevel: true,
         interestedFreelancerWhoWantToWorkOnThisProject: true,
+        selectedFreelancersForThisProject: true,
         projectSlug: true,
+        projectStatus: true,
         createdAt: true
       }
     });
     if (!project) throw { status: BADREQUESTCODE, message: "Project not found." };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, project);
   }),
-  // **  Delete Project By Slug
-  deleteProject: asyncHandler(async (req, res) => {
-    const { projectSlug } = req.params;
-    if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    const project = await db.projects.delete({ where: { projectSlug: projectSlug } });
-    if (!project) throw { status: BADREQUESTCODE, message: "Project not found." };
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, project);
-  }),
 
   // ** Get All OutSourced Projects
 
-  getAllProjects: asyncHandler(async (req, res) => {
+  getAllOutsourcedProjects: asyncHandler(async (req, res) => {
     // Destructure and parse query parameters with types
     const {
       page = "1",
@@ -79,13 +82,15 @@ export default {
     const filters: TFILTEREDPROJECT = {
       trashedAt: null,
       trashedBy: null,
-      projectType: "OUTSOURCE",
-      projectStatus: "PENDING",
-      niche: nicheName
+      projectType: "OUTSOURCE" as const,
+      projectStatus: "PENDING"
     };
 
     if (difficultyLevel) {
       filters.difficultyLevel = difficultyLevel;
+    }
+    if (nicheName) {
+      filters.niche = nicheName;
     }
 
     const orderBy: TSORTORDER[] = [];
@@ -99,7 +104,7 @@ export default {
     });
 
     const projects = await db.projects.findMany({
-      where: filters,
+      where: { ...filters },
       skip,
       take: pageSize,
       orderBy: orderBy,
@@ -111,14 +116,15 @@ export default {
         bounty: true,
         progressPercentage: true,
         niche: true,
-        dfficultyLevel: true,
+        difficultyLevel: true,
+        projectType: true,
         interestedFreelancerWhoWantToWorkOnThisProject: true,
         projectSlug: true,
         createdAt: true
       }
     });
 
-    const totalProjects = await db.projects.count({ where: filters });
+    const totalProjects = await db.projects.count({ where: { ...filters } });
 
     const response = {
       projects,
@@ -146,9 +152,11 @@ export default {
       trashedAt: null,
       trashedBy: null,
       projectType: "INHOUSE",
-      projectStatus: "PENDING",
-      niche: nicheName
+      projectStatus: "PENDING"
     };
+    if (nicheName) {
+      filters.niche = nicheName;
+    }
     const projects = await db.projects.findMany({
       where: filters,
       skip,
@@ -161,7 +169,9 @@ export default {
         bounty: true,
         progressPercentage: true,
         niche: true,
-        dfficultyLevel: true,
+        difficultyLevel: true,
+        projectType: true,
+        interestedFreelancerWhoWantToWorkOnThisProject: true,
         projectSlug: true,
         createdAt: true
       }
@@ -180,5 +190,20 @@ export default {
     };
 
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
+  }),
+
+  // **  Delete Project By Slug
+  deleteProject: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    await db.projects
+      .findUniqueOrThrow({ where: { id: Number(id) } })
+      .then((res) => res)
+      .catch(() => {
+        throw { status: NOTFOUNDCODE, message: "Project not found." };
+      });
+    const project = await db.projects.delete({ where: { id: Number(id) } });
+    if (project) throw { status: BADREQUESTCODE, message: "Project not found." };
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, null);
   })
 };

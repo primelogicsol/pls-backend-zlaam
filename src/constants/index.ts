@@ -86,17 +86,19 @@ export const {
   WELCOMEMESSAGEFORFREELANCER,
   ADMINNAME
 } = QUICKS;
+const BASEURL = "/api/v1";
 const ENDPOINTS = {
-  HEALTHROUTE: "/api/v1/health",
-  AUTHROUTE: "/api/v1/auth",
-  CONTACTUSROUTE: "/api/v1/contactUs",
-  NEWSLETTERROUTE: "/api/v1/newsletter",
-  TRASHROUTE: "/api/v1/trash",
-  NAVIGATIONPAGESROUTE: "/api/v1/navigationPages",
-  GETQUOTESROUTE: "/api/v1/getQuotes",
-  CONSULTATIONROUTE: "/api/v1/consultation",
-  HIREUSROUTE: "/api/v1/hireUs",
-  FREELANCER: "/api/v1/freelancer"
+  HEALTHROUTE: `${BASEURL}/health`,
+  AUTHROUTE: `${BASEURL}/auth`,
+  CONTACTUSROUTE: `${BASEURL}/contactUs`,
+  NEWSLETTERROUTE: `${BASEURL}/newsletter`,
+  TRASHROUTE: `${BASEURL}/trash`,
+  NAVIGATIONPAGESROUTE: `${BASEURL}/navigationPages`,
+  GETQUOTESROUTE: `${BASEURL}/getQuotes`,
+  CONSULTATIONROUTE: `${BASEURL}/consultation`,
+  HIREUSROUTE: `${BASEURL}/hireUs`,
+  FREELANCER: `${BASEURL}/freelancer`,
+  PROJECT: `${BASEURL}/project`
 };
 export const {
   HEALTHROUTE,
@@ -108,5 +110,6 @@ export const {
   GETQUOTESROUTE,
   CONSULTATIONROUTE,
   HIREUSROUTE,
-  FREELANCER
+  FREELANCER,
+  PROJECT
 } = ENDPOINTS;

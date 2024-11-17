@@ -176,7 +176,6 @@ export type TPROJECT = {
   title: string;
   detail: string;
   projectType: TPROJECTTYPE;
-  projectSlug: string;
   niche: string;
   bounty: number;
   deadline: string;

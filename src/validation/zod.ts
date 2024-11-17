@@ -379,11 +379,7 @@ export const projectSchema = z.object({
     .min(1, { message: "niche is required!!" })
     .min(3, { message: "niche must be at least 3 characters long." })
     .max(450, { message: "niche can be at most 450 characters long." }),
-  bounty: z
-    .string({ message: "bounty is required!!" })
-    .min(1, { message: "bounty is required!!" })
-    .min(3, { message: "bounty must be at least 3 characters long." })
-    .max(450, { message: "bounty can be at most 450 characters long." }),
+  bounty: z.number({ message: "bounty is required!!" }).min(1, { message: "bounty is required!!" }),
   deadline: z
     .string({ message: "deadline is required!!" })
     .min(1, { message: "deadline is required!!" })
