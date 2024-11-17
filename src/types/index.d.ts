@@ -172,7 +172,7 @@ export type TPROJECTSTATUS = "PENDING" | "CANCELLED" | "ONGOING" | "COMPLETED";
 
 export type TDIFFICULTYLEVEL = "EASY" | "MEDIUM" | "HARD";
 export type TPROJECTTYPE = "INHOUSE" | "OUTSOURCE";
-export type TProject = {
+export type TPROJECT = {
   title: string;
   detail: string;
   projectType: TPROJECTTYPE;
@@ -181,7 +181,7 @@ export type TProject = {
   bounty: number;
   deadline: string;
   projectStatus: TPROJECTSTATUS;
-  progressPercentage: string;
+  progressPercentage: number;
   difficultyLevel: DIFFICULTY_LEVEL;
   clientWhoPostedThisProject?: string;
   selectedFreelancersForThisProject: string[];

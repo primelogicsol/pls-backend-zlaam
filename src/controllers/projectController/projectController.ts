@@ -1,13 +1,13 @@
 import { BADREQUESTCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
-import type { TSORTORDER, TFILTEREDPROJECT, TGETPROJECTSQUERY, TProject } from "../../types";
+import type { TSORTORDER, TFILTEREDPROJECT, TGETPROJECTSQUERY, TPROJECT } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
 export default {
   createProject: asyncHandler(async (req, res) => {
     // ** validation is already handled by middleware
-    const projectData = req.body as TProject;
+    const projectData = req.body as TPROJECT;
     let deadline = projectData.deadline;
 
     if (deadline.length === 16) {
@@ -31,7 +31,22 @@ export default {
   getSingleProject: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    const project = await db.projects.findUnique({ where: { projectSlug: projectSlug } });
+    const project = await db.projects.findUnique({
+      where: { projectSlug: projectSlug, trashedAt: null, trashedBy: null },
+      select: {
+        id: true,
+        title: true,
+        detail: true,
+        deadline: true,
+        bounty: true,
+        progressPercentage: true,
+        niche: true,
+        dfficultyLevel: true,
+        interestedFreelancerWhoWantToWorkOnThisProject: true,
+        projectSlug: true,
+        createdAt: true
+      }
+    });
     if (!project) throw { status: BADREQUESTCODE, message: "Project not found." };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, project);
   }),

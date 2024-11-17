@@ -39,8 +39,14 @@ export const userRegistrationSchema = z.object({
 
 // ** user login schema
 export const userLoginSchema = z.object({
-  username: z.string({ message: "username is required!!" }).min(1, { message: "username is required!!" }),
-  password: z.string({ message: "password is required!!" }).min(1, { message: "password is required!!" })
+  username: z
+    .string({ message: "username is required!!" })
+    .min(1, { message: "username is required!!" })
+    .max(100, { message: "username can be at most 100 characters long." }),
+  password: z
+    .string({ message: "password is required!!" })
+    .min(1, { message: "password is required!!" })
+    .max(100, { message: "password can be at most 100 characters long." })
 });
 
 // ** verify user schema

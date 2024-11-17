@@ -50,9 +50,9 @@ model User {
 }
 
 enum PROJECT_STATUS {
+  CANCELLED // project has been cancelled
   PENDING // mean no one has accepted the project yet
   ONGOING // someone has accepted the project and now he/she is working on it
-  CANCELLED // project has been cancelled
   COMPLETED // progress percentage is 100% 
 }
 
@@ -75,7 +75,7 @@ model Projects {
   niche                                          String
   bounty                                         Int
   deadline                                       DateTime
-  progressPercentage                             String           @default("0")
+  progressPercentage                             Int              @default(0)
   dfficultyLevel                                 DIFFICULTY_LEVEL @default(EASY)
   projectStatus                                  PROJECT_STATUS   @default(PENDING)
   clientWhoPostedThisProject                     String?
@@ -83,7 +83,8 @@ model Projects {
   interestedFreelancerWhoWantToWorkOnThisProject String[]         @default([""])
   commentByClientAfterProjectCompletion          String?
   starsByClientAfterProjectCompletion            String?
-  projectType                                    PROJECT_TYPE     @default(OUTSOURCE)
+  projectCompletedOn                             DateTime?
+  projectType                                    PROJECT_TYPE     @default(INHOUSE)
   trashedBy                                      String?
   trashedAt                                      DateTime?
   createdAt                                      DateTime         @default(now())

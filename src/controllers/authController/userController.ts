@@ -94,9 +94,9 @@ export default {
   }),
   // ** get single user
   getSingleUser: asyncHandler(async (req: Request, res: Response) => {
-    const { uid } = req.body as TUSERUPDATE;
+    const { username } = req.body as TUSERUPDATE;
     const user = await db.user.findUnique({
-      where: { uid },
+      where: { username },
       select: { username: true, email: true, fullName: true, emailVerifiedAt: true, uid: true }
     });
     httpResponse(req, res, SUCCESSCODE, "User fetched successfully", user);
