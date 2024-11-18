@@ -118,6 +118,7 @@ export default {
         niche: true,
         difficultyLevel: true,
         projectType: true,
+        projectStatus: true,
         interestedFreelancerWhoWantToWorkOnThisProject: true,
         projectSlug: true,
         createdAt: true

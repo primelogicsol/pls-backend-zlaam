@@ -1,13 +1,13 @@
 import { BADREQUESTCODE, INTERNALSERVERERRORMSG, NOTFOUNDCODE, NOTFOUNDMSG } from "../constants";
 import { db } from "../database/db";
-import type { TUSER } from "../types";
+import type { TPROJECT, TUSER } from "../types";
 import logger from "./loggerUtils";
 
 export const findUniqueUser = async (id: string): Promise<TUSER> => {
   if (!id) throw { status: BADREQUESTCODE, message: "Id is required!" };
   let user: unknown = null;
   try {
-    user = (await db.user.findUnique({
+    user = (await db.user.findUniqueOrThrow({
       where: {
         uid: id
       },
@@ -25,6 +25,21 @@ export const findUniqueUser = async (id: string): Promise<TUSER> => {
       logger.error("User not found in findUniqueUserUtils.ts");
       throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     } else return user as TUSER;
+  } catch (error) {
+    if (error instanceof Error) throw { status: NOTFOUNDCODE, message: error.message || INTERNALSERVERERRORMSG };
+    else throw { status: NOTFOUNDCODE, message: INTERNALSERVERERRORMSG };
+  }
+};
+
+export const findUniqueProject = async (uniqueIdentifier: string): Promise<TPROJECT> => {
+  if (!uniqueIdentifier) throw { status: BADREQUESTCODE, message: "Id is required!" };
+  let project: unknown = null;
+  try {
+    project = await db.projects.findUniqueOrThrow({ where: { projectSlug: uniqueIdentifier } });
+    if (!project) {
+      logger.error("project not found in findUniqueUtils.ts");
+      throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+    } else return project as TPROJECT;
   } catch (error) {
     if (error instanceof Error) throw { status: NOTFOUNDCODE, message: error.message || INTERNALSERVERERRORMSG };
     else throw { status: NOTFOUNDCODE, message: INTERNALSERVERERRORMSG };

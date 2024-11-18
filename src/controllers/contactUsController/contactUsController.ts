@@ -7,7 +7,7 @@ import { sendMessageToTheUserService } from "../../services/sendMessageToUserSer
 import type { TCONTACTUS, TTRASH, TUSER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
-import { findUniqueUser } from "../../utils/findUniqueUserUtils";
+import { findUniqueUser } from "../../utils/findUniqueUtils";
 
 export default {
   // create message controller
