@@ -24,3 +24,6 @@ export function generateOtp() {
   const otpExpiry = new Date(Date.now() + 30 * 60 * 1000); // change expiry time using the first letter after Date.now()+1 like this otp is valid for 30 minutes
   return { otp, otpExpiry };
 }
+export function generateUsername(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
+}

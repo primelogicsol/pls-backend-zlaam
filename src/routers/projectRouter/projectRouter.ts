@@ -29,3 +29,24 @@ projectRouter.route("/deleteProject/:id").delete(
   //  authMiddleware.checkIfUserIAdminOrModerator,
   projectController.deleteProject
 );
+// *************************Update Project Details
+
+projectRouter.route("/createInterestedFreelancers/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.createInterestedFreelancers
+);
+
+projectRouter.route("/removeFreelancerFromInterestedList/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.removeFreelancerFromInterestedList
+);
+
+projectRouter.route("/listInterestedFreelancersInSingleProject/:projectSlug").get(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.listInterestedFreelancersInSingleProject
+);
+
+projectRouter.route("/selectFreelancerForProject/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.selectFreelancerForProject
+);

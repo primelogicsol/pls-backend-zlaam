@@ -13,7 +13,7 @@ export default tseslint.config({
   files: ["**/*.ts"],
   extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
   rules: {
-    "no-console": "error",
+    //    "no-console": "error",
     quotes: ["error", "double", { allowTemplateLiterals: true }],
     eqeqeq: "off",
     "no-unused-vars": "error",

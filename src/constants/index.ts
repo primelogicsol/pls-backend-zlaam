@@ -74,9 +74,15 @@ const QUICKS = {
   HIREUSMESSAGE: `Thank you for reaching out to us. We would like to inform you that your request is currently under review. Our team is carefully assessing the details, and we will get back to you as soon as possible with an update.We appreciate your patience and understanding during this process. If you have any additional questions or need further assistance in the meantime, please don’t hesitate to reach out. <p>Best Regards,</p> ${COMPANY_NAME}`,
   THANKYOUMESSAGE: `Thank you for submitting your join request to work with us. We truly appreciate the time and effort you took to reach out, and we’re excited to review your profile. We’ll carefully go through your application and get back to you soon. In the meantime, feel free to share any additional details or ask any questions you may have about the project.Looking forward to connecting further!<p>Best Regard,</p> ${COMPANY_NAME}`,
   WELCOMEMESSAGEFORFREELANCER: `Welcome to the team! We’re excited to have you on board and look forward to working with you. Your expertise will be a great asset, and we’re confident this collaboration will be a success. If you have any questions or need anything to get started, feel free to reach out.`,
-
   ADMINNAME: ` administrator from ${COMPANY_NAME}`
 };
+export function FREELANCERSLECTEDMESSAGE(projectName: string) {
+  return `
+
+Congratulations! We’re excited to inform you that you’ve been selected to work on the project "${projectName}". Your skills and expertise stood out, and we’re confident you’ll make a significant impact on this project. Please feel free to reach out if you have any questions or need further details about the next steps. We’re looking forward to collaborating with you!<p>Best Regards,</p> ${COMPANY_NAME}
+
+`;
+}
 export const {
   CONSULTATIONPENDINGMESSAGEFROMADMIN,
   CONSULTATIONAPPROVALMESSAGEFROMADMIN,

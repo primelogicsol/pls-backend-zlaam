@@ -209,10 +209,10 @@ export default {
     const payLoad: TPAYLOAD = {
       uid: user && user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
+      role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
-    const accessToken = generateAccessToken(payLoad, res, "14m");
+    const accessToken = generateAccessToken(payLoad, res, "194m" /*TODO: change it to 14m*/);
 
     res.cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
 

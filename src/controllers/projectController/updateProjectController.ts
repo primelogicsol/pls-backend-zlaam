@@ -1,9 +1,11 @@
-import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
+import { HOST_EMAIL } from "../../config/config";
+import { ADMINNAME, BADREQUESTCODE, FREELANCERSLECTEDMESSAGE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
+import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
 import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TPROJECT, TSORTORDER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
-import { findUniqueProject } from "../../utils/findUniqueUtils";
+import { findUniqueProject, getFreelancerUsernamesWhoAreInterested } from "../../utils/findUniqueUtils";
 
 export default {
   // ** create List of interested freelancers who want to work on this project
@@ -12,35 +14,41 @@ export default {
     const { interestedFreelancerWhoWantToWorkOnThisProject } = req.body as TPROJECT;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
     if (!Array.isArray(interestedFreelancerWhoWantToWorkOnThisProject))
-      throw { status: BADREQUESTCODE, message: "Send The id of freelancer who is interested." };
-    const interestedFreelancersUsernames = await Promise.all(
-      interestedFreelancerWhoWantToWorkOnThisProject.map(async (freelancerId: string) => {
-        const user = await db.user.findUniqueOrThrow({
-          where: { uid: freelancerId, trashedBy: null, trashedAt: null, role: "FREELANCER" },
-          select: { username: true }
-        });
-        return user.username;
-      })
-    );
-    const checkIfFreelancerIsInterested = await db.projects.findUniqueOrThrow({
-      where: {
-        projectSlug: projectSlug,
-        interestedFreelancerWhoWantToWorkOnThisProject: { hasSome: interestedFreelancerWhoWantToWorkOnThisProject }
-      },
-      select: { interestedFreelancerWhoWantToWorkOnThisProject: true }
-    });
-    if (
-      checkIfFreelancerIsInterested.interestedFreelancerWhoWantToWorkOnThisProject.some((freelancer) =>
-        interestedFreelancerWhoWantToWorkOnThisProject.includes(freelancer)
-      )
-    )
+      throw { status: BADREQUESTCODE, message: "Send The array  of ID's of freelancer who is interested." };
+    const uniqueProject = await findUniqueProject(projectSlug);
+    const interestedFreelancersUsernames = await getFreelancerUsernamesWhoAreInterested(interestedFreelancerWhoWantToWorkOnThisProject);
+    if (uniqueProject.interestedFreelancerWhoWantToWorkOnThisProject.some((freelancer) => interestedFreelancersUsernames.includes(freelancer))) {
       throw { status: BADREQUESTCODE, message: "Freelancer is already interested in this project." };
-    const project = await db.projects.update({
+    }
+    const updateProject = await db.projects.update({
       where: { projectSlug: projectSlug },
-      data: { interestedFreelancerWhoWantToWorkOnThisProject: interestedFreelancersUsernames }
+      data: { interestedFreelancerWhoWantToWorkOnThisProject: { push: interestedFreelancersUsernames } }
     });
-    if (!project) throw { status: NOTFOUNDCODE, message: "Project not found." };
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { interestedFreelancers: project.interestedFreelancerWhoWantToWorkOnThisProject });
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { interestedFreelancers: updateProject.interestedFreelancerWhoWantToWorkOnThisProject });
+  }),
+  // ** Remove Freelancer from Interested List
+  removeFreelancerFromInterestedList: asyncHandler(async (req, res) => {
+    const { projectSlug } = req.params;
+    const { freelancerUsername } = req.body as { freelancerUsername: string };
+
+    if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    if (!freelancerUsername) throw { status: BADREQUESTCODE, message: "Freelancer username is required." };
+
+    const project = await findUniqueProject(projectSlug);
+    const freelancerExists = project.interestedFreelancerWhoWantToWorkOnThisProject.includes(freelancerUsername);
+    if (!freelancerExists) throw { status: BADREQUESTCODE, message: "Freelancer is not in the interested list." };
+
+    const updatedInterestedFreelancers = project.interestedFreelancerWhoWantToWorkOnThisProject.filter((username) => username !== freelancerUsername);
+
+    await db.projects.update({
+      where: { projectSlug: projectSlug },
+      data: { interestedFreelancerWhoWantToWorkOnThisProject: updatedInterestedFreelancers }
+    });
+
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, {
+      message: "Freelancer removed from interested list successfully.",
+      updatedInterestedFreelancers
+    });
   }),
   // ** List all the interested freelancers who want to work on this project
   listInterestedFreelancersInSingleProject: asyncHandler(async (req, res) => {
@@ -57,41 +65,56 @@ export default {
   // ** Select Freelancer for project
   selectFreelancerForProject: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
-    const { /* it will be the username of that selected freelancer not his id*/ selectedFreelancersForThisProject } = req.body as TPROJECT;
+    const { selectedFreelancersForThisProject: freelancerName } = req.body as TPROJECT;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    if (!Array.isArray(selectedFreelancersForThisProject)) throw { status: BADREQUESTCODE, message: "Send The id of freelancer who is interested." };
-    const project = await db.projects.findUniqueOrThrow({
-      where: { projectSlug: projectSlug },
-      select: { interestedFreelancerWhoWantToWorkOnThisProject: true }
-    });
+    if (!Array.isArray(freelancerName)) throw { status: BADREQUESTCODE, message: "Send The username of freelancer who is interested." };
+    const project = await findUniqueProject(projectSlug);
     const checkIfFreelancerIsInterested = project.interestedFreelancerWhoWantToWorkOnThisProject.some((freelancer) =>
-      selectedFreelancersForThisProject.includes(freelancer)
+      freelancerName.includes(freelancer)
     );
     if (!checkIfFreelancerIsInterested) throw { status: BADREQUESTCODE, message: "Freelancer is not interested in this project." };
-
-    const SelectedFreelancer = selectedFreelancersForThisProject.filter((freelancer) =>
-      project.interestedFreelancerWhoWantToWorkOnThisProject.includes(freelancer)
-    );
+    const SelectedFreelancer = freelancerName.filter((freelancer) => project.interestedFreelancerWhoWantToWorkOnThisProject.includes(freelancer));
+    if (project.selectedFreelancersForThisProject.some((freelancer) => freelancerName.includes(freelancer))) {
+      throw { status: BADREQUESTCODE, message: "Freelancer is already selected" };
+    }
     await db.projects.update({
       where: { projectSlug: projectSlug },
-      data: { selectedFreelancersForThisProject: SelectedFreelancer }
+      data: { selectedFreelancersForThisProject: { push: SelectedFreelancer } }
     });
+    await Promise.all(
+      freelancerName.map(async (freelancer) => {
+        const user = await db.user.findUniqueOrThrow({
+          where: { username: freelancer, trashedBy: null, trashedAt: null, role: "FREELANCER" }
+        });
+        await gloabalEmailMessage(
+          HOST_EMAIL,
+          user.email,
+          ADMINNAME,
+          FREELANCERSLECTEDMESSAGE(project.title),
+          "Congratulation for Winning the Project",
+          `Dear ${user.fullName}`
+        );
+      })
+    );
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { selectedFreelancers: SelectedFreelancer });
   }),
   // ** Update Project By Slug
   updateProgressOfProject: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
+    const { freelancerName } = req.body as { freelancerName: string };
     let { progressPercentage } = req.body as TPROJECT;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
     const project = await findUniqueProject(projectSlug);
+    if (!project?.selectedFreelancersForThisProject.includes(freelancerName))
+      throw { status: BADREQUESTCODE, message: "You can't update progress of this project since you are not working on this project" };
+    if (project.projectStatus !== "ONGOING") throw { status: BADREQUESTCODE, message: "You can't update progress of completed or pending project" };
     if (!project) throw { status: NOTFOUNDCODE, message: "Project not found." };
     if (!progressPercentage) throw { status: BADREQUESTCODE, message: "Progress percentage is required." };
     if (isNaN(progressPercentage)) throw { status: BADREQUESTCODE, message: "Progress percentage must be a number." };
     else progressPercentage = Number(progressPercentage);
     if (progressPercentage > 100 || progressPercentage < 0)
       throw { status: BADREQUESTCODE, message: "Progress percentage must be between 0 and 100." };
-    if (project?.progressPercentage < progressPercentage) throw { status: BADREQUESTCODE, message: "You can't update progress backward" };
-    if (project.projectStatus !== "ONGOING") throw { status: BADREQUESTCODE, message: "You can't update progress of completed or pending project" };
+    if (project?.progressPercentage > progressPercentage) throw { status: BADREQUESTCODE, message: "You can't update progress backward" };
     const updateProgressOfProject = await db.projects.update({
       where: { projectSlug: projectSlug },
       data: { progressPercentage: Number(progressPercentage) }

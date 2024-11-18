@@ -45,3 +45,20 @@ export const findUniqueProject = async (uniqueIdentifier: string): Promise<TPROJ
     else throw { status: NOTFOUNDCODE, message: INTERNALSERVERERRORMSG };
   }
 };
+
+export const getFreelancerUsernamesWhoAreInterested = async (freelancerIds: string[]): Promise<string[]> => {
+  try {
+    return await Promise.all(
+      freelancerIds.map(async (freelancerId) => {
+        const user = await db.user.findUniqueOrThrow({
+          where: { uid: freelancerId, trashedBy: null, trashedAt: null, role: "FREELANCER" },
+          select: { username: true }
+        });
+        return user.username;
+      })
+    );
+  } catch (errr) {
+    if (errr instanceof Error) throw { status: NOTFOUNDCODE, message: errr.message + " with freelancer role" || INTERNALSERVERERRORMSG };
+    else throw { status: NOTFOUNDCODE, message: INTERNALSERVERERRORMSG };
+  }
+};

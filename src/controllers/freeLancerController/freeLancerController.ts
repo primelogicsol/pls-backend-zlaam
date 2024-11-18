@@ -10,6 +10,7 @@ import {
   THANKYOUMESSAGE,
   WELCOMEMESSAGEFORFREELANCER
 } from "../../constants";
+import { generateUsername } from "../../services/slugStringGeneratorService";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
 import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
@@ -149,7 +150,7 @@ export default {
     }
     const createdFreelancer = await db.user.create({
       data: {
-        username: `${isRequestExist.name}_${generateRandomStrings(4)}`.toLowerCase(),
+        username: `${generateUsername(isRequestExist.name)}_${generateRandomStrings(4)}`.toLowerCase(),
         email: isRequestExist.email,
         fullName: isRequestExist.name,
         role: "FREELANCER",
@@ -163,10 +164,10 @@ export default {
       isRequestExist.email,
       ADMINNAME,
       `${WELCOMEMESSAGEFORFREELANCER} <p>Please use the following credintials to get access of your Dashboard from where you can see the list of all the projects.</p>
-<br>
-Username:<p style="color:blue;font-weight:bold;>Username:${createdFreelancer.username}</p>
-Password:<p style="color:blue;font-weight:bold;>${randomPassword}</p>
-<p>Best Regard,</p> ${COMPANY_NAME}
+      <br>
+      Username:<p style="color:blue;font-weight:bold;">${createdFreelancer.username}</p>
+      Password:<p style="color:blue;font-weight:bold;">${randomPassword}</p>
+      <p>Best Regard,</p> ${COMPANY_NAME}
 `,
       `Congratulations For Joining Our Team`,
       `Dear, ${isRequestExist.name}`
@@ -176,7 +177,10 @@ Password:<p style="color:blue;font-weight:bold;>${randomPassword}</p>
         id: Number(id)
       }
     });
-    return res.status(SUCCESSCODE).json({ success: true, status: SUCCESSCODE, message: "Request Accepted Successfully" }).end();
+    return res
+      .status(SUCCESSCODE)
+      .json({ success: true, status: SUCCESSCODE, message: "Request Accepted Successfully", createdFreelancer: createdFreelancer.uid })
+      .end();
   }),
   // ** Create Niche for freelancer dynamically
   createNicheListForFreelancer: asyncHandler(async (req: _Request, res) => {
