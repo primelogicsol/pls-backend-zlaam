@@ -140,58 +140,6 @@ export default {
   }),
   // ** Get inhouse projects
 
-  getAllInHouseProjects: asyncHandler(async (req, res) => {
-    // Destructure and parse query parameters with types
-    const { page = "1", limit = "10", nicheName = "" }: TGETPROJECTSQUERY = req.query;
-
-    const pageNum = parseInt(page, 10);
-    const pageSize = parseInt(limit, 10);
-    const skip = (pageNum - 1) * pageSize;
-
-    const filters: TFILTEREDPROJECT = {
-      trashedAt: null,
-      trashedBy: null,
-      projectType: "INHOUSE",
-      projectStatus: "PENDING"
-    };
-    if (nicheName) {
-      filters.niche = nicheName;
-    }
-    const projects = await db.projects.findMany({
-      where: filters,
-      skip,
-      take: pageSize,
-      select: {
-        id: true,
-        title: true,
-        detail: true,
-        deadline: true,
-        bounty: true,
-        progressPercentage: true,
-        niche: true,
-        difficultyLevel: true,
-        projectType: true,
-        interestedFreelancerWhoWantToWorkOnThisProject: true,
-        projectSlug: true,
-        createdAt: true
-      }
-    });
-
-    const totalProjects = await db.projects.count({ where: filters });
-
-    const response = {
-      projects,
-      pagination: {
-        page: pageNum,
-        limit: pageSize,
-        totalPages: Math.ceil(totalProjects / pageSize),
-        totalProjects
-      }
-    };
-
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
-  }),
-
   // **  Delete Project By Slug
   deleteProject: asyncHandler(async (req, res) => {
     const { id } = req.params;

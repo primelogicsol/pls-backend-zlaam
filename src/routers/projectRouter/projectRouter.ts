@@ -3,6 +3,7 @@ import { Router } from "express";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 import { projectSchema } from "../../validation/zod";
 import projectController from "../../controllers/projectController/projectController";
+import updateProjectController from "../../controllers/projectController/updateProjectController";
 export const projectRouter = Router();
 
 projectRouter.route("/createProject").post(
@@ -19,9 +20,9 @@ projectRouter.route("/getAllOutsourcedProjects").get(
   //  authMiddleware.checkIfUserIAdminOrModerator,
   projectController.getAllOutsourcedProjects
 );
-projectRouter.route("/getAllInHouseProjects").get(
+projectRouter.route("/getAllProjects").get(
   //  authMiddleware.checkIfUserIAdminOrModerator,
-  projectController.getAllInHouseProjects
+  updateProjectController.getAllProjects
 );
 
 projectRouter.route("/deleteProject/:id").delete(

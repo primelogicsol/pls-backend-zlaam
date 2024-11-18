@@ -191,8 +191,8 @@ export type TPROJECT = {
 export type TFILTEREDPROJECT = {
   trashedAt: null;
   trashedBy: null;
-  projectType: TPROJECTTYPE;
-  projectStatus: TPROJECTSTATUS;
+  projectType?: TPROJECTTYPE;
+  projectStatus?: TPROJECTSTATUS;
   difficultyLevel?: TDIFFICULTYLEVEL;
   niche?: string;
 };
@@ -202,10 +202,14 @@ export type TGETPROJECTSQUERY = {
   page?: string;
   limit?: string;
   difficultyLevel?: TDIFFICULTYLEVEL;
-  createdAtOrder?: "oldest" | "latest";
-  bountyOrder?: "lowest" | "highest";
+  createdAtOrder?: "oldest" | "latest" | "";
+  bountyOrder?: "lowest" | "highest" | "";
   nicheName?: string;
 };
+export interface TGETFULLPROJECTQUERY extends TGETPROJECTSQUERY {
+  projectType?: TPROJECTTYPE | "";
+  projectStatus?: TPROJECTSTATUS | "";
+}
 
 // Define filters type
 
