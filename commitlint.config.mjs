@@ -19,8 +19,7 @@ export default {
         "revert" // reverting a previous commit
       ]
     ],
-    "header-max-length": [2, "always", 72], // Set max header length to 72 characters
-    "scope-empty": [2, "never"], // Ensure scope is not empty
-    "subject-case": [2, "always", ["sentence-case", "lower-case", "start-case", "pascal-case"]] // Enforce specific casing for the subject
+    "header-max-length": [2, "always", 100],
+    "subject-case": [2, "always", ["sentence-case"]]
   }
 };
