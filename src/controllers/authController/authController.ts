@@ -27,8 +27,8 @@ export default {
     // validation is already handled by the middleware
     const userData = req.body as TUSERREGISTER;
     const { username, fullName, email, password } = userData;
-    const isUserExist = await db.user.findUnique({
-      where: { username: username.toLowerCase(), email: email.toLowerCase() }
+    const isUserExist = await db.user.findFirst({
+      where: { OR: [{ username: username.toLowerCase() }, { email: email.toLowerCase() }] }
     });
     if (isUserExist) throw { status: BADREQUESTCODE, message: "user already exists with same username or email." };
     const hashedPassword = (await passwordHasher(password, res)) as string;

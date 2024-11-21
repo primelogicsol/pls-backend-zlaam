@@ -79,8 +79,8 @@ model Projects {
   difficultyLevel                                DIFFICULTY_LEVEL @default(EASY)
   projectStatus                                  PROJECT_STATUS   @default(PENDING)
   clientWhoPostedThisProject                     String?
-  selectedFreelancersForThisProject              String[]         @default([""])
   interestedFreelancerWhoWantToWorkOnThisProject String[]         @default([""])
+  selectedFreelancersForThisProject              String[]         @default([""])
   commentByClientAfterProjectCompletion          String?
   starsByClientAfterProjectCompletion            String?
   projectCompletedOn                             DateTime?
