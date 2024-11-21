@@ -24,14 +24,14 @@ export default {
   // ** Freelancer will request for create an account
   getFreeLancerJoinUsRequest: asyncHandler(async (req, res) => {
     const freeLancer = req.body as TFREELANCER;
-    const isExist = await db.freeLancers.findUnique({
+    const isExist = await db.freeLancersRequest.findUnique({
       where: {
         email: freeLancer.email,
         phone: freeLancer.phone
       }
     });
     if (isExist) throw { status: BADREQUESTCODE, message: "User Already exists with same email or phone" };
-    await db.freeLancers.create({
+    await db.freeLancersRequest.create({
       data: freeLancer
     });
     await gloabalEmailMessage(
@@ -46,7 +46,7 @@ export default {
   }),
   //  ** Get all freelancer Request which are unaccepted
   getAllFreeLancerRequest: asyncHandler(async (req, res) => {
-    const freelancers = await db.freeLancers.findMany({
+    const freelancers = await db.freeLancersRequest.findMany({
       where: {
         trashedAt: null,
         trashedBy: null,
@@ -59,7 +59,7 @@ export default {
   // ** Get Single freelancer Request which are unaccepted
   getSingleFreeLancerRequest: asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const freelancer = await db.freeLancers.findUnique({
+    const freelancer = await db.freeLancersRequest.findUnique({
       where: {
         id: Number(id),
         trashedAt: null,
@@ -77,7 +77,7 @@ export default {
 
     const userWhoTrashed = await db.user.findUnique({ where: { uid: uid } });
     if (!userWhoTrashed) throw { status: BADREQUESTCODE, message: "User not found" };
-    await db.freeLancers.update({
+    await db.freeLancersRequest.update({
       where: {
         id: Number(id)
       },
@@ -91,7 +91,7 @@ export default {
   // ** untrash freelancer Join request
   untrashFreeLancerRequest: asyncHandler(async (req: _Request, res) => {
     const { id } = req.params;
-    await db.freeLancers.update({
+    await db.freeLancersRequest.update({
       where: {
         id: Number(id)
       },
@@ -105,9 +105,9 @@ export default {
   // ** Permanently delete the request
   deleteFreeLancerRequest: asyncHandler(async (req: _Request, res) => {
     const { id } = req.params;
-    const isRequestExist = await db.freeLancers.findUnique({ where: { id: Number(id) }, select: { id: true } });
+    const isRequestExist = await db.freeLancersRequest.findUnique({ where: { id: Number(id) }, select: { id: true } });
     if (!isRequestExist) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
-    await db.freeLancers.delete({
+    await db.freeLancersRequest.delete({
       where: {
         id: Number(id)
       }
@@ -117,9 +117,9 @@ export default {
   // ** Accept freelancer Request
   acceptFreeLancerRequest: asyncHandler(async (req: _Request, res) => {
     const { id } = req.params;
-    const isRequestExist = await db.freeLancers.findUnique({ where: { id: Number(id) } });
+    const isRequestExist = await db.freeLancersRequest.findUnique({ where: { id: Number(id) } });
     if (!isRequestExist) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
-    await db.freeLancers.update({
+    await db.freeLancersRequest.update({
       where: {
         id: Number(id)
       },
@@ -172,7 +172,7 @@ export default {
       `Congratulations For Joining Our Team`,
       `Dear, ${isRequestExist.name}`
     );
-    await db.freeLancers.delete({
+    await db.freeLancersRequest.delete({
       where: {
         id: Number(id)
       }

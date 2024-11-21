@@ -22,22 +22,46 @@ enum Role {
   FREELANCER
 }
 
+enum KPIRANK {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINIUM
+  DIAMOND
+  CROWN
+  ACE
+  CONQUERER
+}
+
 model User {
-  uid               String    @id @default(cuid())
-  username          String    @unique
-  fullName          String
-  email             String    @unique
-  password          String
-  role              Role      @default(CLIENT)
-  otpPassword       String?   @unique
-  otpPasswordExpiry DateTime?
-  emailVerifiedAt   DateTime?
-  phone             String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  tokenVersion      Int       @default(0)
-  trashedBy         String?
-  trashedAt         DateTime?
+  uid                     String    @id @default(cuid())
+  username                String    @unique
+  fullName                String
+  email                   String    @unique
+  password                String
+  role                    Role      @default(CLIENT)
+  otpPassword             String?   @unique
+  giveModeratorFullAccess Boolean   @default(false)
+  otpPasswordExpiry       DateTime?
+  emailVerifiedAt         DateTime?
+  createdProjects         Project[]
+  phone                   String?   @unique
+  tokenVersion            Int       @default(0)
+  address                 String?
+  detail                  String?
+  portfolioUrl            String?
+  niche                   String?
+  topProjects             String[]  @default([])
+  kpi                     Json[]    @default([])
+  kpiHistory              Json[]    @default([])
+  kpiRank                 KPIRANK   @default(BRONZE)
+  projects                Project[] @relation("InterestedFreelancers")
+  selectedProjects        Project[] @relation("SelectedFreelancers")
+
+  trashedBy String?
+  trashedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([trashedAt])
   @@index([trashedBy])
@@ -53,7 +77,7 @@ enum PROJECT_STATUS {
   CANCELLED // project has been cancelled
   PENDING // mean no one has accepted the project yet
   ONGOING // someone has accepted the project and now he/she is working on it
-  COMPLETED // progress percentage is 100% 
+  COMPLETED // progress percentage is 100%
 }
 
 enum DIFFICULTY_LEVEL {
@@ -67,27 +91,34 @@ enum PROJECT_TYPE {
   OUTSOURCE
 }
 
-model Projects {
-  id                                             Int              @id @default(autoincrement())
-  title                                          String           @unique()
-  projectSlug                                    String           @unique()
-  detail                                         String
-  niche                                          String
-  bounty                                         Int
-  deadline                                       DateTime
-  progressPercentage                             Int              @default(0)
-  difficultyLevel                                DIFFICULTY_LEVEL @default(EASY)
-  projectStatus                                  PROJECT_STATUS   @default(PENDING)
-  clientWhoPostedThisProject                     String?
-  interestedFreelancerWhoWantToWorkOnThisProject String[]         @default([""])
-  selectedFreelancersForThisProject              String[]         @default([""])
-  commentByClientAfterProjectCompletion          String?
-  starsByClientAfterProjectCompletion            String?
-  projectCompletedOn                             DateTime?
-  projectType                                    PROJECT_TYPE     @default(INHOUSE)
-  trashedBy                                      String?
-  trashedAt                                      DateTime?
-  createdAt                                      DateTime         @default(now())
+model Project {
+  id                                    Int              @id @default(autoincrement())
+  title                                 String           @unique()
+  projectSlug                           String           @unique()
+  detail                                String
+  niche                                 String
+  bounty                                Int
+  deadline                              DateTime
+  progressPercentage                    Int              @default(0)
+  difficultyLevel                       DIFFICULTY_LEVEL @default(EASY)
+  projectStatus                         PROJECT_STATUS   @default(PENDING)
+  isDeadlineNeedToBeExtend              Boolean          @default(false)
+  commentByClientAfterProjectCompletion String?
+  starsByClientAfterProjectCompletion   String?
+  projectCompletedOn                    DateTime?
+  projectType                           PROJECT_TYPE     @default(INHOUSE)
+  trashedBy                             String?
+  trashedAt                             DateTime?
+  createdAt                             DateTime         @default(now())
+  // One-to-Many Relation with Milestones
+  milestones                            Milestone[]
+  // Foreign relations with client
+  clientWhoPostedThisProject            User?            @relation(fields: [clientWhoPostedThisProjectForeignId], references: [uid])
+  clientWhoPostedThisProjectForeignId   String?
+
+  // Many-to-Many Relations with Freelancers
+  interestedFreelancers User[] @relation("InterestedFreelancers")
+  selectedFreelancers   User[] @relation("SelectedFreelancers")
 
   @@index([trashedAt])
   @@index([trashedBy])
@@ -96,10 +127,28 @@ model Projects {
   @@index([title])
   @@index([deadline])
   @@index([progressPercentage])
-  @@index([clientWhoPostedThisProject])
-  @@index([selectedFreelancersForThisProject])
+  @@index([clientWhoPostedThisProjectForeignId])
   @@index([createdAt])
-  @@map("Projects")
+}
+
+model Milestone {
+  id            Int       @id @default(autoincrement())
+  mileStoneName String    @unique
+  description   String?
+  deadline      DateTime
+  progress      Int       @default(0)
+  projectId     Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  trashedBy     String?
+  trashedAt     DateTime?
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@index([trashedAt])
+  @@index([trashedBy])
+  @@index([projectId])
+  @@index([createdAt])
 }
 
 model ContactUs {
@@ -212,7 +261,7 @@ model HireUs {
   @@index([trashedBy])
 }
 
-model FreeLancers {
+model FreeLancersRequest {
   id              Int       @id @default(autoincrement())
   name            String
   email           String    @unique

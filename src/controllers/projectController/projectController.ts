@@ -28,11 +28,41 @@ export default {
     }
     const projectSlug = generateSlug(projectData.title);
     const niche = generateSlug(projectData.niche);
-    const isProjectAlreadyExist = await db.projects.findUnique({ where: { projectSlug: projectSlug, title: projectData.title } });
+    const isProjectAlreadyExist = await db.project.findUnique({ where: { projectSlug: projectSlug, title: projectData.title } });
     if (isProjectAlreadyExist) {
       throw { status: BADREQUESTCODE, message: "Project already exist with same title." };
     }
-    const createdProject = await db.projects.create({ data: { ...projectData, deadline: newDeadLine, projectSlug, niche } });
+    if (!projectData.clientWhoPostedThisProjectForeignId) throw { status: BADREQUESTCODE, message: "Client id is required." };
+    const createdProject = await db.project.create({
+      data: {
+        title: projectData.title,
+        detail: projectData.detail,
+        bounty: projectData.bounty,
+        deadline: newDeadLine,
+        niche: niche,
+        projectSlug: projectSlug,
+        difficultyLevel: "MEDIUM",
+        progressPercentage: 0,
+        projectStatus: "PENDING",
+        clientWhoPostedThisProjectForeignId: "cm3rq6pww0002xwr3fnjo23zf"
+      },
+      select: {
+        id: true,
+        title: true,
+        detail: true,
+        deadline: true,
+        bounty: true,
+        progressPercentage: true,
+        niche: true,
+        difficultyLevel: true,
+        clientWhoPostedThisProject: { select: { username: true, uid: true, fullName: true, email: true } },
+        interestedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
+        selectedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
+        projectSlug: true,
+        projectStatus: true,
+        createdAt: true
+      }
+    });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, createdProject);
   }),
 
@@ -40,7 +70,7 @@ export default {
   getSingleProject: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    const project = await db.projects.findUnique({
+    const project = await db.project.findUnique({
       where: { projectSlug: projectSlug, trashedAt: null, trashedBy: null },
       select: {
         id: true,
@@ -51,8 +81,9 @@ export default {
         progressPercentage: true,
         niche: true,
         difficultyLevel: true,
-        interestedFreelancerWhoWantToWorkOnThisProject: true,
-        selectedFreelancersForThisProject: true,
+        clientWhoPostedThisProject: { select: { username: true, uid: true, fullName: true, email: true } },
+        interestedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
+        selectedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
         projectSlug: true,
         projectStatus: true,
         createdAt: true
@@ -69,7 +100,7 @@ export default {
     const {
       page = "1",
       limit = "10",
-      difficultyLevel = "EASY",
+      difficultyLevel,
       createdAtOrder = "latest",
       bountyOrder = "lowest",
       nicheName = ""
@@ -103,7 +134,7 @@ export default {
       bounty: bountyOrder ? "desc" : "asc"
     });
 
-    const projects = await db.projects.findMany({
+    const projects = await db.project.findMany({
       where: { ...filters },
       skip,
       take: pageSize,
@@ -119,13 +150,14 @@ export default {
         difficultyLevel: true,
         projectType: true,
         projectStatus: true,
-        interestedFreelancerWhoWantToWorkOnThisProject: true,
+        selectedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
+        clientWhoPostedThisProject: { select: { username: true, uid: true, fullName: true, email: true } },
         projectSlug: true,
         createdAt: true
       }
     });
 
-    const totalProjects = await db.projects.count({ where: { ...filters } });
+    const totalProjects = await db.project.count({ where: { ...filters } });
 
     const response = {
       projects,
@@ -145,13 +177,13 @@ export default {
   deleteProject: asyncHandler(async (req, res) => {
     const { id } = req.params;
     if (!id) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    await db.projects
+    await db.project
       .findUniqueOrThrow({ where: { id: Number(id) } })
       .then((res) => res)
       .catch(() => {
         throw { status: NOTFOUNDCODE, message: "Project not found." };
       });
-    const project = await db.projects.delete({ where: { id: Number(id) } });
+    const project = await db.project.delete({ where: { id: Number(id) } });
     if (project) throw { status: BADREQUESTCODE, message: "Project not found." };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, null);
   })

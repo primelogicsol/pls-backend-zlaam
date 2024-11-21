@@ -35,7 +35,7 @@ export const findUniqueProject = async (uniqueIdentifier: string): Promise<TPROJ
   if (!uniqueIdentifier) throw { status: BADREQUESTCODE, message: "Id is required!" };
   let project: unknown = null;
   try {
-    project = await db.projects.findUniqueOrThrow({ where: { projectSlug: uniqueIdentifier } });
+    project = await db.project.findUniqueOrThrow({ where: { projectSlug: uniqueIdentifier } });
     if (!project) {
       logger.error("project not found in findUniqueUtils.ts");
       throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };

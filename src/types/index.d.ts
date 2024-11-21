@@ -182,7 +182,7 @@ export type TPROJECT = {
   projectStatus: TPROJECTSTATUS;
   progressPercentage: number;
   difficultyLevel: DIFFICULTY_LEVEL;
-  clientWhoPostedThisProject?: string;
+  clientWhoPostedThisProjectForeignId?: string;
   selectedFreelancersForThisProject: string[];
   interestedFreelancerWhoWantToWorkOnThisProject: string[];
   commentByClientAfterProjectCompletion?: string;

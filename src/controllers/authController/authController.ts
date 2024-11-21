@@ -80,6 +80,7 @@ export default {
 
     const user = await db.user.findUnique({ where: { username: username } });
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
+
     if (user.trashedBy) throw { status: BADREQUESTCODE, message: "You account has been suspended by Administrators. Please contact support" };
     if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
@@ -88,7 +89,7 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: user?.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
+      role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res, "14m");
@@ -128,7 +129,7 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
+      role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
       isVerified: new Date()
     };
     const accessToken = generateAccessToken(payLoad, res, "14m");
@@ -209,7 +210,7 @@ export default {
     const payLoad: TPAYLOAD = {
       uid: user && user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
+      role: WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res, "194m" /*TODO: change it to 14m*/);
