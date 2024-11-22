@@ -1,9 +1,13 @@
 import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
-import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TPROJECT, TSORTORDER } from "../../types";
+import type { _Request } from "../../middlewares/authMiddleware";
+import type { TDIFFICULTYLEVEL, TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TPROJECT, TSORTORDER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
+import { calculate90Percent } from "../../utils/bountyPercentageDividerUtils";
 import { findUniqueProject } from "../../utils/findUniqueUtils";
+import { calculateKpiPoints } from "../../utils/kpiCalculaterUtils";
+import { updateFreelancerRank } from "../../utils/updateFreelancerRankUtils";
 
 export default {
   // ** create List of interested freelancers who want to work on this project
@@ -21,9 +25,9 @@ export default {
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, updateProject);
   }),
   // ** Remove Freelancer from Interested List
-  removeFreelancerFromInterestedList: asyncHandler(async (req, res) => {
+  removeFreelancerFromInterestedList: asyncHandler(async (req: _Request, res) => {
     const { projectSlug } = req.params;
-    const { freelancerUid } = req.body as { freelancerUid: string };
+    const freelancerUid = req.userFromToken?.uid;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
     if (!freelancerUid) throw { status: BADREQUESTCODE, message: "Freelancer username is required." };
     const updatedProject = await db.project.update({
@@ -33,7 +37,10 @@ export default {
         interestedFreelancers: { select: { uid: true, username: true, fullName: true, email: true } }
       }
     });
-
+    await db.user.update({
+      where: { uid: freelancerUid },
+      data: { kpiRankPoints: { decrement: 10 } }
+    });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, {
       message: "Freelancer removed from interested list successfully.",
       updatedProject
@@ -65,6 +72,26 @@ export default {
       select: { selectedFreelancers: { select: { uid: true, username: true, fullName: true, email: true } } }
     });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, selectFreeLancer);
+  }),
+  // ** remove selected Freelancer
+  removeSelectedFreelancer: asyncHandler(async (req: _Request, res) => {
+    const { projectSlug } = req.params;
+    const freelancerUid = req.userFromToken?.uid;
+    if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    if (!freelancerUid) throw { status: BADREQUESTCODE, message: "Freelancer username is required." };
+    const updatedProject = await db.project.update({
+      where: { projectSlug: projectSlug },
+      data: { selectedFreelancers: { disconnect: [{ uid: freelancerUid }] } },
+      select: { selectedFreelancers: { select: { uid: true, username: true, fullName: true, email: true } } }
+    });
+    await db.user.update({
+      where: { uid: freelancerUid },
+      data: { kpiRankPoints: { decrement: 40 } }
+    });
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, {
+      message: "Freelancer removed from selected list successfully.",
+      updatedProject
+    });
   }),
   // ** Update Project By Slug
   updateProgressOfProject: asyncHandler(async (req, res) => {
@@ -189,5 +216,59 @@ export default {
     };
 
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
+  }),
+  // **   Give Rating to the project and freelancer
+  writeReviewAndGiveRating: asyncHandler(async (req, res) => {
+    const { projectSlug } = req.params;
+    const { starsByClientAfterProjectCompletion, commentByClientAfterProjectCompletion: review } = req.body as TPROJECT;
+    if (!review) throw { status: BADREQUESTCODE, message: "You can't rate without comment." };
+    if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    const project = await db.project.findUnique({ where: { projectSlug: projectSlug } });
+    if (project?.projectStatus !== "COMPLETED") throw { status: BADREQUESTCODE, message: "Project must be completed to give rating." };
+    const updatedProject = await db.project.update({
+      where: { projectSlug: projectSlug },
+      data: { commentByClientAfterProjectCompletion: review, starsByClientAfterProjectCompletion: Number(starsByClientAfterProjectCompletion) },
+      select: {
+        selectedFreelancers: { select: { uid: true, username: true } },
+        difficultyLevel: true,
+        starsByClientAfterProjectCompletion: true
+      }
+    });
+    await Promise.all(
+      updatedProject.selectedFreelancers.map(async (freelancer) => {
+        const kpiRankPoints = await calculateKpiPoints({
+          uid: freelancer.uid,
+          difficulty: updatedProject.difficultyLevel,
+          rating: updatedProject.starsByClientAfterProjectCompletion || 0
+        });
+        await updateFreelancerRank(freelancer.uid, kpiRankPoints);
+      })
+    );
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
+  }),
+  // ** Update Project by Slug
+  updateProjectBySlug: asyncHandler(async (req, res) => {
+    const { projectSlug } = req.params;
+    const { title, detail, deadline, projectType, projectStatus, isDeadlineNeedToBeExtend, bounty } = req.body as TPROJECT;
+    const difficultyLevel = req.body as TDIFFICULTYLEVEL;
+    if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    const project = await db.project.update({
+      where: { projectSlug: projectSlug },
+      data: { title, detail, deadline, difficultyLevel, projectType, projectStatus, isDeadlineNeedToBeExtend, bounty: calculate90Percent(bounty) }
+    });
+    if (!project) throw { status: NOTFOUNDCODE, message: "Project not found." };
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { project });
+  }),
+  // ** Make this project outsource
+  makeProjectOutsource: asyncHandler(async (req, res) => {
+    const { projectSlug } = req.params;
+    if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    const project = await db.project.findUnique({ where: { projectSlug: projectSlug }, select: { bounty: true } });
+    if (!project) throw { status: NOTFOUNDCODE, message: "Project not found." };
+    await db.project.update({
+      where: { projectSlug: projectSlug },
+      data: { projectType: "OUTSOURCE", bounty: calculate90Percent(project?.bounty || 0) }
+    });
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { project });
   })
 };

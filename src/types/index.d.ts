@@ -169,7 +169,7 @@ export type TFREELANCER = {
 };
 
 export type TPROJECTSTATUS = "PENDING" | "CANCELLED" | "ONGOING" | "COMPLETED";
-
+export type TKPIRANK = "BRONZE" | "SILVER" | "GOLD" | "PLATINIUM" | "DIAMOND" | "CROWN" | "ACE" | "CONQUERER";
 export type TDIFFICULTYLEVEL = "EASY" | "MEDIUM" | "HARD";
 export type TPROJECTTYPE = "INHOUSE" | "OUTSOURCE";
 export type TPROJECT = {
@@ -181,6 +181,7 @@ export type TPROJECT = {
   deadline: string;
   projectStatus: TPROJECTSTATUS;
   progressPercentage: number;
+  isDeadlineNeedToBeExtend: boolean;
   difficultyLevel: DIFFICULTY_LEVEL;
   clientWhoPostedThisProjectForeignId?: string;
   selectedFreelancersForThisProject: string[];

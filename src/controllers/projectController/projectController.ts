@@ -41,10 +41,10 @@ export default {
         deadline: newDeadLine,
         niche: niche,
         projectSlug: projectSlug,
-        difficultyLevel: "MEDIUM",
+        difficultyLevel: "EASY",
         progressPercentage: 0,
         projectStatus: "PENDING",
-        clientWhoPostedThisProjectForeignId: "cm3rq6pww0002xwr3fnjo23zf"
+        clientWhoPostedThisProjectForeignId: projectData.clientWhoPostedThisProjectForeignId
       },
       select: {
         id: true,

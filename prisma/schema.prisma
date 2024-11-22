@@ -56,12 +56,12 @@ model User {
   kpiHistory              Json[]    @default([])
   kpiRank                 KPIRANK   @default(BRONZE)
   projects                Project[] @relation("InterestedFreelancers")
+  kpiRankPoints           Int       @default(0)
   selectedProjects        Project[] @relation("SelectedFreelancers")
-
-  trashedBy String?
-  trashedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  trashedBy               String?
+  trashedAt               DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
 
   @@index([trashedAt])
   @@index([trashedBy])
@@ -104,7 +104,7 @@ model Project {
   projectStatus                         PROJECT_STATUS   @default(PENDING)
   isDeadlineNeedToBeExtend              Boolean          @default(false)
   commentByClientAfterProjectCompletion String?
-  starsByClientAfterProjectCompletion   String?
+  starsByClientAfterProjectCompletion   Int?
   projectCompletedOn                    DateTime?
   projectType                           PROJECT_TYPE     @default(INHOUSE)
   trashedBy                             String?

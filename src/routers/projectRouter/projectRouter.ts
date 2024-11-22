@@ -50,3 +50,36 @@ projectRouter.route("/selectFreelancerForProject/:projectSlug").patch(
   //  authMiddleware.checkIfUserIAdminOrModerator,
   updateProjectController.selectFreelancerForProject
 );
+
+projectRouter.route("/removeSelectedFreelancer/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.removeSelectedFreelancer
+);
+
+projectRouter.route("/updateProgressOfProject/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.updateProgressOfProject
+);
+
+projectRouter.route("/changeProjectStatus/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.changeProjectStatus
+);
+
+projectRouter.route("/changeProjectType/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.changeProjectType
+);
+projectRouter.route("/writeReviewAndGiveRating/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.writeReviewAndGiveRating
+);
+
+projectRouter.route("/updateProjectBySlug/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.updateProjectBySlug
+);
+projectRouter.route("/makeProjectOutsource/:projectSlug").patch(
+  //  authMiddleware.checkIfUserIAdminOrModerator,
+  updateProjectController.makeProjectOutsource
+);
