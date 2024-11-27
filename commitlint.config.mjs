@@ -16,7 +16,8 @@ export default {
         "perf", // performance improvements
         "test", // adding missing tests
         "chore", // updating build tasks, package manager configs, etc
-        "revert" // reverting a previous commit
+        "revert", // reverting a previous commit
+        "build"
       ]
     ],
     "header-max-length": [2, "always", 100],

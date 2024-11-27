@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { createLogger, format, transports } from "winston";
 import type { ConsoleTransportInstance, FileTransportInstance } from "winston/lib/winston/transports";
 import path from "node:path";
@@ -23,10 +22,8 @@ const colorizeLevel = (level: string) => {
 };
 
 const consoleLogFormat = format.printf((info) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { level, message, meta } = info;
   const customLevel = colorizeLevel(level.toUpperCase());
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const customMessage = message;
 
   // Use JSON.stringify to handle nested objects and avoid [object Object] output
@@ -36,7 +33,7 @@ const consoleLogFormat = format.printf((info) => {
 
   const customLog = `
 -------------------------------------------------------------------------------
-  ${customLevel}::${customMessage} 
+  ${customLevel}::${customMessage as string} 
   ${yellow("TIMESTAMP")} [${green(timestamp)}] 
   ${magenta("META")}: ${customMeta}
 -------------------------------------------------------------------------------
@@ -59,12 +56,11 @@ const consoleTransport = (): Array<ConsoleTransportInstance> => {
 };
 
 const fileLogFormat = format.printf((info) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { level, message, meta = {} } = info;
-
+  const newMeta = meta as Record<string, unknown>;
   const logMeta: Record<string, unknown> = {};
 
-  for (const [key, value] of Object.entries(meta)) {
+  for (const [key, value] of Object.entries(newMeta)) {
     if (value instanceof Error) {
       logMeta[key] = {
         name: value.name,
@@ -78,7 +74,6 @@ const fileLogFormat = format.printf((info) => {
 
   const logData = {
     level: level.toUpperCase(),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     message,
     customTimestamp: getCurrentTimestamp(),
     meta: logMeta
