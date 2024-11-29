@@ -1,102 +1,64 @@
-import { createLogger, format, transports } from "winston";
-import type { ConsoleTransportInstance, FileTransportInstance } from "winston/lib/winston/transports";
-import path from "node:path";
-import { red, yellow, green, magenta } from "colorette";
+import moment from "moment";
+import winston from "winston";
+import "winston-daily-rotate-file";
 import { ENV } from "../config/config";
-
-const getCurrentTimestamp = () => {
-  return new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString("en-US");
+import { red, yellow, green, magenta } from "colorette";
+export const colorizeLevel = (level: string) => {
+  if (level.includes("ERROR")) return red(level);
+  else if (level.includes("INFO")) return green(level);
+  else if (level.includes("WARN")) return yellow(level);
+  else return magenta(level);
 };
 
-const colorizeLevel = (level: string) => {
-  switch (level) {
-    case "ERROR":
-      return red(level);
-    case "INFO":
-      return green(level);
-    case "WARN":
-      return yellow(level);
-    default:
-      return level;
-  }
-};
-
-const consoleLogFormat = format.printf((info) => {
-  const { level, message, meta } = info;
-  const customLevel = colorizeLevel(level.toUpperCase());
-  const customMessage = message;
-
-  // Use JSON.stringify to handle nested objects and avoid [object Object] output
-  const customMeta = JSON.stringify(meta, null, 2); // Adjust depth here if needed for more nested details
-
-  const timestamp = getCurrentTimestamp();
-
-  const customLog = `
--------------------------------------------------------------------------------
-  ${customLevel}::${customMessage as string} 
-  ${yellow("TIMESTAMP")} [${green(timestamp)}] 
-  ${magenta("META")}: ${customMeta}
--------------------------------------------------------------------------------
-`;
-
-  return customLog;
+const devFileTransport = new winston.transports.DailyRotateFile({
+  filename: "logs/development-%DATE%.log",
+  datePattern: "YYYY-MM-DD",
+  zippedArchive: true,
+  maxSize: "20m",
+  maxFiles: "14d"
 });
 
-const consoleTransport = (): Array<ConsoleTransportInstance> => {
-  if (ENV === "DEVELOPMENT") {
-    return [
-      new transports.Console({
-        level: "info",
-        format: format.combine(format.timestamp(), consoleLogFormat)
-      })
-    ];
-  }
-
-  return [];
-};
-
-const fileLogFormat = format.printf((info) => {
-  const { level, message, meta = {} } = info;
-  const newMeta = meta as Record<string, unknown>;
-  const logMeta: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(newMeta)) {
-    if (value instanceof Error) {
-      logMeta[key] = {
-        name: value.name,
-        message: value.message,
-        trace: value.stack || ""
-      };
-    } else {
-      logMeta[key] = value;
-    }
-  }
-
-  const logData = {
-    level: level.toUpperCase(),
-    message,
-    customTimestamp: getCurrentTimestamp(),
-    meta: logMeta
-  };
-
-  return JSON.stringify(logData, null, 4);
+const prodFileTransport = new winston.transports.DailyRotateFile({
+  filename: "logs/production-%DATE%.log",
+  datePattern: "YYYY-MM-DD",
+  zippedArchive: true,
+  maxSize: "20m",
+  maxFiles: "14d"
 });
 
-const FileTransport = (): Array<FileTransportInstance> => {
-  return [
-    new transports.File({
-      filename: path.join(__dirname, "../../", "logs", `${ENV}.log`),
-      level: "info",
-      format: format.combine(format.timestamp(), fileLogFormat)
+const consoleTransport = new winston.transports.Console({
+  format: winston.format.combine(
+    winston.format.prettyPrint(),
+    winston.format.printf(({ timestamp, level, message, ...meta }) => {
+      const customLevel = colorizeLevel(
+        level.includes("error") ? "ERROR" : level.includes("info") ? "INFO" : level.includes("warn") ? "WARN" : "DEBUG"
+      );
+      const customTimeStamp = moment(timestamp as string).format("DD/MM/YYYY  HH:mm:ss A");
+      const customLog = `
+-------------------------------------------------------------------------------
+  ${customLevel}::${message as string} 
+  ${yellow("TIMESTAMP")}::${green(customTimeStamp)}
+  ${magenta("META")}::${yellow(JSON.stringify(meta, null, 2))}
+-------------------------------------------------------------------------------`;
+
+      return customLog;
     })
-  ];
-};
+  )
+});
 
-const logger = createLogger({
-  defaultMeta: {
-    meta: {}
-  },
-  transports: [...FileTransport(), ...consoleTransport()]
+const logLevel = ENV === "PRODUCTION" ? "warn" : "info";
+
+const logger = winston.createLogger({
+  level: logLevel,
+  format: winston.format.combine(
+    winston.format.timestamp({
+      format: "YYYY-MM-DD HH:mm:ss"
+    }),
+    winston.format.printf(({ timestamp, level, message, ...meta }) => {
+      return `[${level}]: ${message as string} \n[time]: ${moment(timestamp as string).format("YYYY-MM-DD HH:mm:ss")} \nmeta: ${JSON.stringify(meta)}`;
+    })
+  ),
+  transports: [consoleTransport, ...(ENV === "PRODUCTION" ? [prodFileTransport] : [devFileTransport])]
 });
 
 export default logger;
