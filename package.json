@@ -1,5 +1,5 @@
 {
-  "name": "fiverr-clone",
+  "name": "primelogicsolutionbackendserver",
   "version": "1.0.0",
   "description": "A freenlance plate form for freelancer just like fiverr",
   "main": "/src/server.ts",
