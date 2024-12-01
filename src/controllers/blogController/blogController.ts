@@ -24,7 +24,7 @@ export default {
   }),
 
   // ** List All Public Blogs Blog Posts
-  getAllBlog: asyncHandler(async (req: Request, res: Response) => {
+  getAllPublicBlog: asyncHandler(async (req: Request, res: Response) => {
     const blogCache: Map<string, { blogs: TBLOGPOST[]; pagination: unknown }> = new Map();
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.max(1, parseInt(req.query.limit as string) || 10);

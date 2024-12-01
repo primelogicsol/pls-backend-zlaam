@@ -104,7 +104,8 @@ const ENDPOINTS = {
   CONSULTATIONROUTE: `${BASEURL}/consultation`,
   HIREUSROUTE: `${BASEURL}/hireUs`,
   FREELANCER: `${BASEURL}/freelancer`,
-  PROJECT: `${BASEURL}/project`
+  PROJECT: `${BASEURL}/project`,
+  BLOG: `${BASEURL}/blog`
 };
 export const {
   HEALTHROUTE,
@@ -117,5 +118,6 @@ export const {
   CONSULTATIONROUTE,
   HIREUSROUTE,
   FREELANCER,
-  PROJECT
+  PROJECT,
+  BLOG
 } = ENDPOINTS;
