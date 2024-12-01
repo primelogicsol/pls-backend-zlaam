@@ -386,3 +386,27 @@ export const projectSchema = z.object({
     .min(3, { message: "deadline must be at least 3 characters long." })
     .max(450, { message: "deadline can be at most 450 characters long." })
 });
+
+// ** Blog post schema
+
+export const blogPostSchema = z.object({
+  blogTitle: z
+    .string({ message: "blogTitle is required!!" })
+    .min(1, { message: "blogTitle is required!!" })
+    .min(3, { message: "blogTitle must be at least 3 characters long." })
+    .max(450, { message: "blogTitle can be at most 450 characters long." }),
+  blogThumbnail: z
+    .string({ message: "blogThumbnail is required!!" })
+    .min(1, { message: "blogThumbnail is required!!" })
+    .min(3, { message: "blogThumbnail must be at least 3 characters long." })
+    .max(450, { message: "blogThumbnail can be at most 450 characters long." }),
+  blogOverview: z
+    .string({ message: "blogOverview is required!!" })
+    .min(1, { message: "blogOverview is required!!" })
+    .min(3, { message: "blogOverview must be at least 3 characters long." })
+    .max(650, { message: "blogOverview can be at most 450 characters long." }),
+  blogBody: z
+    .string({ message: "blogBody is required!!" })
+    .min(1, { message: "blogBody is required!!" })
+    .min(3, { message: "blogBody must be at least 3 characters long." })
+});

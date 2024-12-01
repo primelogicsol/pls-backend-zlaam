@@ -44,7 +44,8 @@ app.use(
     origin: ORIGIN
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ parameterLimit: 50000, extended: true }));
 app.use(express.static(path.resolve(__dirname, "./public")));
 // **APPLICATION ROUTES **
 app.use(AUTHROUTE, authRouter);

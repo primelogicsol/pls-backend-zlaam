@@ -290,3 +290,23 @@ model NichesForFreelancers {
   id    Int    @id @default(autoincrement())
   niche String
 }
+
+// ** Blog post
+
+model BlogPost {
+  blogId        Int      @id @default(autoincrement())
+  blogTitle     String   @unique
+  blogSlug      String   @unique
+  blogThumbnail String
+  blogOverview  String
+  blogBody      String
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([blogId])
+  @@index([blogTitle])
+  @@index([blogSlug])
+  @@index([createdAt])
+  @@index([blogBody])
+  @@map("blogposts")
+}

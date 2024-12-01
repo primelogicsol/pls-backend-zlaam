@@ -219,3 +219,12 @@ export type TSORTORDER = {
   createdAt?: "asc" | "desc";
   bounty?: "asc" | "desc";
 };
+
+// ** type for blog post
+export type TBLOGPOST = {
+  blogTitle: string;
+  blogThumbnail: string;
+  blogOverview: string;
+  blogBody: string;
+  isPublished?: boolean;
+};
