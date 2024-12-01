@@ -75,12 +75,10 @@ export default {
   updateBlog: asyncHandler(async (req: Request, res: Response) => {
     const { blogSlug } = req.params;
     if (!blogSlug) throw { status: BADREQUESTCODE, message: "Blog slug is required" };
-    const { blogTitle, blogThumbnail, blogOverview, blogBody, isPublished = true } = req.body as TBLOGPOST;
-    const updatedBlog = await db.blogPost
-      .update({ where: { blogSlug }, data: { blogTitle, blogThumbnail, blogOverview, blogBody, isPublished } })
-      .catch(() => {
-        throw { status: BADREQUESTCODE, message: "Blog not found" };
-      });
+    const { blogTitle, blogThumbnail, blogOverview, blogBody } = req.body as TBLOGPOST;
+    const updatedBlog = await db.blogPost.update({ where: { blogSlug }, data: { blogTitle, blogThumbnail, blogOverview, blogBody } }).catch(() => {
+      throw { status: BADREQUESTCODE, message: "Blog not found" };
+    });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { optMessage: "Blog updated successfully", updatedBlog });
   }),
   // ** Delete Blog
