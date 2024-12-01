@@ -1,10 +1,12 @@
 import { Router } from "express";
 import blogController from "../../controllers/blogController/blogController";
-
+import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
+import { blogPostSchema } from "../../validation/zod";
 export const blogRouter: Router = Router();
-blogRouter.route("/createBlog").post(blogController.createBlog);
-blogRouter.route("/getSingleBLog/:blogSlug ").get(blogController.getSingleBlog);
-blogRouter.route("/getAllPublicBlog").get(blogController.getAllPublicBlog);
-blogRouter.route("/updateBlog/:blogSlug").patch(blogController.updateBlog);
+blogRouter.route("/createBlog").post(validateDataMiddleware(blogPostSchema), blogController.createBlog);
+blogRouter.route("/getSingleBlog/:blogSlug").get(blogController.getSingleBlog);
+blogRouter.route("/getAllPublicBlogs").get(blogController.getAllPublicBlog);
+blogRouter.route("/getAllPrivateBlogs").get(blogController.getAllPrivateBlogs);
+blogRouter.route("/updateBlog/:blogSlug").patch(validateDataMiddleware(blogPostSchema), blogController.updateBlog);
 blogRouter.route("/makeBlogPublicOrPrivate/:blogSlug").patch(blogController.makeBlogPublicOrPrivate);
 blogRouter.route("/deleteBlog/:blogSlug").delete(blogController.deleteBlog);
