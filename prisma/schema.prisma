@@ -177,14 +177,22 @@ model Newsletter {
   createdAt DateTime @default(now())
 }
 
-model NavigationPages {
-  id                   Int       @id @default(autoincrement())
-  navigationPageConfig Json[]
-  trashedBy            String?
-  trashedAt            DateTime?
+model MenuItem {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  href        String?
+  image       String?
+  parentId    Int?
+  parent      MenuItem?  @relation("ParentChild", fields: [parentId], references: [id])
+  children    MenuItem[] @relation("ParentChild")
+  trashedBy   String?
+  trashedAt   DateTime?
 
   @@index([trashedAt])
   @@index([trashedBy])
+  @@index([id])
+  @@index([parentId])
 }
 
 model GetQuote {
