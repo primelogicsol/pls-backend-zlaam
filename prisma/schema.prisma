@@ -1,7 +1,7 @@
 generator client {
   provider = "prisma-client-js"
 
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -181,10 +181,11 @@ model MenuItem {
   id          Int        @id @default(autoincrement())
   title       String
   description String?
+  slug        String     @unique
   href        String?
   image       String?
   parentId    Int?
-  parent      MenuItem?  @relation("ParentChild", fields: [parentId], references: [id])
+  parent      MenuItem?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
   children    MenuItem[] @relation("ParentChild")
   trashedBy   String?
   trashedAt   DateTime?

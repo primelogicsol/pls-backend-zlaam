@@ -92,8 +92,12 @@ export type TSUBSCRIBENEWSLETTER = {
   email: string;
   newsLetter: string;
 };
-export type TNAVIGATIONPAGE = {
-  data: object[];
+export type IMENUITEM = {
+  title: string;
+  description?: string;
+  href?: string;
+  image?: string;
+  children?: IMENUITEM[];
 };
 
 export type TGETQUOTE = {
