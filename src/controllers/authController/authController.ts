@@ -16,9 +16,11 @@ import { passwordHasher, verifyPassword } from "../../services/passwordHasherSer
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
-import { sendThankYouMessage } from "../../services/ThankYouService";
 import logger from "../../utils/loggerUtils";
 import { verifyToken } from "../../services/verifyTokenService";
+import { filterAdmin } from "../../utils/filterAdminUtils";
+import emailResponses from "../../constants/emailResponses";
+import { gloabalMailMessage } from "../../services/globalMailService";
 
 let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0, role: "CLIENT", isVerified: null };
 export default {
@@ -41,16 +43,22 @@ export default {
         fullName,
         email: email.toLowerCase(),
         password: hashedPassword,
-        role: WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
-        otpPassword: WHITELISTMAILS.includes(email) ? null : hashedOTPPassword,
-        otpPasswordExpiry: WHITELISTMAILS.includes(email) ? null : generateOneTimePassword.otpExpiry,
-        emailVerifiedAt: WHITELISTMAILS.includes(email) ? new Date() : null
+        role: filterAdmin(email) ? "ADMIN" : "CLIENT",
+        otpPassword: filterAdmin(email) ? null : hashedOTPPassword,
+        otpPasswordExpiry: filterAdmin(email) ? null : generateOneTimePassword.otpExpiry,
+        emailVerifiedAt: filterAdmin(email) ? new Date() : null
       }
     });
-    if (!WHITELISTMAILS.includes(email)) await sendThankYouMessage(email, fullName);
-    if (!WHITELISTMAILS.includes(email)) await sendOTP(email, generateOneTimePassword.otp, fullName);
+    if (!filterAdmin(email)) {
+      await gloabalMailMessage(
+        email,
+        emailResponses.OTP_SENDER_MESSAGE(generateOneTimePassword.otp, "30m"),
+        "Account Verification",
+        `Dear ${fullName},`
+      );
+    }
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
-    if (!WHITELISTMAILS.includes(email) && isSubscribed?.email !== createdUser?.email) {
+    if (!filterAdmin(email) && isSubscribed?.email !== createdUser?.email) {
       await db.newsletter.create({
         data: {
           email: email.toLowerCase()
@@ -61,15 +69,15 @@ export default {
     const { generateAccessToken } = tokenGeneratorService;
     payLoad = { uid: createdUser.email, isVerified: null, tokenVersion: createdUser.tokenVersion, role: createdUser.role };
     const accessToken = generateAccessToken(payLoad, res);
-    if (!WHITELISTMAILS.includes(createdUser.email)) {
+    if (!filterAdmin(email)) {
       res.cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     }
     httpResponse(
       req,
       res,
       SUCCESSCODE,
-      WHITELISTMAILS.includes(email) ? "User registered successfully" : "Please verify your email with 6 digit OTP sent to your email",
-      { fullName, email, accessToken: !WHITELISTMAILS.includes(email) ? accessToken : null }
+      filterAdmin(email) ? "User registered successfully" : "Please verify your email with 6 digit OTP sent to your email",
+      { fullName, email, accessToken: !filterAdmin(email) ? accessToken : null }
     );
   }),
 
@@ -89,7 +97,7 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
+      role: user.role === "FREELANCER" ? "FREELANCER" : filterAdmin(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res);
@@ -129,7 +137,7 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
+      role: user.role === "FREELANCER" ? "FREELANCER" : filterAdmin(email) ? "ADMIN" : "CLIENT",
       isVerified: new Date()
     };
     const accessToken = generateAccessToken(payLoad, res);
