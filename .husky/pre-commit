@@ -1,1 +1,1 @@
-pnpm lint && pnpm lint:fix && pnpm type-check && pnpm fmt && git add .
+bun run lint && bun run lint:fix && bun run type-check && bun run fmt && git add .

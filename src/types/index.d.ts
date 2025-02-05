@@ -2,6 +2,8 @@
 export type TENV = "DEVELOPMENT" | "PRODUCTION";
 
 export type TROLE = "CLIENT" | "ADMIN" | "MODERATOR" | "FREELANCER";
+
+export type TEXPIRESIN = "14m" | "1d" | "2d" | "3d" | "4d" | "5d" | "6d" | "7d";
 // Multiline types
 export type TPAYLOAD = {
   uid: string;
@@ -9,6 +11,7 @@ export type TPAYLOAD = {
   role: TROLE;
   isVerified: Date | null;
 };
+
 export type httpResponseType = {
   success: boolean;
   status: number;

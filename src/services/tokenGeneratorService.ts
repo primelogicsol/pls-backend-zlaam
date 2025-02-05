@@ -2,11 +2,10 @@ import type { Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/config";
 import type { TPAYLOAD } from "../types";
-
 export default {
-  generateAccessToken: (payload: TPAYLOAD, res: Response, expiresIn?: string): string | Response => {
+  generateAccessToken: (payload: TPAYLOAD, res: Response): string | Response => {
     try {
-      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn || "1d" });
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "14m" });
       return token;
     } catch (error: unknown) {
       if (error instanceof Error)
@@ -23,9 +22,9 @@ export default {
         });
     }
   },
-  generateRefreshToken: (payload: TPAYLOAD, res: Response, expiresIn?: string): string | Response => {
+  generateRefreshToken: (payload: TPAYLOAD, res: Response): string | Response => {
     try {
-      const token = jwt.sign({ uid: payload.uid, tokenVersion: payload.tokenVersion }, JWT_SECRET, { expiresIn: expiresIn || "7d" });
+      const token = jwt.sign({ uid: payload.uid, tokenVersion: payload.tokenVersion }, JWT_SECRET, { expiresIn: "7d" });
       return token;
     } catch (error: unknown) {
       if (error instanceof Error)

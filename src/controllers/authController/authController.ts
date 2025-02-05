@@ -60,7 +60,7 @@ export default {
 
     const { generateAccessToken } = tokenGeneratorService;
     payLoad = { uid: createdUser.email, isVerified: null, tokenVersion: createdUser.tokenVersion, role: createdUser.role };
-    const accessToken = generateAccessToken(payLoad, res, "1d");
+    const accessToken = generateAccessToken(payLoad, res);
     if (!WHITELISTMAILS.includes(createdUser.email)) {
       res.cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     }
@@ -92,8 +92,8 @@ export default {
       role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
-    const accessToken = generateAccessToken(payLoad, res, "14m");
-    const refreshToken = generateRefreshToken(payLoad, res, "7d");
+    const accessToken = generateAccessToken(payLoad, res);
+    const refreshToken = generateRefreshToken(payLoad, res);
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, SUCCESSCODE, "User logged in successfully", { uid: user.uid, username, refreshToken, accessToken });
   }),
@@ -132,8 +132,8 @@ export default {
       role: user.role === "FREELANCER" ? "FREELANCER" : WHITELISTMAILS.includes(email) ? "ADMIN" : "CLIENT",
       isVerified: new Date()
     };
-    const accessToken = generateAccessToken(payLoad, res, "14m");
-    const refreshToken = generateRefreshToken(payLoad, res, "7d");
+    const accessToken = generateAccessToken(payLoad, res);
+    const refreshToken = generateRefreshToken(payLoad, res);
     res.cookie("refreshToken", refreshToken, REFRESHTOKENCOOKIEOPTIONS).cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
     httpResponse(req, res, SUCCESSCODE, "User verified  successfully", { uid: user.uid, email: user.email, refreshToken, accessToken });
   }),
@@ -213,7 +213,7 @@ export default {
       role: WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
-    const accessToken = generateAccessToken(payLoad, res, "194m" /*TODO: change it to 14m*/);
+    const accessToken = generateAccessToken(payLoad, res);
 
     res.cookie("accessToken", accessToken, ACESSTOKENCOOKIEOPTIONS);
 
