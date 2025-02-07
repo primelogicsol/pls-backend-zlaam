@@ -4,9 +4,8 @@ import path from "node:path";
 import { HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
 import { generateRandomStrings } from "../utils/slugStringGeneratorUtils";
 import logger from "../utils/loggerUtils";
-import reshttp from "reshttp";
 import { replaceAllPlaceholders } from "../utils/replaceAllPlaceholders";
-import { COMPANY_NAME } from "../constants";
+import { COMPANY_NAME, INTERNALSERVERERRORCODE, INTERNALSERVERERRORMSG } from "../constants";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -51,9 +50,9 @@ export async function gloabalMailMessage(
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error Email message sending :${error.message}`);
-      throw { status: reshttp.internalServerErrorCode, message: reshttp.internalServerErrorMessage };
+      throw { status: INTERNALSERVERERRORCODE, message: INTERNALSERVERERRORMSG };
     }
     logger.error(`Error sending Email  message:${error as string}`);
-    throw { status: reshttp.internalServerErrorCode, message: reshttp.internalServerErrorMessage };
+    throw { status: INTERNALSERVERERRORCODE, message: INTERNALSERVERERRORMSG };
   }
 }
