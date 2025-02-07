@@ -3,7 +3,7 @@ import DotenvFlow from "dotenv-flow";
 import type { TENV } from "../types";
 DotenvFlow.config();
 
-export const ORIGIN = [process.env.ORIGIN1, process.env.ORIGIN2, process.env.ORIGIN3, process.env.ORIGIN4] as string[];
+export const ORIGIN = [process.env.ORIGIN1, process.env.ORIGIN2, process.env.ORIGIN3, process.env.ORIGIN4, process.env.ORIGIN5] as string[];
 const config = {
   ENV: process.env.ENV as TENV,
   PORT: process.env.PORT || 4000,

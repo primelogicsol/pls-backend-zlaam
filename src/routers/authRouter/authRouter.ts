@@ -101,11 +101,9 @@ authRouter.route("/unTrashTheUser").patch(authMiddleware.checkToken, authMiddlew
 // ** forgot password
 authRouter
   .route("/forgotPasswordRequestFromUser")
-  .post(validateDataMiddleware(forgotPasswordRequestFromUserSchema), authMiddleware.checkToken, userController.forgotPasswordRequestFromUser);
+  .post(validateDataMiddleware(forgotPasswordRequestFromUserSchema), userController.forgotPasswordRequestFromUser);
 authRouter
   .route("/verifyForgotPasswordRequest")
-  .post(validateDataMiddleware(verifyForgotPasswordRequestSchema), authMiddleware.checkToken, userController.verifyForgotPasswordRequest);
-authRouter
-  .route("/updateNewPasswordRequest")
-  .patch(validateDataMiddleware(updateForgotPasswordSchema), authMiddleware.checkToken, userController.updateNewPasswordRequest);
+  .post(validateDataMiddleware(verifyForgotPasswordRequestSchema), userController.verifyForgotPasswordRequest);
+authRouter.route("/updateNewPasswordRequest").patch(validateDataMiddleware(updateForgotPasswordSchema), userController.updateNewPasswordRequest);
 authRouter.route("/refreshAcessToken").post(authController.refreshAcessToken);

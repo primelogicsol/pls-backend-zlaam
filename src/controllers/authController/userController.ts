@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
-import { BADREQUESTCODE, SUCCESSCODE, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../../constants";
+import { BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../../constants";
 import type { TSENDOTP, TTRASH, TUSERUPDATE, TVERIFYUSER } from "../../types";
 import { db } from "../../database/db";
 import { httpResponse } from "../../utils/apiResponseUtils";
@@ -8,6 +8,7 @@ import { passwordHasher, verifyPassword } from "../../services/passwordHasherSer
 import type { _Request } from "../../middlewares/authMiddleware";
 import { generateOtp } from "../../services/slugStringGeneratorService";
 import { sendOTP } from "../../services/sendOTPService";
+import logger from "../../utils/loggerUtils";
 
 export default {
   // ** updateUserInfo controller
@@ -252,14 +253,17 @@ export default {
   forgotPasswordRequestFromUser: asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.body as TSENDOTP;
     const user = await db.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (user?.password === "") {
+      httpResponse(req, res, SUCCESSCODE, "Password already reset please create new one", { uid: user.uid });
+      return;
+    }
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid email" };
     if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
     const generateOneTimePassword = generateOtp();
-    const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
     await db.user.update({
       where: { email: email.toLowerCase() },
       data: {
-        otpPassword: hashedOTPPassword,
+        otpPassword: generateOneTimePassword.otp,
         otpPasswordExpiry: generateOneTimePassword.otpExpiry
       }
     });
@@ -271,14 +275,18 @@ export default {
     // validation is already handled by the middleware
     const { OTP } = req.body as TVERIFYUSER;
 
-    const uid = req.userFromToken?.uid;
-    if (!uid) throw { status: BADREQUESTCODE, message: "Please send uid" };
-    const user = await db.user.findUnique({ where: { uid: uid } });
-    if (!user) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
-    if (user.password === "") throw { status: BADREQUESTCODE, message: "Password already reset" };
+    const user = await db.user.findUnique({ where: { otpPassword: OTP } });
+    if (user?.password === "") {
+      httpResponse(req, res, SUCCESSCODE, "OTP verified successfully", { uid: user.uid });
+      return;
+    }
+    if (!user) {
+      logger.error("User not found");
+      throw { status: BADREQUESTCODE, message: "Invalid OTP" };
+    }
     if (user.otpPasswordExpiry && user.otpPasswordExpiry < new Date()) {
       await db.user.update({
-        where: { uid: uid },
+        where: { otpPassword: OTP },
         data: {
           otpPassword: null,
           otpPasswordExpiry: null
@@ -286,23 +294,23 @@ export default {
       });
       throw { status: BADREQUESTCODE, message: "OTP expired. Please try again" };
     }
-    const isPasswordMatch = await verifyPassword(OTP, user?.otpPassword as string, res);
-    if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid OTP" };
-    await db.user.update({
-      where: { uid: uid },
+    const updatedUser = await db.user.update({
+      where: { otpPassword: OTP },
       data: {
         otpPassword: null,
         otpPasswordExpiry: null,
         password: ""
       }
     });
-    httpResponse(req, res, SUCCESSCODE, "Password reset successfully");
+
+    res.cookie("rndID", updatedUser.uid, REFRESHTOKENCOOKIEOPTIONS);
+    httpResponse(req, res, SUCCESSCODE, "OTP verified successfully", { uid: updatedUser.uid });
   }),
 
   // *****  update New Password Request Controller **********
   updateNewPasswordRequest: asyncHandler(async (req: _Request, res: Response) => {
     const { newPassword } = req.body as TUSERUPDATE;
-    const uid = req.userFromToken?.uid;
+    const { uid } = req.body as { uid: string };
 
     if (!uid) throw { status: BADREQUESTCODE, message: "Please send uid" };
     const user = await db.user.findUnique({ where: { uid: uid } });

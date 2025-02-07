@@ -59,11 +59,21 @@ export default {
     }
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase() } });
     if (!filterAdmin(email) && isSubscribed?.email !== createdUser?.email) {
-      await db.newsletter.create({
-        data: {
-          email: email.toLowerCase()
-        }
-      });
+      // **     send otp
+      await Promise.all([
+        await gloabalMailMessage(
+          email,
+          emailResponses.OTP_SENDER_MESSAGE(generateOneTimePassword.otp, "30m"),
+          "Account Verification",
+          `Dear ${fullName},`
+        ),
+        // ** subscribe email for news letter
+        await db.newsletter.create({
+          data: {
+            email: email.toLowerCase()
+          }
+        })
+      ]);
     }
 
     const { generateAccessToken } = tokenGeneratorService;
