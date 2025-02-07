@@ -2,7 +2,6 @@ import { ADMIN_MAIL_1, ADMIN_MAIL_2, ENV } from "../config/config";
 
 import type { TCOOKIEOPTIONS } from "../types";
 export const COMPANY_NAME = "Prime Logic Solution";
-export const ORIGIN = ["http://localhost:3000", "https://the-orignal-frontend-url-will-be-here.com"];
 const messages = {
   ERRMSG: "Something went wrong",
   SUCCESSMSG: "Operation was successful",
@@ -92,32 +91,3 @@ export const {
   WELCOMEMESSAGEFORFREELANCER,
   ADMINNAME
 } = QUICKS;
-const BASEURL = "/api/v1";
-const ENDPOINTS = {
-  HEALTHROUTE: `${BASEURL}/health`,
-  AUTHROUTE: `${BASEURL}/auth`,
-  CONTACTUSROUTE: `${BASEURL}/contactUs`,
-  NEWSLETTERROUTE: `${BASEURL}/newsletter`,
-  TRASHROUTE: `${BASEURL}/trash`,
-  NAVIGATIONPAGESROUTE: `${BASEURL}/navigationPages`,
-  GETQUOTESROUTE: `${BASEURL}/getQuotes`,
-  CONSULTATIONROUTE: `${BASEURL}/consultation`,
-  HIREUSROUTE: `${BASEURL}/hireUs`,
-  FREELANCER: `${BASEURL}/freelancer`,
-  PROJECT: `${BASEURL}/project`,
-  BLOG: `${BASEURL}/blog`
-};
-export const {
-  HEALTHROUTE,
-  AUTHROUTE,
-  CONTACTUSROUTE,
-  NEWSLETTERROUTE,
-  TRASHROUTE,
-  NAVIGATIONPAGESROUTE,
-  GETQUOTESROUTE,
-  CONSULTATIONROUTE,
-  HIREUSROUTE,
-  FREELANCER,
-  PROJECT,
-  BLOG
-} = ENDPOINTS;
