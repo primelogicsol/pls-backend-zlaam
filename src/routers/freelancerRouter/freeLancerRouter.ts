@@ -46,3 +46,9 @@ freeLancerRouter
 freeLancerRouter
   .route("/acceptFreeLancerRequest/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, freeLancerController.acceptFreeLancerRequest);
+freeLancerRouter
+  .route("/listAllFreelancers")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, freeLancerController.listAllTheFreelancers);
+freeLancerRouter
+  .route("/listSingleFreelancer/:username")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, freeLancerController.listSingleFreelancer);

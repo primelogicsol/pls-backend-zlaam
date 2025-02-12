@@ -217,5 +217,104 @@ export default {
     const niche = await db.nichesForFreelancers.findUnique({ where: { id: Number(id) } });
     if (!niche) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, niche);
+  }),
+  listAllTheFreelancers: asyncHandler(async (req, res) => {
+    // Get pagination parameters from query
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination metadata
+    const totalCount = await db.user.count({
+      where: {
+        role: "FREELANCER",
+        emailVerifiedAt: { not: null },
+        trashedAt: null
+      }
+    });
+
+    // Get paginated freelancers
+    const freelancers = await db.user.findMany({
+      where: {
+        role: "FREELANCER",
+        emailVerifiedAt: { not: null },
+        trashedAt: null
+      },
+      select: {
+        username: true,
+        fullName: true,
+        niche: true,
+        detail: true,
+        kpiRankPoints: true,
+        kpiRank: true,
+        portfolioUrl: true,
+        projects: { select: { projectStatus: true, projectSlug: true, progressPercentage: true } }
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        kpiRankPoints: "desc" // You can modify this sorting as needed
+      }
+    });
+
+    if (freelancers.length === 0) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // Return response with pagination metadata
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, {
+      data: freelancers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: totalCount,
+        itemsPerPage: limit,
+        hasNextPage,
+        hasPrevPage
+      }
+    });
+  }),
+  listSingleFreelancer: asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    if (!username) throw { status: BADREQUESTCODE, message: "Username is required" };
+    const freelancer = await db.user.findFirst({
+      where: {
+        username,
+        role: "FREELANCER",
+        emailVerifiedAt: { not: null },
+        trashedAt: null
+      },
+      select: {
+        username: true,
+        fullName: true,
+        email: true,
+        niche: true,
+        detail: true,
+        kpiRankPoints: true,
+        kpiRank: true,
+        portfolioUrl: true,
+        projects: {
+          where: {
+            trashedAt: null
+          },
+          select: {
+            projectStatus: true,
+            projectSlug: true,
+            progressPercentage: true,
+            title: true
+          }
+        }
+      }
+    });
+    if (!freelancer) {
+      throw {
+        status: NOTFOUNDCODE,
+        message: "Freelancer not found with the provided username"
+      };
+    }
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, freelancer);
   })
 };
