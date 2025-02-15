@@ -25,12 +25,7 @@ export default {
   // *** create consultaionBooking controller
   createConsultation: asyncHandler(async (req, res) => {
     const { name, email, phone, message, address } = req.body as TCONSULTATION;
-    let { bookingDate: stringyDate } = req.body as TCONSULTATION;
-    if (stringyDate.length === 16) {
-      stringyDate += ":00.000Z";
-    } else {
-      throw { status: BADREQUESTCODE, message: "Please enter a valid date" };
-    }
+    const { bookingDate: stringyDate } = req.body as TCONSULTATION;
     const bookingDate = new Date(stringyDate);
     if (isNaN(bookingDate.getTime())) {
       throw { status: BADREQUESTCODE, message: "Invalid date format." };
