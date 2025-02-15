@@ -232,7 +232,7 @@ enum consultationStatus {
 model ConsultationBooking {
   id          Int                @id @default(autoincrement())
   name        String
-  email       String             @unique
+  email       String             
   phone       String
   message     String
   bookingDate DateTime           @unique
