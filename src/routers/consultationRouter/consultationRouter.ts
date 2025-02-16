@@ -14,6 +14,13 @@ consultationRouter.route("/requestAConsultation").post(
   },
   consultationController.createConsultation
 );
+consultationRouter.route("/updateRequestedConsultation/:id").post(
+  validateDataMiddleware(consultationBookingSchema),
+  async (req, res, next) => {
+    await rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 28800);
+  },
+  consultationController.updateConsultation
+);
 consultationRouter
   .route("/getAllRequestedConsultations")
   .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, consultationController.getAllRequestedConsultations);
