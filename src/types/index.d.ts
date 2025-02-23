@@ -127,6 +127,7 @@ export type TCONSULTATION = {
   message: string;
   address: string;
   bookingDate: string;
+  subject: string;
 };
 
 export type THIREUS = {

@@ -232,11 +232,12 @@ enum consultationStatus {
 model ConsultationBooking {
   id          Int                @id @default(autoincrement())
   name        String
-  email       String             
+  email       String
   phone       String
   message     String
   bookingDate DateTime           @unique
   status      consultationStatus @default(PENDING)
+  subject     String
   address     String
   trashedBy   String?
   trashedAt   DateTime?

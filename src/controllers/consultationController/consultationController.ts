@@ -24,7 +24,7 @@ import logger from "../../utils/loggerUtils";
 export default {
   // *** create consultaionBooking controller
   createConsultation: asyncHandler(async (req, res) => {
-    const { name, email, phone, message, address } = req.body as TCONSULTATION;
+    const { name, email, phone, message, address, subject } = req.body as TCONSULTATION;
     const { bookingDate: stringyDate } = req.body as TCONSULTATION;
     const bookingDate = new Date(stringyDate);
     if (isNaN(bookingDate.getTime())) {
@@ -51,7 +51,8 @@ export default {
         phone,
         message,
         bookingDate,
-        address
+        address,
+        subject
       }
     });
     await Promise.all([
