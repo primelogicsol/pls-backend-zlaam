@@ -31,3 +31,6 @@ newsLetterRouter
     authMiddleware.checkIfUserIAdminOrModerator,
     newsLetterController.sendNewsLetterToAllSubscribers
   );
+newsLetterRouter
+  .route("/listAllSubscribedMails")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, newsLetterController.listAllSubscribedMails);

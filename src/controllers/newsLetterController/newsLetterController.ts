@@ -51,5 +51,28 @@ export default {
     const allSubscribers = await db.newsletter.findMany({ where: { subscriptionStatus: true } });
     await Promise.all(allSubscribers.map((subscriber) => sendNewsLetterToSubscribers(subscriber.email, newsLetter)));
     httpResponse(req, res, SUCCESSCODE, "News letter sent successfully");
+  }),
+  listAllSubscribedMails: asyncHandler(async (req, res) => {
+    // ** Add pagination
+
+    const { page = 1, limit = 10 } = req.query;
+    const pageNumber = Number(page);
+    const pageLimit = Number(limit);
+
+    if (isNaN(pageNumber) || isNaN(pageLimit) || pageNumber <= 0 || pageLimit <= 0) {
+      throw { status: 400, message: "Invalid pagination parameters!!" };
+    }
+
+    const skip = (pageNumber - 1) * pageLimit;
+    const take = pageLimit;
+    const allSubscribers = await db.newsletter.findMany({
+      select: { email: true },
+      skip,
+      take,
+      orderBy: {
+        createdAt: "asc"
+      }
+    });
+    httpResponse(req, res, SUCCESSCODE, "Subscribed Mails", allSubscribers);
   })
 };
