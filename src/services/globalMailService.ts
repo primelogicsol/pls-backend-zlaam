@@ -8,7 +8,10 @@ import { replaceAllPlaceholders } from "../utils/replaceAllPlaceholders";
 import { COMPANY_NAME, INTERNALSERVERERRORCODE, INTERNALSERVERERRORMSG } from "../constants";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.hostinger.com",
+  port: 465,
+  secure: true,
+
   auth: {
     user: HOST_EMAIL,
     pass: HOST_EMAIL_SECRET
@@ -35,13 +38,18 @@ export async function gloabalMailMessage(
   htmlTemplate = replaceAllPlaceholders(htmlTemplate, placeholders);
   const randomStr = generateRandomStrings(10);
   const mailOptions = {
-    from: HOST_EMAIL ?? "noreply@pls.com",
+    from: HOST_EMAIL,
     to: to,
     subject: subject ?? COMPANY_NAME,
     html: htmlTemplate,
     headers: {
+      "X-Auto-Response-Suppress": "All",
+      Precedence: "bulk",
+      "Auto-Submitted": "auto-generated",
       "Message-ID": `<${randomStr}.dev>`
-    }
+    },
+
+    replyTo: "support@primelogicsole.com"
   };
 
   try {
