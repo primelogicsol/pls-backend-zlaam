@@ -15,7 +15,6 @@
     "build": "bun run tsc --build  && bun run copy",
     "dev": "bun run build  && nodemon  ./src/server.ts",
     "start": "bun run build && node --env-file .env ./dist/src/server.js",
-    "prepare": "husky",
     "commit-lint": "commitlint  --edit",
     "precommit": "bun run lint && bun run fmt && git add .",
     "db:generate": "prisma generate",
@@ -23,7 +22,8 @@
     "db:deploy": "prisma deploy",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
-    "test": "node"
+    "test": "node",
+    "prepare": "husky"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0",
