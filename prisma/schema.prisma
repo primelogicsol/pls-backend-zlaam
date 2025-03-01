@@ -93,8 +93,8 @@ enum PROJECT_TYPE {
 
 model Project {
   id                                    Int              @id @default(autoincrement())
-  title                                 String           @unique()
-  projectSlug                           String           @unique()
+  title                                 String           @unique
+  projectSlug                           String           @unique
   detail                                String
   niche                                 String
   bounty                                Int

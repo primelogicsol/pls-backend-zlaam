@@ -77,6 +77,7 @@ projectRouter.route("/writeReviewAndGiveRating/:projectSlug").patch(
 
 projectRouter.route("/updateProjectBySlug/:projectSlug").patch(
   //  authMiddleware.checkIfUserIAdminOrModerator,
+  validateDataMiddleware(projectSchema),
   updateProjectController.updateProjectBySlug
 );
 projectRouter.route("/makeProjectOutsource/:projectSlug").patch(

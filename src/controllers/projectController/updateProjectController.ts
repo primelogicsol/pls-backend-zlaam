@@ -1,7 +1,8 @@
 import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
-import type { TDIFFICULTYLEVEL, TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TPROJECT, TSORTORDER } from "../../types";
+import { generateSlug } from "../../services/slugStringGeneratorService";
+import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TPROJECT, TSORTORDER, TUPDATE_PROJECT } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { calculate90Percent } from "../../utils/bountyPercentageDividerUtils";
@@ -249,12 +250,15 @@ export default {
   // ** Update Project by Slug
   updateProjectBySlug: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
-    const { title, detail, deadline, projectType, projectStatus, isDeadlineNeedToBeExtend, bounty } = req.body as TPROJECT;
-    const difficultyLevel = req.body as TDIFFICULTYLEVEL;
+    const updatedData = req.body as TUPDATE_PROJECT;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
+    const deadLineDate = new Date(updatedData.deadline);
+    // check if deadline  ISO-8601 format or not
+    if (isNaN(deadLineDate.getTime())) throw { status: BADREQUESTCODE, message: "Invalid deadline date." };
+    if (deadLineDate < new Date()) throw { status: BADREQUESTCODE, message: "Deadline must be a future date." };
     const project = await db.project.update({
       where: { projectSlug: projectSlug },
-      data: { title, detail, deadline, difficultyLevel, projectType, projectStatus, isDeadlineNeedToBeExtend, bounty: calculate90Percent(bounty) }
+      data: { ...updatedData, projectSlug: generateSlug(updatedData.title), bounty: calculate90Percent(updatedData.bounty), deadline: deadLineDate }
     });
     if (!project) throw { status: NOTFOUNDCODE, message: "Project not found." };
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { project });
@@ -263,8 +267,11 @@ export default {
   makeProjectOutsource: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    const project = await db.project.findUnique({ where: { projectSlug: projectSlug }, select: { bounty: true } });
+    const project = await db.project.findUnique({ where: { projectSlug: projectSlug }, select: { bounty: true, projectType: true } });
     if (!project) throw { status: NOTFOUNDCODE, message: "Project not found." };
+    if (project.projectType === "OUTSOURCE") {
+      throw { status: BADREQUESTCODE, message: "Project is already outsource." };
+    }
     await db.project.update({
       where: { projectSlug: projectSlug },
       data: { projectType: "OUTSOURCE", bounty: calculate90Percent(project?.bounty || 0) }

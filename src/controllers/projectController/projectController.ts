@@ -26,8 +26,15 @@ export default {
     if (isNaN(newDeadLine.getTime())) {
       throw { status: BADREQUESTCODE, message: "Invalid date format." };
     }
+    if (newDeadLine < new Date()) {
+      throw { status: BADREQUESTCODE, message: "Deadline must be in the future." };
+    }
     const projectSlug = generateSlug(projectData.title);
     const niche = generateSlug(projectData.niche);
+    const clientWhoPostedThisProjectForeignIdExists = await db.user.findUnique({
+      where: { uid: projectData.clientWhoPostedThisProjectForeignId || "" }
+    });
+    if (!clientWhoPostedThisProjectForeignIdExists) throw { status: BADREQUESTCODE, message: "Client id does not exist." };
     const isProjectAlreadyExist = await db.project.findUnique({ where: { projectSlug: projectSlug, title: projectData.title } });
     if (isProjectAlreadyExist) {
       throw { status: BADREQUESTCODE, message: "Project already exist with same title." };
