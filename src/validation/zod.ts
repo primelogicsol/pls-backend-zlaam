@@ -118,7 +118,20 @@ export const userUpdatePasswordSchema = z.object({
     .max(50, { message: " newPassword can be at most 50 characters long." })
 });
 export const userDeleteSchema = z.object({
-  uid: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" })
+  username: z.string({ message: "uid is required!!" }).min(1, { message: "uid is required!!" })
+});
+
+export const getSingleUserSChema = z.object({
+  username: z
+    .string({ message: "username is required!!" })
+    .min(1, { message: "username is required!!" })
+    .min(3, {
+      message: "Username must be at least 3 characters long. e.g: user123"
+    })
+    .max(50, { message: "Username can be at most 50 characters long. e.g: user123" })
+    .regex(/^[a-z0-9_.]{1,20}$/, {
+      message: "Username can only contain lowercase letters, numbers, underscores, and periods. e.g: user123"
+    })
 });
 /*                                                       Contact US Schema                                                               */
 

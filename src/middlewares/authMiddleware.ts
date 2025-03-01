@@ -27,7 +27,7 @@ export default {
     }
     const [error, decoded] = verifyToken<TPAYLOAD>(parsedToken);
     if (error) {
-      logger.error("Error while verifying token", "authMiddleware.ts:24");
+      logger.error(`Error while verifying token :: ${String(parsedToken)}`, "authMiddleware.ts:24");
       throw { status: UNAUTHORIZEDCODE, message: UNAUTHORIZEDMSG };
     }
     if (!decoded?.uid) {

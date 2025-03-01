@@ -1,6 +1,4 @@
-import { ADMIN_MAIL_1 } from "../../config/config";
 import {
-  ADMINNAME,
   BADREQUESTCODE,
   COMPANY_NAME,
   NOTFOUNDCODE,
@@ -13,12 +11,12 @@ import {
 import { generateUsername } from "../../services/slugStringGeneratorService";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
-import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
 import { passwordHasher } from "../../services/passwordHasherService";
 import { generateRandomStrings } from "../../services/slugStringGeneratorService";
 import type { TFREELANCER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
+import { gloabalMailMessage } from "../../services/globalMailService";
 
 export default {
   // ** Freelancer will request for create an account
@@ -30,18 +28,11 @@ export default {
         phone: freeLancer.phone
       }
     });
-    if (isExist) throw { status: BADREQUESTCODE, message: "User Already exists with same email or phone" };
+    if (isExist) throw { status: BADREQUESTCODE, message: "You've already requested for joining us" };
     await db.freeLancersRequest.create({
       data: freeLancer
     });
-    await gloabalEmailMessage(
-      ADMIN_MAIL_1,
-      freeLancer.email,
-      ADMINNAME,
-      THANKYOUMESSAGE,
-      `Your Request To Join Our Team`,
-      `Dear, ${freeLancer.name}`
-    );
+    await gloabalMailMessage(freeLancer.email, THANKYOUMESSAGE, `Your Request Join us`, `Dear, ${freeLancer.name}`);
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   }),
   //  ** Get all freelancer Request which are unaccepted
@@ -159,18 +150,16 @@ export default {
         emailVerifiedAt: new Date()
       }
     });
-    await gloabalEmailMessage(
-      ADMIN_MAIL_1,
-      isRequestExist.email,
-      ADMINNAME,
+
+    await gloabalMailMessage(
+      createdFreelancer.email,
       `${WELCOMEMESSAGEFORFREELANCER} <p>Please use the following credintials to get access of your Dashboard from where you can see the list of all the projects.</p>
       <br>
       Username:<p style="color:blue;font-weight:bold;">${createdFreelancer.username}</p>
       Password:<p style="color:blue;font-weight:bold;">${randomPassword}</p>
-      <p>Best Regard,</p> ${COMPANY_NAME}
-`,
-      `Congratulations For Joining Our Team`,
-      `Dear, ${isRequestExist.name}`
+      <p>Best Regard,</p> ${COMPANY_NAME}`,
+      `Congratulations For Joining Us`,
+      `Dear, ${createdFreelancer.fullName}`
     );
     await db.freeLancersRequest.delete({
       where: {
@@ -253,7 +242,7 @@ export default {
       skip,
       take: limit,
       orderBy: {
-        kpiRankPoints: "desc" // You can modify this sorting as needed
+        kpiRankPoints: "desc"
       }
     });
 

@@ -4,6 +4,7 @@ import authController from "../../controllers/authController/authController";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 import {
   forgotPasswordRequestFromUserSchema,
+  getSingleUserSChema,
   sendOTPSchema,
   updateForgotPasswordSchema,
   userDeleteSchema,
@@ -86,7 +87,7 @@ authRouter.route("/updateRole").patch(
   (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 2),
   userController.updateRole
 );
-authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(userDeleteSchema), userController.getSingleUser);
+authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(getSingleUserSChema), userController.getSingleUser);
 
 authRouter.route("/getAllUsers").get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.getAllUsers);
 
