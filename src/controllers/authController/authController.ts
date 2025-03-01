@@ -15,7 +15,6 @@ import {
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
-import { sendOTP } from "../../services/sendOTPService";
 import logger from "../../utils/loggerUtils";
 import { verifyToken } from "../../services/verifyTokenService";
 import { filterAdmin } from "../../utils/filterAdminUtils";
@@ -171,7 +170,12 @@ export default {
         otpPasswordExpiry: generateOneTimePassword.otpExpiry
       }
     });
-    await sendOTP(email, generateOneTimePassword.otp, user.fullName);
+    await gloabalMailMessage(
+      email,
+      emailResponses.OTP_SENDER_MESSAGE(generateOneTimePassword.otp, "30m"),
+      "Account Verification",
+      `Dear ${user.fullName},`
+    );
     httpResponse(req, res, SUCCESSCODE, "OTP sent successfully", { email });
   }),
   // *** Logout User Controlelr ************************* This controller is only for user who want to logout himself admin can't use this otherise he will logout himself

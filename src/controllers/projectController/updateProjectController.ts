@@ -8,6 +8,7 @@ import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { calculate90Percent } from "../../utils/bountyPercentageDividerUtils";
 import { findUniqueProject } from "../../utils/findUniqueUtils";
 import { calculateKpiPoints } from "../../utils/kpiCalculaterUtils";
+import logger from "../../utils/loggerUtils";
 import { updateFreelancerRank } from "../../utils/updateFreelancerRankUtils";
 
 export default {
@@ -29,8 +30,9 @@ export default {
   removeFreelancerFromInterestedList: asyncHandler(async (req: _Request, res) => {
     const { projectSlug } = req.params;
     const freelancerUid = req.userFromToken?.uid;
+    logger.info(freelancerUid);
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
-    if (!freelancerUid) throw { status: BADREQUESTCODE, message: "Freelancer username is required." };
+    if (!freelancerUid) throw { status: BADREQUESTCODE, message: "Freelancer uid is required." };
     const updatedProject = await db.project.update({
       where: { projectSlug: projectSlug },
       data: { interestedFreelancers: { disconnect: [{ uid: freelancerUid }] } },

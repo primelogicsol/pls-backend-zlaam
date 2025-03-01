@@ -1,60 +1,57 @@
 import { Router } from "express";
-//import authMiddleware from "../../middlewares/authMiddleware";
 import { validateDataMiddleware } from "../../middlewares/validationMiddleware";
 import { projectSchema } from "../../validation/zod";
 import projectController from "../../controllers/projectController/projectController";
 import updateProjectController from "../../controllers/projectController/updateProjectController";
+import authMiddleware from "../../middlewares/authMiddleware";
 export const projectRouter = Router();
 
-projectRouter.route("/createProject").post(
-  validateDataMiddleware(projectSchema),
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  projectController.createProject
-);
+projectRouter
+  .route("/createProject")
+  .post(
+    validateDataMiddleware(projectSchema),
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIAdminOrModerator,
+    projectController.createProject
+  );
 projectRouter.route("/getSingleProject/:projectSlug").get(
   //  authMiddleware.checkIfUserIAdminOrModerator,
   projectController.getSingleProject
 );
 
-projectRouter.route("/getAllOutsourcedProjects").get(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  projectController.getAllOutsourcedProjects
-);
-projectRouter.route("/getAllProjects").get(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  updateProjectController.getAllProjects
-);
+projectRouter
+  .route("/getAllOutsourcedProjects")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, projectController.getAllOutsourcedProjects);
+projectRouter
+  .route("/getAllProjects")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, updateProjectController.getAllProjects);
 
-projectRouter.route("/deleteProject/:id").delete(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  projectController.deleteProject
-);
+projectRouter.route("/deleteProject/:id").delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, projectController.deleteProject);
 // *************************Update Project Details
 
-projectRouter.route("/createInterestedFreelancers/:projectSlug").patch(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  updateProjectController.createInterestedFreelancers
-);
+projectRouter
+  .route("/createInterestedFreelancers/:projectSlug")
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, updateProjectController.createInterestedFreelancers);
 
-projectRouter.route("/removeFreelancerFromInterestedList/:projectSlug").patch(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  updateProjectController.removeFreelancerFromInterestedList
-);
+projectRouter
+  .route("/removeFreelancerFromInterestedList/:projectSlug")
+  .patch(
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer,
+    updateProjectController.removeFreelancerFromInterestedList
+  );
 
-projectRouter.route("/listInterestedFreelancersInSingleProject/:projectSlug").get(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  updateProjectController.listInterestedFreelancersInSingleProject
-);
+projectRouter
+  .route("/listInterestedFreelancersInSingleProject/:projectSlug")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, updateProjectController.listInterestedFreelancersInSingleProject);
 
-projectRouter.route("/selectFreelancerForProject/:projectSlug").patch(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  updateProjectController.selectFreelancerForProject
-);
+projectRouter
+  .route("/selectFreelancerForProject/:projectSlug")
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, updateProjectController.selectFreelancerForProject);
 
-projectRouter.route("/removeSelectedFreelancer/:projectSlug").patch(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  updateProjectController.removeSelectedFreelancer
-);
+projectRouter
+  .route("/removeSelectedFreelancer/:projectSlug")
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, updateProjectController.removeSelectedFreelancer);
 
 projectRouter.route("/updateProgressOfProject/:projectSlug").patch(
   //  authMiddleware.checkIfUserIAdminOrModerator,
@@ -75,7 +72,7 @@ projectRouter.route("/writeReviewAndGiveRating/:projectSlug").patch(
   updateProjectController.writeReviewAndGiveRating
 );
 
-projectRouter.route("/updateProjectBySlug/:projectSlug").patch(
+projectRouter.route("/epdateProjectBySlug/:projectSlug").patch(
   //  authMiddleware.checkIfUserIAdminOrModerator,
   validateDataMiddleware(projectSchema),
   updateProjectController.updateProjectBySlug

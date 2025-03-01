@@ -83,6 +83,9 @@ export default {
     // ** validation is already handled by the middleware
     const userData = req.body as TUSERUPDATE;
     const { role, uid } = userData;
+    if (!role || !uid) {
+      throw { status: BADREQUESTCODE, message: "Role and UID is required" };
+    }
     const updatedUser = await db.user.update({
       where: { uid },
       data: {
