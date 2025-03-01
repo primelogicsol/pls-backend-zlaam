@@ -1,14 +1,13 @@
 import type { UploadApiResponse } from "cloudinary";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../../services/cloudinaryService";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
-import { ADMINNAME, BADREQUESTCODE, HIREUSMESSAGE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
+import { BADREQUESTCODE, HIREUSMESSAGE, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import type { THIREUS, THIREUSDOCUMENT } from "../../types";
 import { db } from "../../database/db";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import type { _Request } from "../../middlewares/authMiddleware";
-import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
-import { ADMIN_MAIL_1 } from "../../config/config";
 import logger from "../../utils/loggerUtils";
+import { gloabalMailMessage } from "../../services/globalMailService";
 
 export default {
   // create hire us request controller
@@ -43,7 +42,7 @@ export default {
         docs: responseAfterUploadingFilesOnCloudinary
       }
     });
-    await gloabalEmailMessage(ADMIN_MAIL_1, data.email, ADMINNAME, HIREUSMESSAGE, "Request to hire Prime Logic Solution", `Dear ${data.name}`);
+    await gloabalMailMessage(data.email, HIREUSMESSAGE, "Prime Logic Solution", "Request to hire Prime Logic Solution", `Dear ${data.name}`);
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { data: createdHireUs });
   }),
 

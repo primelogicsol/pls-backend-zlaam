@@ -285,7 +285,12 @@ export const consultationBookingSchema = z.object({
     .string({ message: "address is required!!" })
     .min(1, { message: "address is required!!" })
     .min(3, { message: "address must be at least 3 characters long." })
-    .max(450, { message: "address can be at most 150 characters long." })
+    .max(450, { message: "address can be at most 150 characters long." }),
+  subject: z
+    .string({ message: "subject is required!!" })
+    .min(1, { message: "subject is required!!" })
+    .min(3, { message: "subject must be at least 3 characters long." })
+    .max(450, { message: "subject can be at most 150 characters long." })
 });
 
 export const hireUsSchema = z.object({

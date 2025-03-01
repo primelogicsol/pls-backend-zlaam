@@ -1,4 +1,4 @@
-import { ADMIN_MAIL_1, HOST_EMAIL } from "../../config/config";
+import { HOST_EMAIL } from "../../config/config";
 import {
   ADMINNAME,
   BADREQUESTCODE,
@@ -15,7 +15,7 @@ import {
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
 
-import { gloabalEmailMessage } from "../../services/gloablEmailMessageService";
+import { gloabalMailMessage } from "../../services/globalMailService";
 import type { TCONSULTATION } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
@@ -57,17 +57,17 @@ export default {
     });
     await Promise.all([
       // ** this email sent by user
-      await gloabalEmailMessage(
-        email,
-        ADMIN_MAIL_1,
-        name,
+      await gloabalMailMessage(email, message, "Consultation Request For Prime Logic Solution", `Dear ${name},`),
+      await gloabalMailMessage(
+        HOST_EMAIL,
         message,
         "Consultation Request For Prime Logic Solution",
         "Dear Administrators of PLS,",
-        `User's orignal email is here: ${email} For more information check admin pannel of PLS`
+        `User's orignal email is here: ${email} For more information check admin pannel of PLS`,
+        name
       ),
       // ** this is auto generated reply for user
-      await gloabalEmailMessage(HOST_EMAIL, email, ADMINNAME, CONSULTATIONPENDINGMESSAGEFROMADMIN, "About your consultation request", `Dear ${name},`)
+      await gloabalMailMessage(email, CONSULTATIONPENDINGMESSAGEFROMADMIN, "About your consultation request", `Dear ${name},`, "", ADMINNAME)
     ]);
     httpResponse(req, res, SUCCESSCODE, "Please check your email for more details", consultation);
   }),
@@ -75,7 +75,7 @@ export default {
   updateConsultation: asyncHandler(async (req, res) => {
     const { id } = req.params;
     if (!id) throw { status: BADREQUESTCODE, message: "Please send the id of consultaion request you want to update" };
-    const { name, email, phone, message, address } = req.body as TCONSULTATION;
+    const { name, email, phone, message, address, subject } = req.body as TCONSULTATION;
     const { bookingDate: stringyDate } = req.body as TCONSULTATION;
 
     // Check if consultation exists
@@ -133,29 +133,29 @@ export default {
         phone,
         message,
         bookingDate,
-        address
+        address,
+        subject
       }
     });
 
     // Send email notifications
     await Promise.all([
-      await gloabalEmailMessage(
-        email,
-        ADMIN_MAIL_1,
-        name,
+      await gloabalMailMessage(
+        HOST_EMAIL,
         message,
         "Consultation Update For Prime Logic Solution",
         "Dear Administrators of PLS,",
-        `Some one has updated the User's email in consultancy. User's update email is here: ${email} For more information check admin panel of PLS`
+        `Some one has updated the User's email in consultancy. User's update email is here: ${email} For more information check admin panel of PLS`,
+        name
       ),
 
-      await gloabalEmailMessage(
-        HOST_EMAIL,
+      await gloabalMailMessage(
         email,
-        ADMINNAME,
         "Your consultation booking has been updated successfully",
         "Consultation Update Confirmation",
-        `Dear ${name},`
+        `Dear ${name},`,
+        "",
+        ADMINNAME
       )
     ]);
 
@@ -190,13 +190,13 @@ export default {
     const { id } = req.params;
     const consultation = await db.consultationBooking.update({ where: { id: Number(id) }, data: { status: "ACCEPTED" } });
     // ** send acceptance email controller
-    await gloabalEmailMessage(
-      HOST_EMAIL,
+    await gloabalMailMessage(
       consultation.email,
-      ADMINNAME,
       `${CONSULTATIONAPPROVALMESSAGEFROMADMIN} <p>I hope you are ready on ${consultation.bookingDate.toLocaleDateString()} at ${consultation.bookingDate.toLocaleTimeString()}.</p><p>Best regards,</p><p>Prime Logic Solution</p>`,
       "Your consultation request got Accepted",
-      `Dear ${consultation.name},`
+      `Dear ${consultation.name},`,
+      "",
+      ADMINNAME
     );
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   }),
@@ -209,23 +209,23 @@ export default {
         where: { id: Number(id), status: "PENDING" },
         data: { status: "REJECTED" }
       });
-      await gloabalEmailMessage(
-        HOST_EMAIL,
+      await gloabalMailMessage(
         rejectedConsultation.email,
-        ADMINNAME,
         CONSULTATIONREJECTMESSAGEFROMADMIN,
         "Your consultation request got rejected",
-        `Dear ${rejectedConsultation.name},`
+        `Dear ${rejectedConsultation.name},`,
+        "",
+        ADMINNAME
       );
     } else if (rejectAndDeleteConsultaion) {
       const rejectedDelete = await db.consultationBooking.delete({ where: { id: Number(id) } });
-      await gloabalEmailMessage(
-        HOST_EMAIL,
+      await gloabalMailMessage(
         rejectedDelete.email,
-        ADMINNAME,
         CONSULTATIONREJECTMESSAGEFROMADMIN,
         "Your consultation request got rejected",
-        `Dear ${rejectedDelete.name},`
+        `Dear ${rejectedDelete.name},`,
+        "",
+        ADMINNAME
       );
     }
 

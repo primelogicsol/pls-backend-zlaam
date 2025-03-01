@@ -1,5 +1,6 @@
 import { BADREQUESTCODE, SUCCESSCODE, WHITELISTMAILS } from "../../constants";
 import { db } from "../../database/db";
+import { gloabalMailMessage } from "../../services/globalMailService";
 import { sendNewsLetterToSubscribers } from "../../services/sendNewsLetterToSubscribersService";
 import type { TSUBSCRIBENEWSLETTER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
@@ -49,7 +50,9 @@ export default {
     // ** validation is already handled by  middleware
     const { newsLetter } = req.body as TSUBSCRIBENEWSLETTER;
     const allSubscribers = await db.newsletter.findMany({ where: { subscriptionStatus: true } });
-    await Promise.all(allSubscribers.map((subscriber) => sendNewsLetterToSubscribers(subscriber.email, newsLetter)));
+    await Promise.all(
+      allSubscribers.map((subscriber) => gloabalMailMessage(subscriber.email, newsLetter, "Prime Logic Solutions", `Dear ${subscriber.email}`))
+    );
     httpResponse(req, res, SUCCESSCODE, "News letter sent successfully");
   }),
   listAllSubscribedMails: asyncHandler(async (req, res) => {

@@ -8,10 +8,13 @@ import { INTERNALSERVERERRORCODE } from "../constants";
 
 // Create a transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.hostinger.com",
+  port: 465,
+  secure: true,
+
   auth: {
     user: HOST_EMAIL,
-    pass: HOST_EMAIL_SECRET // Use the app password if 2FA is enabled
+    pass: HOST_EMAIL_SECRET
   }
 });
 
