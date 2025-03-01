@@ -106,7 +106,7 @@ export default {
     payLoad = {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: user.role === "FREELANCER" ? "FREELANCER" : filterAdmin(user?.email) ? "ADMIN" : "CLIENT",
+      role: !filterAdmin(user.email) ? user.role : "ADMIN",
       isVerified: user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res);
