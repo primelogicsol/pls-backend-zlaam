@@ -5,7 +5,7 @@ import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
 export default {
   getAllTrashedConsultations: asyncHandler(async (req, res) => {
-    const trashedConsultations = await db.hireUs.findMany({
+    const trashedConsultations = await db.consultationBooking.findMany({
       where: {
         trashedBy: { not: null },
         trashedAt: { not: null }

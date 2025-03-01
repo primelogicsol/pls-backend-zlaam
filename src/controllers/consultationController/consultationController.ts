@@ -178,6 +178,8 @@ export default {
   // ** delete consultation
   deleteRequestedConsultation: asyncHandler(async (req, res) => {
     const { id } = req.params;
+    const checkIfConsultationExists = await db.consultationBooking.findUnique({ where: { id: Number(id) } });
+    if (!checkIfConsultationExists) throw { status: NOTFOUNDCODE, message: "No consultation found" };
     await db.consultationBooking
       .delete({ where: { id: Number(id) } })
       .then(() => httpResponse(req, res, SUCCESSCODE, "Deleted successfully"))

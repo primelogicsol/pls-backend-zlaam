@@ -108,3 +108,4 @@ authRouter
   .post(validateDataMiddleware(verifyForgotPasswordRequestSchema), userController.verifyForgotPasswordRequest);
 authRouter.route("/updateNewPasswordRequest").patch(validateDataMiddleware(updateForgotPasswordSchema), userController.updateNewPasswordRequest);
 authRouter.route("/refreshAcessToken").post(authController.refreshAcessToken);
+authRouter.route("/getAllClients").get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.getAllClients);

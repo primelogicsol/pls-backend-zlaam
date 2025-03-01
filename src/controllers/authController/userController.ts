@@ -327,5 +327,50 @@ export default {
       }
     });
     httpResponse(req, res, SUCCESSCODE, "Password updated successfully");
+  }),
+  // ** Get All Clients Profile
+  getAllClients: asyncHandler(async (req: Request, res: Response) => {
+    const { page = 1, limit = 10 } = req.query;
+    const pageNumber = Number(page);
+    const pageLimit = Number(limit);
+
+    if (isNaN(pageNumber) || isNaN(pageLimit) || pageNumber <= 0 || pageLimit <= 0) {
+      throw { status: 400, message: "Invalid pagination parameters!!" };
+    }
+
+    const skip = (pageNumber - 1) * pageLimit;
+    const take = pageLimit;
+    const users = await db.user.findMany({
+      where: {
+        role: "CLIENT",
+        trashedAt: null,
+        trashedBy: null
+      },
+      select: {
+        uid: true,
+        username: true,
+        fullName: true,
+        email: true,
+        role: true,
+        emailVerifiedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        projects: true
+      },
+      skip,
+      take,
+      orderBy: {
+        createdAt: "asc"
+      }
+    });
+    const totalUsers = await db.user.count({ where: { role: "CLIENT", trashedAt: null, trashedBy: null } });
+    const totalPages = Math.ceil(totalUsers / pageLimit);
+
+    const hasNextPage = totalPages > pageNumber;
+    const hasPreviousPage = pageNumber > 1;
+    httpResponse(req, res, SUCCESSCODE, "Clients fetched successfully", {
+      users,
+      pagination: { totalPages, totalUsers, currentPage: pageNumber, hasPreviousPage, hasNextPage }
+    });
   })
 };

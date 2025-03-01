@@ -2,7 +2,7 @@ import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../con
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
 import { generateSlug } from "../../services/slugStringGeneratorService";
-import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TPROJECT, TSORTORDER, TUPDATE_PROJECT } from "../../types";
+import type { TPROJECT, TUPDATE_PROJECT } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { calculate90Percent } from "../../utils/bountyPercentageDividerUtils";
@@ -144,83 +144,6 @@ export default {
   }),
   // ** Get All Projects
 
-  getAllProjects: asyncHandler(async (req, res) => {
-    // Destructure and parse query parameters with types
-    const { page = "1", limit = "10", difficultyLevel, nicheName = "", projectType = "", projectStatus = "" }: TGETFULLPROJECTQUERY = req.query;
-    let { createdAtOrder = "latest", bountyOrder = "" }: TGETFULLPROJECTQUERY = req.query;
-    const pageNum = parseInt(page, 10);
-    const pageSize = parseInt(limit, 10);
-    const skip = (pageNum - 1) * pageSize;
-
-    const filters: TFILTEREDPROJECT = {
-      trashedAt: null,
-      trashedBy: null
-    };
-
-    if (difficultyLevel) {
-      filters.difficultyLevel = difficultyLevel;
-    }
-    if (nicheName) {
-      filters.niche = nicheName;
-    }
-    if (projectType) {
-      filters.projectType = projectType;
-    }
-    if (projectStatus) {
-      filters.projectStatus = projectStatus;
-    }
-
-    const orderBy: TSORTORDER[] = [];
-    if (createdAtOrder) {
-      bountyOrder = "";
-      orderBy.push({
-        createdAt: createdAtOrder === "latest" ? "desc" : "asc"
-      });
-    }
-    if (bountyOrder) {
-      createdAtOrder = "";
-      orderBy.push({
-        bounty: bountyOrder === "highest" ? "desc" : "asc"
-      });
-    }
-
-    const projects = await db.project.findMany({
-      where: { ...filters },
-      skip,
-      take: pageSize,
-      orderBy: orderBy,
-      select: {
-        id: true,
-        title: true,
-        detail: true,
-        deadline: true,
-        bounty: true,
-        progressPercentage: true,
-        niche: true,
-        difficultyLevel: true,
-        projectType: true,
-        projectStatus: true,
-        interestedFreelancers: true,
-        projectSlug: true,
-        createdAt: true
-      }
-    });
-
-    const totalProjects = await db.project.count({ where: { ...filters } });
-
-    const response = {
-      projects,
-      pagination: {
-        page: pageNum,
-        limit: pageSize,
-        totalPages: Math.ceil(totalProjects / pageSize),
-        totalProjects
-      }
-    };
-
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
-  }),
-  // **   Give Rating to the project and freelancer
   writeReviewAndGiveRating: asyncHandler(async (req, res) => {
     const { projectSlug } = req.params;
     const { starsByClientAfterProjectCompletion, commentByClientAfterProjectCompletion: review } = req.body as TPROJECT;

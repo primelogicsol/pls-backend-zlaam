@@ -4,6 +4,7 @@ import { projectSchema } from "../../validation/zod";
 import projectController from "../../controllers/projectController/projectController";
 import updateProjectController from "../../controllers/projectController/updateProjectController";
 import authMiddleware from "../../middlewares/authMiddleware";
+import getProjectController from "../../controllers/projectController/getProjectController";
 export const projectRouter = Router();
 
 projectRouter
@@ -24,8 +25,13 @@ projectRouter
   .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, projectController.getAllOutsourcedProjects);
 projectRouter
   .route("/getAllProjects")
-  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, updateProjectController.getAllProjects);
-
+  .get(
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIAdminOrModerator,
+    authMiddleware.checkIfUserIAdminOrModerator,
+    getProjectController.getAllProjects
+  );
+projectRouter.route("/getAllProjectsWithThierClient/:clientId").get(authMiddleware.checkToken, getProjectController.getAllProjectsWithThierClient);
 projectRouter.route("/deleteProject/:id").delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, projectController.deleteProject);
 // *************************Update Project Details
 
