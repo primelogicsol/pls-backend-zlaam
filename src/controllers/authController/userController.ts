@@ -246,8 +246,8 @@ export default {
   // ** deleteUser controller
   deleteUser: asyncHandler(async (req: Request, res: Response) => {
     // ** validation is already handled by the middleware
-    const userData = req.body as TUSERUPDATE;
-    const { uid } = userData;
+    const { uid } = req.params;
+    if (!uid) throw { status: BADREQUESTCODE, message: "Please Send the id of victim" };
     await db.user.delete({ where: { uid } });
     httpResponse(req, res, SUCCESSCODE, "User deleted successfully");
   }),
