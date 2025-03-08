@@ -93,6 +93,8 @@ export default {
           select: { username: true, uid: true, fullName: true, email: true, niche: true, portfolioUrl: true, kpiRankPoints: true, kpiRank: true }
         },
         selectedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
+        commentByClientAfterProjectCompletion: true,
+        starsByClientAfterProjectCompletion: true,
         projectSlug: true,
         projectStatus: true,
         createdAt: true

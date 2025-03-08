@@ -7,7 +7,6 @@ import {
   getSingleUserSChema,
   sendOTPSchema,
   updateForgotPasswordSchema,
-  userDeleteSchema,
   userLoginSchema,
   userRegistrationSchema,
   userUpdateEmailSchema,
@@ -94,9 +93,7 @@ authRouter.route("/getAllUsers").get(authMiddleware.checkToken, authMiddleware.c
 authRouter.route("/searchUsers").get(authMiddleware.checkToken, userController.searchUser);
 authRouter.route("/getCurrentUser").get(authMiddleware.checkToken, userController.getCurrentUser);
 
-authRouter
-  .route("/deleteUser/:uid")
-  .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, validateDataMiddleware(userDeleteSchema), userController.deleteUser);
+authRouter.route("/deleteUser/:uid").delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.deleteUser);
 authRouter.route("/trashTheUser").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, userController.moveToTrash);
 authRouter.route("/unTrashTheUser").patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, userController.unTrashUser);
 // ** forgot password

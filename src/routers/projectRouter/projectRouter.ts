@@ -78,7 +78,7 @@ projectRouter.route("/writeReviewAndGiveRating/:projectSlug").patch(
   updateProjectController.writeReviewAndGiveRating
 );
 
-projectRouter.route("/epdateProjectBySlug/:projectSlug").patch(
+projectRouter.route("/updateProjectBySlug/:projectSlug").patch(
   //  authMiddleware.checkIfUserIAdminOrModerator,
   validateDataMiddleware(projectSchema),
   updateProjectController.updateProjectBySlug
