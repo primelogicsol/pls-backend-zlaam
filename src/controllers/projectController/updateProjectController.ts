@@ -35,7 +35,7 @@ export default {
     if (!freelancerUid) throw { status: BADREQUESTCODE, message: "Freelancer uid is required." };
     const updatedProject = await db.project.update({
       where: { projectSlug: projectSlug },
-      data: { interestedFreelancers: { disconnect: [{ uid: freelancerUid }] } },
+      data: { interestedFreelancers: { disconnect: { uid: freelancerUid } } },
       select: {
         interestedFreelancers: { select: { uid: true, username: true, fullName: true, email: true } }
       }
