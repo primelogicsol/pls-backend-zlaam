@@ -5,10 +5,10 @@ import {
   BADREQUESTMSG,
   CONSULTATIONAPPROVALMESSAGEFROMADMIN,
   CONSULTATIONPENDINGMESSAGEFROMADMIN,
-  CONSULTATIONREJECTMESSAGEFROMADMIN,
   INTERNALSERVERERRORCODE,
   INTERNALSERVERERRORMSG,
   NOTFOUNDCODE,
+  NOTFOUNDMSG,
   SUCCESSCODE,
   SUCCESSMSG
 } from "../../constants";
@@ -164,7 +164,7 @@ export default {
   // *** get all consultations controller
   getAllRequestedConsultations: asyncHandler(async (req, res) => {
     const consultations = await db.consultationBooking.findMany({ where: { trashedAt: null, trashedBy: null } });
-    if (consultations.length === 0) throw { status: NOTFOUNDCODE, message: "No consultations found" };
+    if (consultations.length === 0) httpResponse(req, res, SUCCESSCODE, NOTFOUNDMSG, null);
     httpResponse(req, res, SUCCESSCODE, "All consultations", consultations);
   }),
 
@@ -206,31 +206,15 @@ export default {
   rejectConsultationBooking: asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { rejectAndDeleteConsultaion = true } = req.body as { rejectAndDeleteConsultaion: boolean };
-    if (!rejectAndDeleteConsultaion) {
-      const rejectedConsultation = await db.consultationBooking.update({
+    if (!id) throw { status: BADREQUESTCODE, message: "Please send the id of consultaion request you want to reject" };
+    const checkIfConsultationExists = await db.consultationBooking.findUnique({ where: { id: Number(id) } });
+    if (!checkIfConsultationExists) throw { status: NOTFOUNDCODE, message: "No consultation found" };
+    if (rejectAndDeleteConsultaion) {
+      await db.consultationBooking.update({
         where: { id: Number(id), status: "PENDING" },
         data: { status: "REJECTED" }
       });
-      await gloabalMailMessage(
-        rejectedConsultation.email,
-        CONSULTATIONREJECTMESSAGEFROMADMIN,
-        "Your consultation request got rejected",
-        `Dear ${rejectedConsultation.name},`,
-        "",
-        ADMINNAME
-      );
-    } else if (rejectAndDeleteConsultaion) {
-      const rejectedDelete = await db.consultationBooking.delete({ where: { id: Number(id) } });
-      await gloabalMailMessage(
-        rejectedDelete.email,
-        CONSULTATIONREJECTMESSAGEFROMADMIN,
-        "Your consultation request got rejected",
-        `Dear ${rejectedDelete.name},`,
-        "",
-        ADMINNAME
-      );
     }
-
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   }),
   // ** trash consultation

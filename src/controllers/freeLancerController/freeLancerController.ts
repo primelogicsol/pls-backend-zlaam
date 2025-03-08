@@ -44,7 +44,7 @@ export default {
         isAccepted: false
       }
     });
-    if (freelancers.length === 0) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+    if (freelancers.length === 0) httpResponse(req, res, SUCCESSCODE, NOTFOUNDMSG, null);
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, freelancers);
   }),
   // ** Get Single freelancer Request which are unaccepted

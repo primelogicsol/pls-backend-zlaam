@@ -37,6 +37,8 @@ export default {
   deleteServicesForQuote: asyncHandler(async (req, res) => {
     const { id } = req.params;
     if (!id) throw { status: BADREQUESTCODE, message: BADREQUESTMSG };
+    const checkIfServiceExist = await db.createServicesForQuote.findUnique({ where: { id: Number(id) } });
+    if (!checkIfServiceExist) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
     await db.createServicesForQuote.delete({ where: { id: Number(id) } });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
   }),
@@ -49,7 +51,8 @@ export default {
   // ** fetch all qotes controller
   getAllQuote: asyncHandler(async (req, res) => {
     const quotes = await db.getQuote.findMany({ where: { trashedAt: null, trashedBy: null } });
-    if (quotes.length === 0) throw { status: NOTFOUNDCODE, message: NOTFOUNDMSG };
+    if (quotes.length === 0) httpResponse(req, res, SUCCESSCODE, NOTFOUNDMSG, null);
+
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, quotes);
   }),
   // ** Trash single quote controller
