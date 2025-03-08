@@ -12,6 +12,8 @@ export default {
     const { blogTitle, blogThumbnail, blogOverview, blogBody } = req.body as TBLOGPOST;
     // ** validation is handled by middleware
     const blogSlug = generateSlug(blogTitle);
+    const checkIfBlogExist = await db.blogPost.findUnique({ where: { blogSlug } });
+    if (checkIfBlogExist) throw { status: BADREQUESTCODE, message: "Blog already exist" };
     await db.blogPost.create({ data: { blogTitle, blogSlug, blogThumbnail, blogOverview, blogBody } });
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, { optMessage: "Blog uploaded successfully" });
   }),
