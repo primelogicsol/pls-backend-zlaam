@@ -52,22 +52,6 @@ export default {
         difficultyLevel: true,
         projectType: true,
         projectStatus: true,
-        interestedFreelancers: {
-          select: {
-            uid: true,
-            username: true,
-            fullName: true,
-            email: true
-          }
-        },
-        selectedFreelancers: {
-          select: {
-            uid: true,
-            username: true,
-            fullName: true,
-            email: true
-          }
-        },
         projectSlug: true,
         createdAt: true,
         clientWhoPostedThisProject: {

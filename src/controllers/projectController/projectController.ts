@@ -97,6 +97,7 @@ export default {
         starsByClientAfterProjectCompletion: true,
         projectSlug: true,
         projectStatus: true,
+        projectType: true,
         createdAt: true
       }
     });
@@ -161,8 +162,6 @@ export default {
         difficultyLevel: true,
         projectType: true,
         projectStatus: true,
-        selectedFreelancers: { select: { username: true, uid: true, fullName: true, email: true } },
-        clientWhoPostedThisProject: { select: { username: true, uid: true, fullName: true, email: true } },
         projectSlug: true,
         createdAt: true
       }
