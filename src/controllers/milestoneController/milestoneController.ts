@@ -13,7 +13,6 @@ import { distributeMilestonePoints, updateProjectProgress } from "../../utils/up
 export default {
   createSingleProjectMilestone: asyncHandler(async (req, res) => {
     const milestoneData = req.body as Milestone;
-    // TODO: VALIDATION YET TO BE HANDLED
     const projectId = req.params.projectId as string;
 
     if (!projectId) throwError(NOTFOUNDCODE, NOTFOUNDMSG);
@@ -148,16 +147,36 @@ export default {
 
   updateMileStone: asyncHandler(async (req, res) => {
     const milestoneData = req.body as Milestone;
-
-    // TODO: VALIDATION YET TO BE HANDLED
     const milestoneId = req.params.milestoneId as string;
 
     if (!milestoneId) throwError(NOTFOUNDCODE, NOTFOUNDMSG);
 
+    // Find the existing milestone
     const milestone = await db.milestone.findUnique({ where: { id: Number(milestoneId) } });
     if (!milestone) throwError(NOTFOUNDCODE, NOTFOUNDMSG);
 
-    await db.milestone.update({ where: { id: Number(milestoneId) }, data: milestoneData });
+    // Parse and validate the deadline
+    const deadline = new Date(milestoneData.deadline);
+    if (!deadline) throwError(BADREQUESTCODE, "Invalid deadline");
+
+    if (isNaN(deadline.getTime())) {
+      throw { status: BADREQUESTCODE, message: "Invalid date format." };
+    }
+    if (deadline < new Date()) throw { status: BADREQUESTCODE, message: "Please enter a future date" };
+
+    // Extract only the allowed fields to update
+    const updateData = {
+      mileStoneName: milestoneData.mileStoneName,
+      description: milestoneData.description,
+      deadline: deadline, // Use the parsed Date object instead of the string
+      priorityRank: milestoneData.priorityRank
+    };
+
+    // Update the milestone with only the allowed fields
+    await db.milestone.update({
+      where: { id: Number(milestoneId) },
+      data: updateData
+    });
 
     // If priority rank was updated, redistribute points
     if (milestoneData.priorityRank !== undefined && milestoneData.priorityRank !== milestone?.priorityRank && milestone?.projectId) {
@@ -190,12 +209,11 @@ export default {
 
     // Update project progress
     if (milestone?.projectId) {
-      await updateProjectProgress(milestone.projectId);
+      await updateProjectProgress(Number(milestone.projectId));
     }
 
     httpResponse(req, res, CREATEDCODE, "Project Milestone updated successfully");
   }),
-
   deleteMileStone: asyncHandler(async (req, res) => {
     const milestoneId = req.params.milestoneId as string;
 

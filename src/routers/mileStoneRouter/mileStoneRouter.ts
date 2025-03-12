@@ -7,20 +7,45 @@ export const milestoneRouter: Router = Router();
 
 milestoneRouter
   .route("/createMilestone/:projectId")
-  .post(validateDataMiddleware(MilestoneSchema), authMiddleware.checkToken, milestoneController.createSingleProjectMilestone);
+  .post(
+    validateDataMiddleware(MilestoneSchema),
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIAdminOrModerator,
+    milestoneController.createSingleProjectMilestone
+  );
 
 milestoneRouter
   .route("/createMultipleMilestones/:projectId")
-  .post(validateDataMiddleware(MultipleMilestoneSchema), authMiddleware.checkToken, milestoneController.createMultipleMileStones);
+  .post(
+    validateDataMiddleware(MultipleMilestoneSchema),
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIAdminOrModerator,
+    milestoneController.createMultipleMileStones
+  );
 
 milestoneRouter
-  .route("/updateMilestone/milestone/:milestoneId")
-  .put(validateDataMiddleware(MilestoneSchema), authMiddleware.checkToken, milestoneController.updateMileStone);
-
-milestoneRouter.route("/deleteMilestone/milestone/:milestoneId").delete(authMiddleware.checkToken, milestoneController.deleteMileStone);
-
-milestoneRouter.route("/completeMilestone/milestone/:milestoneId").put(authMiddleware.checkToken, milestoneController.completeMileStone);
+  .route("/updateMilestone/:milestoneId")
+  .patch(
+    validateDataMiddleware(MilestoneSchema),
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIAdminOrModerator,
+    milestoneController.updateMileStone
+  );
 
 milestoneRouter
-  .route("/updateMilestoneProgress/milestone/:milestoneId")
-  .put(validateDataMiddleware(MilestoneProgressSchema), authMiddleware.checkToken, milestoneController.updateMilestoneProgress);
+  .route("/deleteMilestone/:milestoneId")
+  .delete(authMiddleware.checkToken, authMiddleware.checkIfUserIAdminOrModerator, milestoneController.deleteMileStone);
+
+// ** If freelancer already completed the milestone  he can mark it as a completed and progress point will be full
+milestoneRouter
+  .route("/completeMilestone/:milestoneId")
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, milestoneController.completeMileStone);
+// ** For freelancer to update milestone progress
+milestoneRouter
+  .route("/updateMilestoneProgress/:milestoneId")
+  .patch(
+    validateDataMiddleware(MilestoneProgressSchema),
+    authMiddleware.checkToken,
+    authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer,
+    milestoneController.updateMilestoneProgress
+  );
