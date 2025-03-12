@@ -79,7 +79,7 @@ export default {
   // ** remove selected Freelancer
   removeSelectedFreelancer: asyncHandler(async (req: _Request, res) => {
     const { projectSlug } = req.params;
-    const freelancerUid = req.userFromToken?.uid;
+    const { uid: freelancerUid } = req.body as { uid: string };
     if (!projectSlug) throw { status: BADREQUESTCODE, message: "Project slug is required." };
     if (!freelancerUid) throw { status: BADREQUESTCODE, message: "Freelancer username is required." };
     const updatedProject = await db.project.update({
