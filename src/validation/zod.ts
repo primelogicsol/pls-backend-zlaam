@@ -428,3 +428,73 @@ export const blogPostSchema = z.object({
     .min(1, { message: "blogBody is required!!" })
     .min(3, { message: "blogBody must be at least 3 characters long." })
 });
+// ** MileStone Schema
+export const MilestoneSchema = z.object({
+  mileStoneName: z
+    .string({ message: "mileStoneName is required!!" })
+    .min(1, { message: "mileStoneName is required!!" })
+    .min(3, { message: "mileStoneName must be at least 3 characters long." })
+    .max(100, { message: "mileStoneName can be at most 100 characters long." }),
+
+  description: z.string({ message: "description must be a string" }).optional(),
+
+  deadline: z
+    .string({ message: "deadline is required!!" })
+    .min(1, { message: "deadline is required!!" })
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid date format for deadline"
+    }),
+
+  priorityRank: z
+    .number({ message: "priorityRank is required!!" })
+    .min(1, { message: "priorityRank must be at least 1" })
+    .int({ message: "priorityRank must be an integer" }),
+
+  totalProgressPoints: z.number({ message: "totalProgressPoints must be a number" }).optional(),
+
+  progress: z.number({ message: "progress must be a number" }).default(0),
+
+  isMilestoneCompleted: z.boolean({ message: "isMilestoneCompleted must be a boolean" }).default(false)
+});
+
+// ** Schema for multiple milestones
+export const MultipleMilestoneSchema = z.object({
+  milestones: z.array(MilestoneSchema, { message: "Invalid milestone data format" }).min(1, { message: "At least one milestone must be provided" })
+});
+
+// ** Schema for updating milestone progress
+export const MilestoneProgressSchema = z.object({
+  progress: z.number({ message: "progress is required!!" }).min(0, { message: "progress cannot be negative" })
+});
+
+// ** Schema for filtering milestones
+export const MilestoneFilterSchema = z.object({
+  projectId: z.string({ message: "projectId must be a string" }).optional(),
+
+  isCompleted: z.enum(["true", "false"], { message: "isCompleted must be 'true' or 'false'" }).optional(),
+
+  priorityRank: z.string({ message: "priorityRank must be a string" }).optional(),
+
+  sortBy: z
+    .enum(["deadline", "priorityRank", "progress", "createdAt"], {
+      message: "sortBy must be one of: deadline, priorityRank, progress, createdAt"
+    })
+    .optional()
+    .default("priorityRank"),
+
+  sortOrder: z.enum(["asc", "desc"], { message: "sortOrder must be 'asc' or 'desc'" }).optional().default("asc"),
+
+  page: z
+    .string({ message: "page must be a string" })
+    .optional()
+    .refine((val) => !val || !isNaN(Number(val)), {
+      message: "page must be a valid number"
+    }),
+
+  limit: z
+    .string({ message: "limit must be a string" })
+    .optional()
+    .refine((val) => !val || !isNaN(Number(val)), {
+      message: "limit must be a valid number"
+    })
+});
