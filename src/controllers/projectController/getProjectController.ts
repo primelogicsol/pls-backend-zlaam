@@ -55,6 +55,7 @@ export default {
         projectStatus: true,
         projectSlug: true,
         createdAt: true,
+        milestones: true,
         clientWhoPostedThisProject: {
           select: {
             uid: true,

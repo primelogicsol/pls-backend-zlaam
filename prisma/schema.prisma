@@ -132,22 +132,25 @@ model Project {
 }
 
 model Milestone {
-  id            Int       @id @default(autoincrement())
-  mileStoneName String    @unique
-  description   String?
-  deadline      DateTime
-  progress      Int       @default(0)
-  projectId     Int
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  trashedBy     String?
-  trashedAt     DateTime?
+  id                   Int      @id @default(autoincrement())
+  mileStoneName        String   @unique
+  description          String?
+  deadline             DateTime
+  progress             Int      @default(0)
+  totalProgressPoints  Int
+  projectId            Int
+  priorityRank         Int
+  createdAt            DateTime @default(now())
+  isMilestoneCompleted Boolean  @default(false)
 
   project Project @relation(fields: [projectId], references: [id])
 
-  @@index([trashedAt])
-  @@index([trashedBy])
   @@index([projectId])
+  @@index([priorityRank])
+  @@index([mileStoneName])
+  @@index([deadline])
+  @@index([progress])
+  @@index([id])
   @@index([createdAt])
 }
 
