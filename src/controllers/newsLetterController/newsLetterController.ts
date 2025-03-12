@@ -1,10 +1,11 @@
-import { BADREQUESTCODE, SUCCESSCODE, WHITELISTMAILS } from "../../constants";
+import { BADREQUESTCODE, SUCCESSCODE } from "../../constants";
 import { db } from "../../database/db";
 import { gloabalMailMessage } from "../../services/globalMailService";
 import { sendNewsLetterToSubscribers } from "../../services/sendNewsLetterToSubscribersService";
 import type { TSUBSCRIBENEWSLETTER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
+import { filterAdmin } from "../../utils/filterAdminUtils";
 
 export default {
   subscribeToTheNewsLetter: asyncHandler(async (req, res) => {
@@ -41,7 +42,7 @@ export default {
     // ** validation is already handled by  middleware
     const { email, newsLetter } = req.body as TSUBSCRIBENEWSLETTER;
     const isSubscribed = await db.newsletter.findUnique({ where: { email: email.toLowerCase(), subscriptionStatus: true } });
-    if (WHITELISTMAILS.includes(email)) throw { status: BADREQUESTCODE, message: "Cannot send newsletter to admin" };
+    if (filterAdmin(email)) throw { status: BADREQUESTCODE, message: "Cannot send newsletter to admin" };
     if (!isSubscribed) throw { status: BADREQUESTCODE, message: "You are not subscribed" };
     await sendNewsLetterToSubscribers(email, newsLetter);
     httpResponse(req, res, SUCCESSCODE, "News letter sent successfully");

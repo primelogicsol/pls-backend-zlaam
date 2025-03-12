@@ -3,15 +3,7 @@ import { httpResponse } from "../../utils/apiResponseUtils";
 import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TUSERUPDATE, TVERIFYUSER } from "../../types";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 import { db } from "../../database/db";
-import {
-  ACESSTOKENCOOKIEOPTIONS,
-  BADREQUESTCODE,
-  REFRESHTOKENCOOKIEOPTIONS,
-  SUCCESSCODE,
-  UNAUTHORIZEDCODE,
-  UNAUTHORIZEDMSG,
-  WHITELISTMAILS
-} from "../../constants";
+import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../../constants";
 import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
 import tokenGeneratorService from "../../services/tokenGeneratorService";
 import { generateOtp } from "../../services/slugStringGeneratorService";
@@ -232,7 +224,7 @@ export default {
     const payLoad: TPAYLOAD = {
       uid: user && user?.uid,
       tokenVersion: user?.tokenVersion,
-      role: WHITELISTMAILS.includes(user?.email) ? "ADMIN" : "CLIENT",
+      role: filterAdmin(user?.email) ? "ADMIN" : "CLIENT",
       isVerified: user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res);

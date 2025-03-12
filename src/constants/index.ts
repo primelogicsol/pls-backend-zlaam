@@ -1,5 +1,4 @@
-import { ADMIN_MAIL_1, ADMIN_MAIL_2, ENV } from "../config/config";
-
+import { ENV } from "../config/config";
 import type { TCOOKIEOPTIONS } from "../types";
 export const COMPANY_NAME = "Prime Logic Solution";
 const messages = {
@@ -65,7 +64,6 @@ const COOKIEOPTIONS = {
 };
 export const { REFRESHTOKENCOOKIEOPTIONS, ACESSTOKENCOOKIEOPTIONS } = COOKIEOPTIONS;
 
-export const WHITELISTMAILS = [ADMIN_MAIL_1, ADMIN_MAIL_2];
 const QUICKS = {
   CONSULTATIONPENDINGMESSAGEFROMADMIN: `Thank You for your interest in ${COMPANY_NAME}. We have received your request for "free consultation". We are reviewing your request and will get back to you as soon as possible.<p>Best regards,</p> Prime Logic Solution`,
   CONSULTATIONAPPROVALMESSAGEFROMADMIN: `I hope you are doing well, Thank You for your Patience. We are excited to tell you that your request for having a free consultation with us has have been accepted,`,

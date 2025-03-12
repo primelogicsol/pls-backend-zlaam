@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "node:path";
 import { errorHandler, notFoundHandler } from "./middlewares/errorMiddleware";
 import helmet from "helmet";
-import { ORIGIN } from "./config/config";
+import { ALLOWED_ORIGIN } from "./config/config";
 import { BASEURL } from "./constants/endpoint";
 import { defaultRouter } from "./routers/defaultRouter";
 // **** APP *****
@@ -19,7 +19,7 @@ app.use(
   cors({
     methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
     credentials: true,
-    origin: ORIGIN
+    origin: ALLOWED_ORIGIN
   })
 );
 app.use(express.json({ limit: "50mb" }));
