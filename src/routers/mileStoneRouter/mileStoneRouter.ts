@@ -6,11 +6,11 @@ import milestoneController from "../../controllers/milestoneController/milestone
 export const milestoneRouter: Router = Router();
 
 milestoneRouter
-  .route("/createMilestone/project/:projectId")
+  .route("/createMilestone/:projectId")
   .post(validateDataMiddleware(MilestoneSchema), authMiddleware.checkToken, milestoneController.createSingleProjectMilestone);
 
 milestoneRouter
-  .route("/createMultipleMilestones/project/:projectId")
+  .route("/createMultipleMilestones/:projectId")
   .post(validateDataMiddleware(MultipleMilestoneSchema), authMiddleware.checkToken, milestoneController.createMultipleMileStones);
 
 milestoneRouter

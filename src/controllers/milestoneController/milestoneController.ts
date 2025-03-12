@@ -30,7 +30,13 @@ export default {
     });
 
     if (!existingMilestones) throwError(BADREQUESTCODE, "Failed to fetch existing milestones");
+    const deadline = new Date(milestoneData.deadline);
+    if (!deadline) throwError(BADREQUESTCODE, "Invalid deadline");
 
+    if (isNaN(deadline.getTime())) {
+      throw { status: BADREQUESTCODE, message: "Invalid date format." };
+    }
+    if (deadline < new Date()) throw { status: BADREQUESTCODE, message: "Please enter a future date" };
     // Calculate appropriate totalProgressPoints for the new milestone
     const allMilestones = [...existingMilestones, { ...milestoneData, projectId: Number(projectId) }];
     const updatedMilestones = distributeMilestonePoints(allMilestones);
@@ -47,6 +53,7 @@ export default {
       data: {
         ...milestoneData,
         projectId: Number(projectId),
+        deadline: deadline,
         totalProgressPoints: newTotalPoints
       }
     });

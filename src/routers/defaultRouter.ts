@@ -12,6 +12,7 @@ import { hireUsRouter } from "./hireUsRouter/hireUsRouter";
 import { freeLancerRouter } from "./freelancerRouter/freeLancerRouter";
 import { projectRouter } from "./projectRouter/projectRouter";
 import { blogRouter } from "./blogRouter/blogRouter";
+import { milestoneRouter } from "./mileStoneRouter/mileStoneRouter";
 export const defaultRouter: Router = Router();
 
 defaultRouter.use(endpoint.AUTHROUTE, authRouter);
@@ -35,5 +36,7 @@ defaultRouter.use(endpoint.HIREUSROUTE, hireUsRouter);
 defaultRouter.use(endpoint.FREELANCER, freeLancerRouter);
 // **   PROJECT  ROUTER
 defaultRouter.use(endpoint.PROJECT, projectRouter);
+// **   PROJECTMILESTONE ROUTER
+defaultRouter.use(endpoint.MILESTONE, milestoneRouter);
 // **   BLOG  ROUTER
 defaultRouter.use(endpoint.BLOG, blogRouter);

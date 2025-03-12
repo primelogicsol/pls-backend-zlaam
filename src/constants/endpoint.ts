@@ -11,5 +11,6 @@ export default {
   HIREUSROUTE: `/hireUs`,
   FREELANCER: `/freelancer`,
   PROJECT: `/project`,
+  MILESTONE: `/milestone`,
   BLOG: `/blog`
 };
