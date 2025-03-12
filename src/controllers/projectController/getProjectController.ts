@@ -1,7 +1,7 @@
 import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
-import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TSORTORDER } from "../../types";
+import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TGETPROJECTSQUERY, TSORTORDER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
@@ -12,8 +12,7 @@ export default {
     if (!clientId) throw { status: BADREQUESTCODE, message: "Client id is required" };
     const client = await db.user.findFirst({
       where: {
-        uid: clientId,
-        role: "CLIENT"
+        uid: clientId
       }
     });
 
@@ -145,6 +144,7 @@ export default {
         progressPercentage: true,
         niche: true,
         difficultyLevel: true,
+        milestones: true,
         projectType: true,
         projectStatus: true,
         projectSlug: true,
@@ -199,6 +199,7 @@ export default {
         title: true,
         detail: true,
         deadline: true,
+        milestones: true,
         bounty: true,
         progressPercentage: true,
         niche: true,
@@ -231,5 +232,81 @@ export default {
         hasNextPage
       }
     });
+  }),
+
+  getAllOutsourcedProjects: asyncHandler(async (req, res) => {
+    // Destructure and parse query parameters with types
+    const {
+      page = "1",
+      limit = "10",
+      difficultyLevel,
+      createdAtOrder = "latest",
+      bountyOrder = "lowest",
+      nicheName = ""
+    }: TGETPROJECTSQUERY = req.query;
+
+    const pageNum = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNum - 1) * pageSize;
+
+    const filters: TFILTEREDPROJECT = {
+      trashedAt: null,
+      trashedBy: null,
+      projectType: "OUTSOURCE" as const,
+      projectStatus: "PENDING"
+    };
+
+    if (difficultyLevel) {
+      filters.difficultyLevel = difficultyLevel;
+    }
+    if (nicheName) {
+      filters.niche = nicheName;
+    }
+
+    const orderBy: TSORTORDER[] = [];
+
+    orderBy.push({
+      createdAt: createdAtOrder ? "desc" : "asc"
+    });
+
+    orderBy.push({
+      bounty: bountyOrder ? "desc" : "asc"
+    });
+
+    const projects = await db.project.findMany({
+      where: { ...filters },
+      skip,
+      take: pageSize,
+      orderBy: orderBy,
+      select: {
+        id: true,
+        title: true,
+        detail: true,
+        milestones: true,
+        deadline: true,
+        bounty: true,
+        progressPercentage: true,
+        niche: true,
+        difficultyLevel: true,
+        projectType: true,
+        projectStatus: true,
+        projectSlug: true,
+        createdAt: true
+      }
+    });
+
+    const totalProjects = await db.project.count({ where: { ...filters } });
+
+    const response = {
+      projects,
+      pagination: {
+        page: pageNum,
+        limit: pageSize,
+        totalPages: Math.ceil(totalProjects / pageSize),
+        totalProjects
+      }
+    };
+
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
   })
 };

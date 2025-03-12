@@ -1,7 +1,7 @@
 import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
 import { generateSlug } from "../../services/slugStringGeneratorService";
-import type { TSORTORDER, TFILTEREDPROJECT, TGETPROJECTSQUERY, TPROJECT } from "../../types";
+import type { TPROJECT } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
@@ -106,82 +106,6 @@ export default {
   }),
 
   // ** Get All OutSourced Projects
-
-  getAllOutsourcedProjects: asyncHandler(async (req, res) => {
-    // Destructure and parse query parameters with types
-    const {
-      page = "1",
-      limit = "10",
-      difficultyLevel,
-      createdAtOrder = "latest",
-      bountyOrder = "lowest",
-      nicheName = ""
-    }: TGETPROJECTSQUERY = req.query;
-
-    const pageNum = parseInt(page, 10);
-    const pageSize = parseInt(limit, 10);
-    const skip = (pageNum - 1) * pageSize;
-
-    const filters: TFILTEREDPROJECT = {
-      trashedAt: null,
-      trashedBy: null,
-      projectType: "OUTSOURCE" as const,
-      projectStatus: "PENDING"
-    };
-
-    if (difficultyLevel) {
-      filters.difficultyLevel = difficultyLevel;
-    }
-    if (nicheName) {
-      filters.niche = nicheName;
-    }
-
-    const orderBy: TSORTORDER[] = [];
-
-    orderBy.push({
-      createdAt: createdAtOrder ? "desc" : "asc"
-    });
-
-    orderBy.push({
-      bounty: bountyOrder ? "desc" : "asc"
-    });
-
-    const projects = await db.project.findMany({
-      where: { ...filters },
-      skip,
-      take: pageSize,
-      orderBy: orderBy,
-      select: {
-        id: true,
-        title: true,
-        detail: true,
-        deadline: true,
-        bounty: true,
-        progressPercentage: true,
-        niche: true,
-        difficultyLevel: true,
-        projectType: true,
-        projectStatus: true,
-        projectSlug: true,
-        createdAt: true
-      }
-    });
-
-    const totalProjects = await db.project.count({ where: { ...filters } });
-
-    const response = {
-      projects,
-      pagination: {
-        page: pageNum,
-        limit: pageSize,
-        totalPages: Math.ceil(totalProjects / pageSize),
-        totalProjects
-      }
-    };
-
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
-  }),
-  // ** Get inhouse projects
 
   // **  Delete Project By Slug
   deleteProject: asyncHandler(async (req, res) => {

@@ -21,7 +21,7 @@ projectRouter
 
 projectRouter
   .route("/getAllOutsourcedProjects")
-  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, projectController.getAllOutsourcedProjects);
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, getProjectController.getAllOutsourcedProjects);
 projectRouter
   .route("/getAllProjects")
   .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, getProjectController.getAllProjects);
