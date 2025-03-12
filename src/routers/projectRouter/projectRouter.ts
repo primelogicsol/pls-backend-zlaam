@@ -15,24 +15,22 @@ projectRouter
     authMiddleware.checkIfUserIAdminOrModerator,
     projectController.createProject
   );
-projectRouter.route("/getSingleProject/:projectSlug").get(
-  //  authMiddleware.checkIfUserIAdminOrModerator,
-  projectController.getSingleProject
-);
+projectRouter
+  .route("/getSingleProject/:projectSlug")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, projectController.getSingleProject);
 
 projectRouter
   .route("/getAllOutsourcedProjects")
   .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, projectController.getAllOutsourcedProjects);
 projectRouter
   .route("/getAllProjects")
-  .get(
-    authMiddleware.checkToken,
-    authMiddleware.checkIfUserIAdminOrModerator,
-    authMiddleware.checkIfUserIAdminOrModerator,
-    getProjectController.getAllProjects
-  );
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, getProjectController.getAllProjects);
 projectRouter.route("/getAllProjectsWithThierClient/:clientId").get(authMiddleware.checkToken, getProjectController.getAllProjectsWithThierClient);
 projectRouter.route("/deleteProject/:id").delete(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, projectController.deleteProject);
+
+projectRouter
+  .route("/getProjectForSelectedFreelancers")
+  .get(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdminModeratorOrFreeLancer, getProjectController.getProjectForSelectedFreelancers);
 // *************************Update Project Details
 
 projectRouter

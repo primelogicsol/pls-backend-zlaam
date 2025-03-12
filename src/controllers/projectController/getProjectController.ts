@@ -1,5 +1,6 @@
 import { BADREQUESTCODE, NOTFOUNDCODE, SUCCESSCODE, SUCCESSMSG } from "../../constants";
 import { db } from "../../database/db";
+import type { _Request } from "../../middlewares/authMiddleware";
 import type { TFILTEREDPROJECT, TGETFULLPROJECTQUERY, TSORTORDER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
@@ -52,22 +53,6 @@ export default {
         difficultyLevel: true,
         projectType: true,
         projectStatus: true,
-        interestedFreelancers: {
-          select: {
-            uid: true,
-            username: true,
-            fullName: true,
-            email: true
-          }
-        },
-        selectedFreelancers: {
-          select: {
-            uid: true,
-            username: true,
-            fullName: true,
-            email: true
-          }
-        },
         projectSlug: true,
         createdAt: true,
         clientWhoPostedThisProject: {
@@ -179,5 +164,71 @@ export default {
     };
 
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, response);
+  }),
+  getProjectForSelectedFreelancers: asyncHandler(async (req: _Request, res) => {
+    const id = req.userFromToken?.uid;
+    if (!id) throw { status: BADREQUESTCODE, message: "user id is required" };
+
+    const { page = "1", limit = "10" } = req.query;
+
+    const pageNumber = Number(page);
+    const pageLimit = Number(limit);
+
+    if (isNaN(pageNumber) || isNaN(pageLimit) || pageNumber <= 0 || pageLimit <= 0) {
+      throw { status: BADREQUESTCODE, message: "Invalid pagination parameters" };
+    }
+
+    const skip = (pageNumber - 1) * pageLimit;
+    const take = pageLimit;
+
+    const projects = await db.project.findMany({
+      where: {
+        selectedFreelancers: { some: { uid: id } },
+        projectStatus: "ONGOING",
+        trashedAt: null,
+        trashedBy: null
+      },
+      skip,
+      take,
+      orderBy: {
+        createdAt: "desc"
+      },
+      select: {
+        id: true,
+        title: true,
+        detail: true,
+        deadline: true,
+        bounty: true,
+        progressPercentage: true,
+        niche: true,
+        difficultyLevel: true,
+        projectType: true,
+        projectStatus: true,
+        projectSlug: true,
+        createdAt: true
+      }
+    });
+    const totalProjects = await db.project.count({
+      where: {
+        selectedFreelancers: { some: { uid: id } },
+        trashedAt: null,
+        trashedBy: null
+      }
+    });
+
+    const totalPages = Math.ceil(totalProjects / pageLimit);
+    const hasNextPage = totalPages > pageNumber;
+    const hasPreviousPage = pageNumber > 1;
+
+    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, {
+      projects,
+      pagination: {
+        totalPages,
+        totalProjects,
+        currentPage: pageNumber,
+        hasPreviousPage,
+        hasNextPage
+      }
+    });
   })
 };
