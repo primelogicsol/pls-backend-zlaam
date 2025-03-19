@@ -9,3 +9,5 @@ dist/
 .env.production
 test.txt
 public/temp/
+# Docker
+docker/docker-compose.yml

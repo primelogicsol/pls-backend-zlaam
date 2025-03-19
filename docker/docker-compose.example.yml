@@ -1,0 +1,23 @@
+services:
+  app:
+    image: pls:test # TODO: change to pls:latest
+    container_name: pls
+    ports:
+      - "8000:8000"
+    environment:
+      ENV: PRODUCTION
+      PORT: youport
+      DATABASE_URL: your_database_url
+      SECRET_KEY: hiomio
+      SMTP_HOST_EMAIL: test@mail.com
+      SMTP_SECRET: test@password
+      ADMIN_EMAIL1: admin1@mail.com
+      ADMIN_EMAIL2: admin2@mail.com
+      CLOUDINARY_API_SECRET: randomcrab
+      CLOUDINARY_API_KEY: what are you look for
+      CLOUDINARY_NAME: what no way
+      CLOUDINARY_URL: you really think it is real pathetic to be you
+
+    volumes:
+      - ./app:/usr/src/app
+    restart: always
