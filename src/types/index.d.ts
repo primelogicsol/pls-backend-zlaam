@@ -175,6 +175,68 @@ export type TFREELANCER = {
   trashedBy: string | null;
   trashedAt: string | null;
 };
+export interface TFREELANCERPROFILE {
+  whoYouAre: {
+    fullName?: string;
+    email?: string;
+    timeZone?: string; // Optional, defaults to "UTC" in controller
+    country?: string | null; // Optional, defaults to null in controller
+    professionalLinks?: Record<string, string>; // Optional, defaults to {} in controller
+    phone?: string | null; // Optional, defaults to null in controller
+  };
+  coreRole?: {
+    primaryDomain: string;
+  };
+  eliteSkillCards?: {
+    selectedSkills: string[];
+  };
+  toolstackProficiency?: {
+    selectedTools: string[];
+  };
+  domainExperience?: {
+    roles: string[];
+  };
+  industryExperience?: {
+    selectedIndustries: string[];
+  };
+  availabilityWorkflow?: {
+    weeklyCommitment: number;
+    workingHours: string[];
+    collaborationTools: string[];
+    teamStyle: string;
+    screenSharing: string;
+    availabilityExceptions: string;
+  };
+  softSkills?: {
+    collaborationStyle: string;
+    communicationFrequency: string;
+    conflictResolution: string;
+    languages: string[];
+    teamVsSolo: string;
+  };
+  certifications?: {
+    certificates: string[];
+  };
+  projectQuoting?: {
+    compensationPreference: string;
+    smallProjectPrice: number;
+    midProjectPrice: number;
+    longTermPrice: number;
+    milestoneTerms: string;
+    willSubmitProposals: string;
+  };
+  legalAgreements?: {
+    agreements: string[];
+    identityVerification: {
+      idType: string;
+      taxDocType: string;
+      addressVerified: boolean;
+    };
+    workAuthorization: {
+      interested: boolean;
+    };
+  };
+}
 
 export type TPROJECTSTATUS = "PENDING" | "CANCELLED" | "ONGOING" | "COMPLETED";
 export type TKPIRANK = "BRONZE" | "SILVER" | "GOLD" | "PLATINIUM" | "DIAMOND" | "CROWN" | "ACE" | "CONQUERER";

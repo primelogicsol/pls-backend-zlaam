@@ -1,17 +1,17 @@
 import type { Request, Response } from "express";
-import { httpResponse } from "../../utils/apiResponseUtils";
-import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TUSERUPDATE, TVERIFYUSER } from "../../types";
-import { asyncHandler } from "../../utils/asyncHandlerUtils";
-import { db } from "../../database/db";
 import { ACESSTOKENCOOKIEOPTIONS, BADREQUESTCODE, REFRESHTOKENCOOKIEOPTIONS, SUCCESSCODE, UNAUTHORIZEDCODE, UNAUTHORIZEDMSG } from "../../constants";
-import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
-import tokenGeneratorService from "../../services/tokenGeneratorService";
-import { generateOtp } from "../../services/slugStringGeneratorService";
-import logger from "../../utils/loggerUtils";
-import { verifyToken } from "../../services/verifyTokenService";
-import { filterAdmin } from "../../utils/filterAdminUtils";
 import emailResponses from "../../constants/emailResponses";
+import { db } from "../../database/db";
 import { gloabalMailMessage } from "../../services/globalMailService";
+import { passwordHasher, verifyPassword } from "../../services/passwordHasherService";
+import { generateOtp } from "../../services/slugStringGeneratorService";
+import tokenGeneratorService from "../../services/tokenGeneratorService";
+import { verifyToken } from "../../services/verifyTokenService";
+import type { TPAYLOAD, TSENDOTP, TUSERLOGIN, TUSERREGISTER, TUSERUPDATE, TVERIFYUSER } from "../../types";
+import { httpResponse } from "../../utils/apiResponseUtils";
+import { asyncHandler } from "../../utils/asyncHandlerUtils";
+import { filterAdmin } from "../../utils/filterAdminUtils";
+import logger from "../../utils/loggerUtils";
 
 let payLoad: TPAYLOAD = { uid: "", tokenVersion: 0, role: "CLIENT", isVerified: null };
 export default {
@@ -26,6 +26,8 @@ export default {
     if (isUserExist) throw { status: BADREQUESTCODE, message: "user already exists with same username or email." };
     const hashedPassword = (await passwordHasher(password, res)) as string;
     const generateOneTimePassword = generateOtp();
+    console.log(generateOneTimePassword);
+
     const hashedOTPPassword = (await passwordHasher(generateOneTimePassword.otp, res)) as string;
 
     const createdUser = await db.user.create({
@@ -34,6 +36,8 @@ export default {
         fullName,
         email: email.toLowerCase(),
         password: hashedPassword,
+        // role: filterAdminTest(email) ? "ADMIN" : filterFreelanserEmail(email) ? "FREELANCER" : "CLIENT",
+
         role: filterAdmin(email) ? "ADMIN" : "CLIENT",
         otpPassword: filterAdmin(email) ? null : hashedOTPPassword,
         otpPasswordExpiry: filterAdmin(email) ? null : generateOneTimePassword.otpExpiry,
@@ -91,7 +95,7 @@ export default {
     if (!user) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
 
     if (user.trashedBy) throw { status: BADREQUESTCODE, message: "You account has been suspended by Administrators. Please contact support" };
-    if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
+    // if (!user.emailVerifiedAt) throw { status: BADREQUESTCODE, message: "Please verify your email first" };
     const isPasswordMatch = await verifyPassword(password, user?.password, res);
     if (!isPasswordMatch) throw { status: BADREQUESTCODE, message: "Invalid credentials" };
     const { generateAccessToken, generateRefreshToken } = tokenGeneratorService;
@@ -99,7 +103,7 @@ export default {
       uid: user?.uid,
       tokenVersion: user?.tokenVersion,
       role: !filterAdmin(user.email) ? user.role : "ADMIN",
-      isVerified: user?.emailVerifiedAt
+      isVerified: new Date() //user?.emailVerifiedAt
     };
     const accessToken = generateAccessToken(payLoad, res);
     const refreshToken = generateRefreshToken(payLoad, res);

@@ -1,11 +1,11 @@
-import nodemailer from "nodemailer";
 import fs from "node:fs";
 import path from "node:path";
-import { HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
-import { generateRandomStrings } from "../utils/slugStringGeneratorUtils";
+import nodemailer from "nodemailer";
+import { ENV, HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
+import { COMPANY_NAME, INTERNALSERVERERRORCODE, INTERNALSERVERERRORMSG } from "../constants";
 import logger from "../utils/loggerUtils";
 import { replaceAllPlaceholders } from "../utils/replaceAllPlaceholders";
-import { COMPANY_NAME, INTERNALSERVERERRORCODE, INTERNALSERVERERRORMSG } from "../constants";
+import { generateRandomStrings } from "../utils/slugStringGeneratorUtils";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com",
@@ -26,6 +26,8 @@ export async function gloabalMailMessage(
   addsOn?: string,
   senderIntro?: string
 ) {
+  //if env is development then return
+  if (ENV == "DEVELOPMENT") return;
   const templatePath = path.resolve(__dirname, "../../templates/globalMessageTemplate.html");
   let htmlTemplate = fs.readFileSync(templatePath, "utf8");
   const placeholders = {
