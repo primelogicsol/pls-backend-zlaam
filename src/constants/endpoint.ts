@@ -12,5 +12,6 @@ export default {
   FREELANCER: `/freelancer`,
   PROJECT: `/project`,
   MILESTONE: `/milestone`,
-  BLOG: `/blog`
+  BLOG: `/blog`,
+  PROJECTREQUESTROUTE: `/projectRequest`
 };

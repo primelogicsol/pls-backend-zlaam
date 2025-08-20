@@ -301,3 +301,82 @@ export type TBLOGPOST = {
   blogBody: string;
   isPublished?: boolean;
 };
+export type ProjectRequestCreateDTO = {
+  registerYourself: {
+    fullName: string;
+    businessEmail: string;
+    phoneNumber?: string;
+    companyName?: string;
+    companyWebsite?: string;
+    businessAddress?: string;
+    businessType?: string;
+    referralSource?: string;
+  };
+
+  services: {
+    category: string;
+    service: string;
+  }[];
+
+  industries: {
+    category: string;
+    industry: string;
+  }[];
+
+  technologies: {
+    category: string;
+    technology: string;
+  }[];
+
+  features: {
+    category: string;
+    feature: string;
+  }[];
+
+  specialOffers: {
+    discounts: string[];
+    appliedDiscount: number;
+  };
+
+  timeline: string;
+
+  budget: {
+    paymentMethod: string;
+  };
+
+  estimate: {
+    accepted: boolean;
+    comparisonVisible: boolean;
+    finalPrice: {
+      min: number;
+      max: number;
+    };
+    basePrice: {
+      min: number;
+      max: number;
+    };
+    discount: {
+      percentage: number;
+      amount: {
+        min: number;
+        max: number;
+      };
+    };
+    rushFee: {
+      percentage: number;
+      amount: {
+        min: number;
+        max: number;
+      };
+    };
+  };
+
+  agreement: {
+    accepted: boolean;
+  };
+
+  proceedOptions: {
+    selectedOption: string;
+    completed: boolean;
+  };
+};

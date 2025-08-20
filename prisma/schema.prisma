@@ -62,6 +62,7 @@ model User {
   trashedAt               DateTime?
   createdAt               DateTime  @default(now())
   updatedAt               DateTime  @updatedAt
+  projectRequests         ProjectRequest[] // opposite relation field
 
   @@index([trashedAt])
   @@index([trashedBy])
@@ -456,4 +457,94 @@ model WorkAuthorization {
   id              String           @id @default(uuid())
   interested      Boolean
   legalAgreements LegalAgreements?
+}
+/**
+ * Project Request model
+ */
+ model ProjectRequest {
+  id              String           @id @default(uuid())
+  userId          String?
+  user            User?             @relation(fields: [userId], references: [uid]) 
+
+  // Register Yourself Info
+  fullName        String
+  businessEmail   String
+  phoneNumber     String?
+  companyName     String?
+  companyWebsite  String?
+  businessAddress String?
+  businessType    String?
+  referralSource  String?
+  stripeCheckOutUrl String?
+  paymentIntentId String?
+
+  // Relations
+  services        Service[]                     
+  industries      Industry[]
+  technologies    Technology[]
+  features        Feature[]
+
+  // Special Offers
+  appliedDiscount Int?
+  
+  // Timeline & Budget
+  timeline        String?
+  paymentMethod   String?
+
+  // Estimate
+  estimateAccepted        Boolean    @default(false)
+  comparisonVisible       Boolean    @default(false)
+  estimateFinalPriceMin   Int?
+  estimateFinalPriceMax   Int?
+  estimateBasePriceMin    Int?
+  estimateBasePriceMax    Int?
+  discountPercentage      Int?
+  discountAmountMin       Int?
+  discountAmountMax       Int?
+  rushFeePercentage       Int?
+  rushFeeAmountMin        Int?
+  rushFeeAmountMax        Int?
+
+  // Agreement
+  agreementAccepted       Boolean    @default(false)
+
+  // Proceed Options
+  selectedOption          String?
+  completed               Boolean    @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+	@@map("ProjectRequest")
+}
+
+model Service {
+  id          String          @id @default(uuid())
+  submission  ProjectRequest  @relation(fields: [submissionId], references: [id])
+  submissionId String
+  category    String
+  service     String
+}
+
+model Industry {
+  id          String          @id @default(uuid())
+  submission  ProjectRequest  @relation(fields: [submissionId], references: [id])
+  submissionId String
+  category    String
+  industry    String
+}
+
+model Technology {
+  id          String          @id @default(uuid())
+  submission  ProjectRequest  @relation(fields: [submissionId], references: [id])
+  submissionId String
+  category    String
+  technology  String
+}
+
+model Feature {
+  id          String          @id @default(uuid())
+  submission  ProjectRequest  @relation(fields: [submissionId], references: [id])
+  submissionId String
+  category    String
+  feature     String
 }

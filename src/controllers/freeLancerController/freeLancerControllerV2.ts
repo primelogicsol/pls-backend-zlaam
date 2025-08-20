@@ -121,7 +121,9 @@ const freeLancerControllerV2 = {
         legalAgreements: true
       }
     });
-    if (profiles.length === 0) httpResponse(req, res, SUCCESSCODE, NOTFOUNDMSG, null);
+    if (profiles.length === 0) {
+      httpResponse(req, res, SUCCESSCODE, NOTFOUNDMSG, null);
+    }
     httpResponse(req, res, SUCCESSCODE, SUCCESSMSG, profiles);
   }),
 
