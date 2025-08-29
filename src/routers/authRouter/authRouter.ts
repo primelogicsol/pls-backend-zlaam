@@ -16,32 +16,32 @@ import {
   verifyUserSchema
 } from "../../validation/zod";
 // import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
-import { OTPALREADYSENT } from "../../constants/index";
 import userController from "../../controllers/authController/userController";
 import authMiddleware from "../../middlewares/authMiddleware";
-import rateLimiterMiddleware from "../../middlewares/rateLimiterMiddleware";
 export const authRouter = Router();
 
 // Routes**
-authRouter
-  .route("/register")
-  .post(
-    validateDataMiddleware(userRegistrationSchema),
-    (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5),
-    authController.registerUser
-  );
+authRouter.route("/register").post(
+  validateDataMiddleware(userRegistrationSchema),
+  // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5),
+  authController.registerUser
+);
 
 authRouter
   .route("/verifyEmail")
   // 2 req per minute from single  ip adress
-  .post(validateDataMiddleware(verifyUserSchema), (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5), authController.verifyUser);
+  .post(
+    validateDataMiddleware(verifyUserSchema),
+    //  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5),
+    authController.verifyUser
+  );
 
 authRouter
   .route("/sendOTP")
   // 1 req per minute from single  ip adress
   .post(
     validateDataMiddleware(sendOTPSchema),
-    (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10, OTPALREADYSENT),
+    // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10, OTPALREADYSENT),
     authController.sendOTP
   );
 
@@ -50,7 +50,7 @@ authRouter
   // 5 req per mnute from single  ip adress
   .post(
     validateDataMiddleware(userLoginSchema),
-    (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5, undefined, 20, 180),
+    // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 5, undefined, 20, 180),
     authController.loginUser
   );
 
@@ -61,14 +61,14 @@ authRouter.route("/updateInfo").patch(
   authMiddleware.checkToken,
   validateDataMiddleware(userUpdateSchema),
   // 1 req per minute from single  ip adress
-  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
+  // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
   userController.updateInfo
 );
 authRouter.route("/updateEmail").patch(
   authMiddleware.checkToken,
   validateDataMiddleware(userUpdateEmailSchema),
   // 1 req per minute from single  ip adress
-  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
+  // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
   userController.updateEmail
 );
 
@@ -76,14 +76,14 @@ authRouter.route("/updatePassword").patch(
   authMiddleware.checkToken,
   validateDataMiddleware(userUpdatePasswordSchema),
   // 1 req per minute from single  ip adress
-  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
+  // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10),
   userController.updatePassword
 );
 authRouter.route("/updateRole").patch(
   authMiddleware.checkToken,
   authMiddleware.checkIfUserIsAdmin,
   // 2 req per minute from single  ip adress
-  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 2),
+  // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 2),
   userController.updateRole
 );
 authRouter.route("/getSingleUser").get(authMiddleware.checkToken, validateDataMiddleware(getSingleUserSChema), userController.getSingleUser);
