@@ -81,7 +81,7 @@ authRouter.route("/updatePassword").patch(
 );
 authRouter.route("/updateRole").patch(
   authMiddleware.checkToken,
-  authMiddleware.checkIfUserIsAdmin,
+  // authMiddleware.checkIfUserIsAdmin,
   // 2 req per minute from single  ip adress
   // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 2),
   userController.updateRole

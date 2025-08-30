@@ -1,13 +1,5 @@
-import {
-  BADREQUESTCODE,
-  COMPANY_NAME,
-  NOTFOUNDCODE,
-  NOTFOUNDMSG,
-  SUCCESSCODE,
-  SUCCESSMSG,
-  THANKYOUMESSAGE,
-  WELCOMEMESSAGEFORFREELANCER
-} from "../../constants";
+import type { Prisma } from "@prisma/client";
+import { BADREQUESTCODE, COMPANY_NAME, NOTFOUNDCODE, NOTFOUNDMSG, SUCCESSCODE, SUCCESSMSG, WELCOMEMESSAGEFORFREELANCER } from "../../constants";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
 import { gloabalMailMessage } from "../../services/globalMailService";
@@ -19,85 +11,167 @@ import { asyncHandler } from "../../utils/asyncHandlerUtils";
 
 const freeLancerControllerV2 = {
   getFreeLancerJoinUsRequest: asyncHandler(async (req: _Request, res) => {
-    const freeLancer = req.body as TFREELANCERPROFILE;
-    // Apply defaults if not provided
-    freeLancer.whoYouAre.timeZone = freeLancer.whoYouAre.timeZone ?? "UTC";
-    freeLancer.whoYouAre.country = freeLancer.whoYouAre.country ?? null;
-    freeLancer.whoYouAre.professionalLinks = freeLancer.whoYouAre.professionalLinks ?? {};
-    freeLancer.whoYouAre.phone = freeLancer.whoYouAre.phone ?? null;
+    const freeLancer: TFREELANCERPROFILE = req.body as TFREELANCERPROFILE;
 
-    // Check existence by email OR phone (better for duplicate prevention)
-    const orFilters = [];
-    if (freeLancer.whoYouAre.email !== undefined) {
-      orFilters.push({ whoYouAre: { email: freeLancer.whoYouAre.email } });
-    }
-    // console.log(orFilters);
-
-    const isExist = await db.profile.findFirst({
-      where: orFilters.length > 0 ? { OR: orFilters } : {}
-    });
-    // console.log(isExist);
-
-    if (isExist) throw { status: BADREQUESTCODE, message: "You've already requested for joining us" };
-
-    // Assign userId from request or generate as needed
-    const userId = req.userFromToken?.uid as string;
+    // Validate required fields
     if (!freeLancer.whoYouAre.email) {
       throw { status: BADREQUESTCODE, message: "Email is required for sending confirmation." };
     }
-    await db.profile.create({
-      data: {
-        userId,
-        whoYouAre: {
-          create: {
-            fullName: freeLancer.whoYouAre.fullName ?? "",
-            email: freeLancer.whoYouAre.email ?? "",
-            timeZone: freeLancer.whoYouAre.timeZone ?? "UTC",
-            country: freeLancer.whoYouAre.country ?? null,
-            professionalLinks: freeLancer.whoYouAre.professionalLinks ?? {},
-            phone: freeLancer.whoYouAre.phone ?? null
-          }
-        },
 
-        ...(freeLancer.coreRole ? { coreRole: { create: freeLancer.coreRole } } : {}),
-
-        ...(freeLancer.eliteSkillCards ? { eliteSkillCards: { create: freeLancer.eliteSkillCards } } : {}),
-
-        ...(freeLancer.toolstackProficiency ? { toolstackProficiency: { create: freeLancer.toolstackProficiency } } : {}),
-
-        ...(freeLancer.domainExperience ? { domainExperience: { create: freeLancer.domainExperience } } : {}),
-
-        ...(freeLancer.industryExperience ? { industryExperience: { create: freeLancer.industryExperience } } : {}),
-
-        ...(freeLancer.availabilityWorkflow ? { availabilityWorkflow: { create: freeLancer.availabilityWorkflow } } : {}),
-
-        ...(freeLancer.softSkills ? { softSkills: { create: freeLancer.softSkills } } : {}),
-
-        ...(freeLancer.certifications ? { certifications: { create: freeLancer.certifications } } : {}),
-
-        ...(freeLancer.projectQuoting ? { projectQuoting: { create: freeLancer.projectQuoting } } : {}),
-
-        ...(freeLancer.legalAgreements
-          ? {
-              legalAgreements: {
-                create: {
-                  agreements: freeLancer.legalAgreements.agreements,
-                  identityVerification: {
-                    create: freeLancer.legalAgreements.identityVerification
-                  },
-                  workAuthorization: {
-                    create: freeLancer.legalAgreements.workAuthorization
-                  }
-                }
-              }
-            }
-          : {})
+    // Check existence by email
+    const isExist = await db.profile.findFirst({
+      where: {
+        whoYouAre: { email: freeLancer.whoYouAre.email }
       }
     });
 
-    await gloabalMailMessage(freeLancer.whoYouAre.email, THANKYOUMESSAGE, `Your Request to Join Us`, `Dear, ${freeLancer.whoYouAre.fullName}`);
-    // res.status(200).json({ message: "Request sent successfully" });
-    httpResponse(req, res, SUCCESSCODE, SUCCESSMSG);
+    if (isExist) {
+      throw { status: BADREQUESTCODE, message: "You've already requested for joining us" };
+    }
+
+    // Get userId from token
+    const userId = req.userFromToken?.uid ?? null;
+    // if (!userId) {
+    //   throw { status: BADREQUESTCODE, message: "User ID is required from token." };
+    // }
+
+    // Prepare legalAgreements create input
+    const legalAgreementsCreate: Prisma.LegalAgreementsCreateNestedOneWithoutProfileInput | undefined = freeLancer.legalAgreements
+      ? {
+          create: {
+            agreements: freeLancer.legalAgreements.agreements || [],
+            // Only include identityVerification if all required fields are present
+            ...(freeLancer.legalAgreements.identityVerification?.idType &&
+            freeLancer.legalAgreements.identityVerification.taxDocType &&
+            typeof freeLancer.legalAgreements.identityVerification.addressVerified === "boolean"
+              ? {
+                  identityVerification: {
+                    create: {
+                      idType: freeLancer.legalAgreements.identityVerification.idType,
+                      taxDocType: freeLancer.legalAgreements.identityVerification.taxDocType,
+                      addressVerified: freeLancer.legalAgreements.identityVerification.addressVerified
+                    }
+                  }
+                }
+              : {}),
+            // Only include workAuthorization if it exists
+            ...(freeLancer.legalAgreements.workAuthorization
+              ? {
+                  workAuthorization: {
+                    create: {
+                      interested: freeLancer.legalAgreements.workAuthorization.interested || false
+                    }
+                  }
+                }
+              : {})
+          }
+        }
+      : undefined;
+
+    // Create the profile with all related data
+    const profileData: Prisma.ProfileCreateInput = {
+      userId,
+      whoYouAre: {
+        create: {
+          fullName: freeLancer.whoYouAre.fullName || "",
+          email: freeLancer.whoYouAre.email,
+          timeZone: freeLancer.whoYouAre.timeZone || "UTC",
+          country: freeLancer.whoYouAre.country || null,
+          professionalLinks: freeLancer.whoYouAre.professionalLinks || {},
+          phone: freeLancer.whoYouAre.phone || null
+        }
+      }
+    };
+
+    if (freeLancer.coreRole) {
+      profileData.coreRole = {
+        create: {
+          primaryDomain: freeLancer.coreRole.primaryDomain || ""
+        }
+      };
+    }
+    if (freeLancer.eliteSkillCards) {
+      profileData.eliteSkillCards = {
+        create: {
+          selectedSkills: freeLancer.eliteSkillCards.selectedSkills || []
+        }
+      };
+    }
+    if (freeLancer.toolstackProficiency) {
+      profileData.toolstackProficiency = {
+        create: {
+          selectedTools: freeLancer.toolstackProficiency.selectedTools || []
+        }
+      };
+    }
+    if (freeLancer.domainExperience) {
+      profileData.domainExperience = {
+        create: {
+          roles: freeLancer.domainExperience.roles || []
+        }
+      };
+    }
+    if (freeLancer.industryExperience) {
+      profileData.industryExperience = {
+        create: {
+          selectedIndustries: freeLancer.industryExperience.selectedIndustries || []
+        }
+      };
+    }
+    if (freeLancer.availabilityWorkflow) {
+      profileData.availabilityWorkflow = {
+        create: {
+          weeklyCommitment: freeLancer.availabilityWorkflow.weeklyCommitment || 0,
+          workingHours: freeLancer.availabilityWorkflow.workingHours || [],
+          collaborationTools: freeLancer.availabilityWorkflow.collaborationTools || [],
+          teamStyle: freeLancer.availabilityWorkflow.teamStyle || "",
+          screenSharing: freeLancer.availabilityWorkflow.screenSharing || "",
+          availabilityExceptions: freeLancer.availabilityWorkflow.availabilityExceptions || ""
+        }
+      };
+    }
+    if (freeLancer.softSkills) {
+      profileData.softSkills = {
+        create: {
+          collaborationStyle: freeLancer.softSkills.collaborationStyle || "",
+          communicationFrequency: freeLancer.softSkills.communicationFrequency || "",
+          conflictResolution: freeLancer.softSkills.conflictResolution || "",
+          languages: freeLancer.softSkills.languages || [],
+          teamVsSolo: freeLancer.softSkills.teamVsSolo || ""
+        }
+      };
+    }
+    if (freeLancer.certifications) {
+      profileData.certifications = {
+        create: {
+          certificates: freeLancer.certifications.certificates || []
+        }
+      };
+    }
+    if (freeLancer.projectQuoting) {
+      profileData.projectQuoting = {
+        create: {
+          compensationPreference: freeLancer.projectQuoting.compensationPreference || "",
+          smallProjectPrice: freeLancer.projectQuoting.smallProjectPrice || 0,
+          midProjectPrice: freeLancer.projectQuoting.midProjectPrice || 0,
+          longTermPrice: freeLancer.projectQuoting.longTermPrice || 0,
+          milestoneTerms: freeLancer.projectQuoting.milestoneTerms || "",
+          willSubmitProposals: freeLancer.projectQuoting.willSubmitProposals || ""
+        }
+      };
+    }
+    if (legalAgreementsCreate) {
+      profileData.legalAgreements = legalAgreementsCreate;
+    }
+    // ...existing code...
+    // console.log("PROFILE DATA:", JSON.stringify(profileData, null, 2));
+    // ...existing code...
+    await db.profile.create({
+      data: profileData
+    });
+    // ...existing code...
+
+    res.status(201).json({ message: "Freelancer profile created successfully" });
   }),
 
   getAllFreeLancerRequest: asyncHandler(async (req, res) => {
@@ -210,12 +284,12 @@ const freeLancerControllerV2 = {
     });
 
     const randomPassword = generateRandomStrings(6);
-    const hashedPassword = (await passwordHasher(randomPassword, res)) as string;
+    const hashedPassword = await passwordHasher(randomPassword, res); // Remove unnecessary type assertion
     const isFreelancerAlreadyExist = await db.user.findUnique({
       where: { email: profile.whoYouAre.email ? profile.whoYouAre.email : "" }
     });
 
-    if (isFreelancerAlreadyExist && profile?.whoYouAre?.email) {
+    if (isFreelancerAlreadyExist && profile.whoYouAre.email) {
       await db.user.update({
         where: { email: profile.whoYouAre.email },
         data: { role: "FREELANCER" }
@@ -228,12 +302,12 @@ const freeLancerControllerV2 = {
 
     const createdFreelancer = await db.user.create({
       data: {
-        username: `${generateUsername((profile.whoYouAre.fullName as string) || "freelancer")}_${generateRandomStrings(4)}`.toLowerCase(),
-        email: profile.whoYouAre.email as string,
-        fullName: (profile.whoYouAre.fullName as string) || "Freelancer",
+        username: `${generateUsername(profile.whoYouAre.fullName || "freelancer")}_${generateRandomStrings(4)}`.toLowerCase(),
+        email: profile.whoYouAre.email,
+        fullName: profile.whoYouAre.fullName || "Freelancer",
         role: "FREELANCER",
-        phone: (profile.whoYouAre.phone as string) || null,
-        password: hashedPassword,
+        phone: profile.whoYouAre.phone || null,
+        password: hashedPassword as string,
         emailVerifiedAt: new Date()
       }
     });

@@ -326,137 +326,137 @@ model BlogPost {
 }
 
 model Profile {
-  id                     String                @id @default(uuid())
-  userId                 String?                @unique
-  whoYouAre              WhoYouAre?            @relation(fields: [whoYouAreId], references: [id])
-  whoYouAreId            String?               @unique
-  coreRole               CoreRole?             @relation(fields: [coreRoleId], references: [id])
-  coreRoleId             String?               @unique
-  eliteSkillCards        EliteSkillCards?      @relation(fields: [eliteSkillCardsId], references: [id])
-  eliteSkillCardsId      String?               @unique
-  toolstackProficiency   ToolstackProficiency? @relation(fields: [toolstackProficiencyId], references: [id])
-  toolstackProficiencyId String?               @unique
-  domainExperience       DomainExperience?     @relation(fields: [domainExperienceId], references: [id])
-  domainExperienceId     String?               @unique
-  industryExperience     IndustryExperience?   @relation(fields: [industryExperienceId], references: [id])
-  industryExperienceId   String?               @unique
-  availabilityWorkflow   AvailabilityWorkflow? @relation(fields: [availabilityWorkflowId], references: [id])
-  availabilityWorkflowId String?               @unique
-  softSkills             SoftSkills?           @relation(fields: [softSkillsId], references: [id])
-  softSkillsId           String?               @unique
-  certifications         Certifications?       @relation(fields: [certificationsId], references: [id])
-  certificationsId       String?               @unique
-  projectQuoting         ProjectQuoting?       @relation(fields: [projectQuotingId], references: [id])
-  projectQuotingId       String?               @unique
-  legalAgreements        LegalAgreements?      @relation(fields: [legalAgreementsId], references: [id])
-  legalAgreementsId      String?               @unique
-  isAccepted             Boolean                @default(false)
-  createdAt              DateTime              @default(now())
-  trashedBy              String?
-  trashedAt              DateTime?
+  id                  String   @id @default(uuid())
+  userId              String?
+  whoYouAre           WhoYouAre      @relation(fields: [whoYouAreId], references: [id])
+  whoYouAreId         String   @unique
+  coreRole            CoreRole?      @relation(fields: [coreRoleId], references: [id])
+  coreRoleId          String?   @unique
+  eliteSkillCards     EliteSkillCards? @relation(fields: [eliteSkillCardsId], references: [id])
+  eliteSkillCardsId   String?   @unique
+  toolstackProficiency ToolstackProficiency? @relation(fields: [toolstackProficiencyId], references: [id])
+  toolstackProficiencyId String?   @unique
+  domainExperience    DomainExperience? @relation(fields: [domainExperienceId], references: [id])
+  domainExperienceId  String?   @unique
+  industryExperience  IndustryExperience? @relation(fields: [industryExperienceId], references: [id])
+  industryExperienceId String?   @unique
+  availabilityWorkflow AvailabilityWorkflow? @relation(fields: [availabilityWorkflowId], references: [id])
+  availabilityWorkflowId String?   @unique
+  softSkills          SoftSkills? @relation(fields: [softSkillsId], references: [id])
+  softSkillsId        String?   @unique 
+  certifications      Certifications? @relation(fields: [certificationsId], references: [id])
+
+  certificationsId    String?   @unique
+  projectQuoting      ProjectQuoting? @relation(fields: [projectQuotingId], references: [id])
+  projectQuotingId    String?   @unique
+  legalAgreements     LegalAgreements? @relation(fields: [legalAgreementsId], references: [id])
+  legalAgreementsId   String?   @unique 
+  trashedAt           DateTime?
+  trashedBy           String?
+  isAccepted          Boolean   @default(false)
 }
 
 model WhoYouAre {
   id                String   @id @default(uuid())
-  fullName          String?
-  email             String?
+  fullName          String
+  email             String   @unique
   timeZone          String
   country           String?
   professionalLinks Json
-  profile           Profile? // back relation
-  phone             String? 
+  phone             String?
+  profile           Profile?
 }
 
 model CoreRole {
-  id            String   @id @default(uuid())
-  primaryDomain String?
-  profile       Profile?
+  id                String   @id @default(uuid())
+  primaryDomain     String
+  profile           Profile?
 }
 
 model EliteSkillCards {
-  id             String   @id @default(uuid())
-  selectedSkills String[]
-  profile        Profile?
+  id                String   @id @default(uuid())
+  selectedSkills    Json
+  profile           Profile?
 }
 
 model ToolstackProficiency {
-  id            String   @id @default(uuid())
-  selectedTools String[]
-  profile       Profile?
+  id                String   @id @default(uuid())
+  selectedTools     Json
+  profile           Profile?
 }
 
 model DomainExperience {
-  id      String   @id @default(uuid())
-  roles   String[]
-  profile Profile?
+  id                String   @id @default(uuid())
+  roles             Json
+  profile           Profile?
 }
 
 model IndustryExperience {
-  id                 String   @id @default(uuid())
-  selectedIndustries String[]
-  profile            Profile?
+  id                String   @id @default(uuid())
+  selectedIndustries Json
+  profile           Profile?
 }
 
 model AvailabilityWorkflow {
-  id                     String   @id @default(uuid())
-  weeklyCommitment       Int
-  workingHours           String[]
-  collaborationTools     String[]
-  teamStyle              String?
-  screenSharing          String?
-  availabilityExceptions String?
-  profile                Profile?
+  id                String   @id @default(uuid())
+  weeklyCommitment  Int
+  workingHours      Json
+  collaborationTools Json
+  teamStyle         String
+  screenSharing     String
+  availabilityExceptions String
+  profile           Profile?
 }
 
 model SoftSkills {
-  id                     String   @id @default(uuid())
-  collaborationStyle     String?
-  communicationFrequency String?
-  conflictResolution     String?
-  languages              String[]
-  teamVsSolo             String?
-  profile                Profile?
+  id                String   @id @default(uuid())
+  collaborationStyle String
+  communicationFrequency String
+  conflictResolution String
+  languages         Json
+  teamVsSolo        String
+  profile           Profile?
 }
 
 model Certifications {
-  id           String   @id @default(uuid())
-  certificates String[]
-  profile      Profile?
+  id                String   @id @default(uuid())
+  certificates      Json
+  profile           Profile?
 }
 
 model ProjectQuoting {
-  id                     String   @id @default(uuid())
-  compensationPreference String?
-  smallProjectPrice      Int
-  midProjectPrice        Int
-  longTermPrice          Int
-  milestoneTerms         String?
-  willSubmitProposals    String?
-  profile                Profile?
+  id                String   @id @default(uuid())
+  compensationPreference String
+  smallProjectPrice Int
+  midProjectPrice   Int
+  longTermPrice     Int
+  milestoneTerms    String
+  willSubmitProposals String
+  profile           Profile?
 }
 
 model LegalAgreements {
-  id                     String                @id @default(uuid())
-  agreements             String[]
-  identityVerification   IdentityVerification? @relation(fields: [identityVerificationId], references: [id])
-  identityVerificationId String?               @unique
-  workAuthorization      WorkAuthorization?    @relation(fields: [workAuthorizationId], references: [id])
-  workAuthorizationId    String?               @unique
-  profile                Profile?
+  id                String   @id @default(uuid())
+  agreements        Json
+  identityVerification IdentityVerification? @relation(fields: [identityVerificationId], references: [id])
+  identityVerificationId String?   @unique
+  workAuthorization WorkAuthorization? @relation(fields: [workAuthorizationId], references: [id])
+  workAuthorizationId String?   @unique
+  profile           Profile?
 }
 
 model IdentityVerification {
-  id              String           @id @default(uuid())
-  idType          String?
-  taxDocType      String?
-  addressVerified Boolean
-  legalAgreements LegalAgreements?
+  id                String   @id @default(uuid())
+  idType            String
+  taxDocType        String
+  addressVerified   Boolean
+  legalAgreements   LegalAgreements?
 }
 
 model WorkAuthorization {
-  id              String           @id @default(uuid())
-  interested      Boolean
-  legalAgreements LegalAgreements?
+  id                String   @id @default(uuid())
+  interested        Boolean
+  legalAgreements   LegalAgreements?
 }
 /**
  * Project Request model

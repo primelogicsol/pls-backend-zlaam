@@ -177,12 +177,22 @@ export type TFREELANCER = {
 };
 export interface TFREELANCERPROFILE {
   whoYouAre: {
-    fullName?: string;
-    email?: string;
-    timeZone?: string; // Optional, defaults to "UTC" in controller
-    country?: string | null; // Optional, defaults to null in controller
-    professionalLinks?: Record<string, string>; // Optional, defaults to {} in controller
-    phone?: string | null; // Optional, defaults to null in controller
+    fullName: string;
+    email: string;
+    timeZone?: string | null;
+    country?: string | null;
+    professionalLinks?: {
+      github: string;
+      gitlab: string;
+      dribbble: string;
+      behance: string;
+      stackoverflow: string;
+      medium: string;
+      kaggle: string;
+      personalSite: string;
+      linkedin: string;
+    };
+    phone?: string | null;
   };
   coreRole?: {
     primaryDomain: string;
@@ -194,7 +204,10 @@ export interface TFREELANCERPROFILE {
     selectedTools: string[];
   };
   domainExperience?: {
-    roles: string[];
+    roles: {
+      title: string;
+      years: number;
+    }[];
   };
   industryExperience?: {
     selectedIndustries: string[];
@@ -226,13 +239,16 @@ export interface TFREELANCERPROFILE {
     willSubmitProposals: string;
   };
   legalAgreements?: {
-    agreements: string[];
-    identityVerification: {
+    agreements: {
+      id: string;
+      accepted: boolean;
+    }[];
+    identityVerification?: {
       idType: string;
       taxDocType: string;
       addressVerified: boolean;
     };
-    workAuthorization: {
+    workAuthorization?: {
       interested: boolean;
     };
   };

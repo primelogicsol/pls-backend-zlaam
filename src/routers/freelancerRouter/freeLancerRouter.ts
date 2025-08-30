@@ -34,7 +34,7 @@ freeLancerRouter
  */
 freeLancerRouter.route("/getFreeLancerJoinUsRequestV2").post(
   // validateDataMiddleware(freeLancerSchema),
-  (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 300),
+  // (req, res, next) => rateLimiterMiddleware.handle(req, res, next, 10, undefined, 10, 300),
   freeLancerControllerV2.getFreeLancerJoinUsRequest
 );
 freeLancerRouter

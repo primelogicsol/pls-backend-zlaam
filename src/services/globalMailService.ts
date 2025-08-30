@@ -1,10 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import nodemailer from "nodemailer";
 import { ENV, HOST_EMAIL, HOST_EMAIL_SECRET } from "../config/config";
 import { COMPANY_NAME, INTERNALSERVERERRORCODE, INTERNALSERVERERRORMSG } from "../constants";
 import logger from "../utils/loggerUtils";
-import { replaceAllPlaceholders } from "../utils/replaceAllPlaceholders";
 import { generateRandomStrings } from "../utils/slugStringGeneratorUtils";
 
 const transporter = nodemailer.createTransport({
@@ -28,16 +25,37 @@ export async function gloabalMailMessage(
 ) {
   //if env is development then return
   if (ENV == "DEVELOPMENT") return;
-  const templatePath = path.resolve(__dirname, "../../templates/globalMessageTemplate.html");
-  let htmlTemplate = fs.readFileSync(templatePath, "utf8");
-  const placeholders = {
-    companyname: COMPANY_NAME || "Prime Logic Solutions",
-    senderIntro: senderIntro || "",
-    message: message || "",
-    header: header || "",
-    addsOn: addsOn || ""
-  };
-  htmlTemplate = replaceAllPlaceholders(htmlTemplate, placeholders);
+
+  const htmlTemplate = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { background: #f4f4f4; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { font-size: 12px; color: #666; text-align: center; padding: 20px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>${header || ""}</h2>
+        </div>
+        <div class="content">
+          <p>${senderIntro || ""}</p>
+          <p>${message || ""}</p>
+          <p>${addsOn || ""}</p>
+        </div>
+        <div class="footer">
+          <p>${COMPANY_NAME || "Prime Logic Solutions"}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
   const randomStr = generateRandomStrings(10);
   const mailOptions = {
     from: HOST_EMAIL,
@@ -50,7 +68,6 @@ export async function gloabalMailMessage(
       "Auto-Submitted": "auto-generated",
       "Message-ID": `<${randomStr}.dev>`
     },
-
     replyTo: "support@primelogicsole.com"
   };
 
@@ -62,7 +79,7 @@ export async function gloabalMailMessage(
       logger.error(`Error Email message sending :${error.message}`);
       throw { status: INTERNALSERVERERRORCODE, message: INTERNALSERVERERRORMSG };
     }
-    logger.error(`Error sending Email  message:${error as string}`);
+    logger.error(`Error sending Email message:${error as string}`);
     throw { status: INTERNALSERVERERRORCODE, message: INTERNALSERVERERRORMSG };
   }
 }
