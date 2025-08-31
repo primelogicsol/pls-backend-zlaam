@@ -61,4 +61,4 @@ jobs:
           script: |
             cd /home/${{ secrets.SERVER_USER }}/coding/projects/primelogicsolutions/pls-backend
             bun install
-            pm2 restart pls-backend --update-env
+            pm2 restart pls-backend
