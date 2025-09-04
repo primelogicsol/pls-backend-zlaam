@@ -52,6 +52,9 @@ freeLancerRouter
 freeLancerRouter
   .route("/untrashFreeLancerRequestV2/:id")
   .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, freeLancerControllerV2.untrashFreeLancerRequest);
+freeLancerRouter
+  .route("/acceptFreeLancerRequestV2/:id")
+  .patch(authMiddleware.checkToken, authMiddleware.checkIfUserIsAdmin, freeLancerControllerV2.acceptFreeLancerRequest);
 /**
  * Create a niche list for a freelancer
  */

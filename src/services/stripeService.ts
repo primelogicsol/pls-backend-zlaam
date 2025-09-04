@@ -85,81 +85,76 @@
 
 // export default new StripeService()
 
-
-
-
-
 //************************************************************
-	// public async paymentSheetForOrder(
-	// 	id: ObjectId | string,
-	// 	userId: ObjectId
-	// ): Promise<{ clientSecret: string; hostedUrl?: any }> {
-	// 	const order = await Order.findById(id)
+// public async paymentSheetForOrder(
+// 	id: ObjectId | string,
+// 	userId: ObjectId
+// ): Promise<{ clientSecret: string; hostedUrl?: any }> {
+// 	const order = await Order.findById(id)
 
-	// 	if (!order || order.orderStatus !== 'confirmed') {
-	// 		throw new Error('Invalid Response')
-	// 	}
-	// 	let amount =
-	// 		order.price.amount + order?.GST?.amount + order?.deliveryPrice?.amount
-	// 	if (order.paymentIntentId) {
-	// 		return { clientSecret: order.paymentIntentId, hostedUrl: order.hostedUrl }
-	// 	}
-	// 	amount = Math.round(amount * 100) / 100
-	// 	const { paymentIntent: intent, hostedUrl } =
-	// 		await StripeService.createPaymentIntent({
-	// 			amount: {
-	// 				amount: amount * 100,
-	// 				currency: order.price.currency || 'cad',
-	// 			},
-	// 			description: 'Payment for order by SolaBran',
-	// 			orderId: order._id.toString(),
-	// 			customerId: userId,
-	// 		})
+// 	if (!order || order.orderStatus !== 'confirmed') {
+// 		throw new Error('Invalid Response')
+// 	}
+// 	let amount =
+// 		order.price.amount + order?.GST?.amount + order?.deliveryPrice?.amount
+// 	if (order.paymentIntentId) {
+// 		return { clientSecret: order.paymentIntentId, hostedUrl: order.hostedUrl }
+// 	}
+// 	amount = Math.round(amount * 100) / 100
+// 	const { paymentIntent: intent, hostedUrl } =
+// 		await StripeService.createPaymentIntent({
+// 			amount: {
+// 				amount: amount * 100,
+// 				currency: order.price.currency || 'cad',
+// 			},
+// 			description: 'Payment for order by SolaBran',
+// 			orderId: order._id.toString(),
+// 			customerId: userId,
+// 		})
 
-	// 	if (!intent.client_secret) {
-	// 		throw new Error('Payment intent failed to be created')
-	// 	}
+// 	if (!intent.client_secret) {
+// 		throw new Error('Payment intent failed to be created')
+// 	}
 
-	// 	order.paymentIntentId = intent.client_secret
-	// 	order.hostedUrl = hostedUrl ?? ''
+// 	order.paymentIntentId = intent.client_secret
+// 	order.hostedUrl = hostedUrl ?? ''
 
-	// 	await order.save()
+// 	await order.save()
 
-	// 	return { clientSecret: intent.client_secret, hostedUrl }
-	// }
+// 	return { clientSecret: intent.client_secret, hostedUrl }
+// }
 
-    
-    //************************************************************************** */
-    // createIntentForOrder: async (req: Request, res: Response) => {
-	// 	try {
-	// 		if (
-	// 			req.user.personalInformation.phoneNumber === null ||
-	// 			req.user.personalInformation.phoneNumber === ''
-	// 		) {
-	// 			return res.status(400).json({
-	// 				success: false,
-	// 				message:
-	// 					'Please update your phone number in account settings to create order',
-	// 			})
-	// 		}
+//************************************************************************** */
+// createIntentForOrder: async (req: Request, res: Response) => {
+// 	try {
+// 		if (
+// 			req.user.personalInformation.phoneNumber === null ||
+// 			req.user.personalInformation.phoneNumber === ''
+// 		) {
+// 			return res.status(400).json({
+// 				success: false,
+// 				message:
+// 					'Please update your phone number in account settings to create order',
+// 			})
+// 		}
 
-	// 		const { orderId } = req.query
+// 		const { orderId } = req.query
 
-	// 		const intent = await OrderRepository.paymentSheetForOrder(
-	// 			orderId as string,
-	// 			req.user._id
-	// 		)
+// 		const intent = await OrderRepository.paymentSheetForOrder(
+// 			orderId as string,
+// 			req.user._id
+// 		)
 
-	// 		res.status(201).json({
-	// 			success: true,
-	// 			intent: typeof intent === 'string' ? intent : intent.clientSecret,
-	// 			hostedUrl:
-	// 				typeof intent === 'object' && intent !== null
-	// 					? (intent.hostedUrl as string | undefined)
-	// 					: undefined,
-	// 			message: 'Payment intent created successfully',
-	// 		})
-	// 	} catch (error) {
-	// 		returnError(req, res, error)
-	// 	}
-	// },
+// 		res.status(201).json({
+// 			success: true,
+// 			intent: typeof intent === 'string' ? intent : intent.clientSecret,
+// 			hostedUrl:
+// 				typeof intent === 'object' && intent !== null
+// 					? (intent.hostedUrl as string | undefined)
+// 					: undefined,
+// 			message: 'Payment intent created successfully',
+// 		})
+// 	} catch (error) {
+// 		returnError(req, res, error)
+// 	}
+// },

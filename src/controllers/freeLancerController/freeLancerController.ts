@@ -8,15 +8,14 @@ import {
   THANKYOUMESSAGE,
   WELCOMEMESSAGEFORFREELANCER
 } from "../../constants";
-import { generateUsername } from "../../services/slugStringGeneratorService";
 import { db } from "../../database/db";
 import type { _Request } from "../../middlewares/authMiddleware";
+import { gloabalMailMessage } from "../../services/globalMailService";
 import { passwordHasher } from "../../services/passwordHasherService";
-import { generateRandomStrings } from "../../services/slugStringGeneratorService";
+import { generateRandomStrings, generateUsername } from "../../services/slugStringGeneratorService";
 import type { TFREELANCER } from "../../types";
 import { httpResponse } from "../../utils/apiResponseUtils";
 import { asyncHandler } from "../../utils/asyncHandlerUtils";
-import { gloabalMailMessage } from "../../services/globalMailService";
 
 export default {
   // ** Freelancer will request for create an account
